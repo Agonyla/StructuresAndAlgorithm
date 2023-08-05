@@ -19,6 +19,7 @@ public class Code01 {
         for (int j : arr) {
             eor ^= j;
         }
+        // right为最右边是1的数
         int rightOne = eor & (-eor);
         int onlyOne = 0;
         for (int j : arr) {
@@ -38,5 +39,6 @@ public class Code01 {
         int[] arr = {6, 10, 6, 6, 4, 4, 12, 12, 12, 12, 3, 3};
 
         getNum(arr);
+
     }
 }
