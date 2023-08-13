@@ -42,6 +42,4 @@ public class MergeKLists2 {
             return l2;
         }
     }
-
-
 }
