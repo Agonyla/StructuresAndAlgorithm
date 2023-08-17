@@ -1,5 +1,7 @@
 package class08;
 
+import java.util.HashMap;
+
 /**
  * @Author Agony
  * @Create 2023/8/16 21:27
@@ -124,6 +126,113 @@ public class Code01_TrieTree {
     }
 
 
+    // 用HashMap 来记录 节点的路径
+    public static class Node2 {
+        int pass;
+        int end;
+
+        HashMap<Integer, Node2> next;
+
+        public Node2() {
+            pass = 0;
+            end = 0;
+            next = new HashMap<>();
+        }
+    }
+
+    public static class Trie2 {
+        Node2 root;
+
+        public Trie2() {
+            root = new Node2();
+        }
+
+        public void insert(String word) {
+            if (word == null) {
+                return;
+            }
+            char[] chars = word.toCharArray();
+            Node2 cur = root;
+            cur.pass++;
+            for (int i = 0; i < chars.length; i++) {
+                int path = (int) chars[i];
+                if (!cur.next.containsKey(path)) {
+                    cur.next.put(path, new Node2());
+                }
+                cur = cur.next.get(path);
+                cur.pass++;
+            }
+            cur.end++;
+        }
+
+        public void delete(String word) {
+            if (search(word) == 0) {
+                return;
+            }
+            char[] chars = word.toCharArray();
+            Node2 cur = root;
+            cur.pass--;
+            for (int i = 0; i < chars.length; i++) {
+                int path = chars[i];
+                if (--cur.next.get(path).pass == 0) {
+                    cur.next.remove(path);
+                    return;
+                }
+                cur = cur.next.get(path);
+            }
+            cur.end--;
+        }
+
+        public int search(String word) {
+            if (word == null) {
+                return 0;
+            }
+            char[] chars = word.toCharArray();
+            Node2 cur = root;
+            for (int i = 0; i < chars.length; i++) {
+                int path = chars[i];
+                if (!cur.next.containsKey(path)) {
+                    return 0;
+                }
+                cur = cur.next.get(path);
+            }
+            return cur.end;
+        }
+
+        public int prefixNumber(String word) {
+            if (word == null) {
+                return 0;
+            }
+            char[] chars = word.toCharArray();
+            Node2 cur = root;
+            for (int i = 0; i < chars.length; i++) {
+                int path = chars[i];
+                if (!cur.next.containsKey(path)) {
+                    return 0;
+                }
+                cur = cur.next.get(path);
+            }
+            return cur.end;
+        }
+    }
+
+    public static String generateRandomString(int strLen) {
+        char[] chars = new char[(int) (Math.random() * strLen) + 1];
+        for (int i = 0; i < chars.length; i++) {
+            int value = (int) (Math.random() * 6);
+            chars[i] = (char) (97 + value);
+        }
+        return String.valueOf(chars);
+    }
+
+    public static String[] generateRandomStringArr(int arrLen, int strLen) {
+        String[] strings = new String[(int) (Math.random() * arrLen) + 1];
+        for (int i = 0; i < strings.length; i++) {
+            strings[i] = generateRandomString(strLen);
+        }
+        return strings;
+    }
+
     public static void main(String[] args) {
 
         String word = "abc";
@@ -162,6 +271,46 @@ public class Code01_TrieTree {
         // System.out.println(trie1.root.next[0].next[1].end);
         // System.out.println(trie1.root.next[0].next[1].next[3].pass);
         // System.out.println(trie1.root.next[0].next[1].next[3].end);
+
+
+        System.out.println("=================Trie2测试================");
+
+        Trie2 trie2 = new Trie2();
+        trie2.insert("abcd");
+
+        System.out.println("=========================对数器=======================");
+
+        int strLen = 5;
+        int arrLen = 10;
+        int testTimes = 10000;
+        for (int i = 0; i < testTimes; i++) {
+            String[] strings = generateRandomStringArr(arrLen, strLen);
+            Trie1 trie11 = new Trie1();
+            Trie2 trie22 = new Trie2();
+            double random = Math.random();
+            for (int j = 0; j < strings.length; j++) {
+                if (random < 0.25) {
+                    trie11.insert(strings[j]);
+                    trie22.insert(strings[j]);
+                } else if (random < 0.5) {
+                    trie11.delete(strings[j]);
+                    trie22.delete(strings[j]);
+                } else if (random < 0.75) {
+                    int res1 = trie11.search(strings[j]);
+                    int res2 = trie22.search(strings[j]);
+                    if (res1 != res2) {
+                        System.out.println("Oops");
+                    }
+                } else {
+                    int res1 = trie11.prefixNumber(strings[j]);
+                    int res2 = trie22.prefixNumber(strings[j]);
+                    if (res1 != res2) {
+                        System.out.println("Oops");
+                    }
+                }
+            }
+        }
+        System.out.println("test finish");
 
     }
 }
