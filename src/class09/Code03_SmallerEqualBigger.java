@@ -16,6 +16,7 @@ public class Code03_SmallerEqualBigger {
         }
     }
 
+    // 使用容器
     public static Node listPartition1(Node head, int target) {
         if (head == null) {
             return null;
@@ -43,6 +44,67 @@ public class Code03_SmallerEqualBigger {
         // 最后一个指向null
         nodes[nodes.length - 1].next = null;
         return nodes[0];
+    }
+
+    // 不使用容器
+    public static Node listPartition2(Node head, int target) {
+
+        if (head == null) {
+            return null;
+        }
+        Node smallHead = null;
+        Node equalHead = null;
+        Node bigHead = null;
+
+        Node smallCur = null;
+        Node equalCur = null;
+        Node bigCur = null;
+
+        Node next = null;
+        while (head != null) {
+            next = head.next;
+            // 这里必须把该指针的next节点指向空，不然后能会练到别的区域的节点
+            head.next = null;
+            if (head.value < target) {
+                if (smallHead == null) {
+                    smallHead = head;
+                    smallCur = head;
+                } else {
+                    smallCur.next = head;
+                    smallCur = head;
+                }
+            } else if (head.value == target) {
+                if (equalHead == null) {
+                    equalHead = head;
+                    equalCur = head;
+                } else {
+                    equalCur.next = head;
+                    equalCur = head;
+                }
+            } else {
+                if (bigHead == null) {
+                    bigHead = head;
+                    bigCur = head;
+                } else {
+                    bigCur.next = head;
+                    bigCur = head;
+                }
+            }
+            head = next;
+        }
+
+        // 如果有小于区域
+        if (smallCur != null) {
+            smallCur.next = equalHead;
+            equalCur = equalCur == null ? smallCur : equalCur;
+        }
+
+        // 只有当小区域和等于区域都为空时才不进入该判断
+        // 如果有小区域，则经过上一个if  equalCur  不会为空
+        if (equalCur != null) {
+            equalCur.next = bigHead;
+        }
+        return smallHead != null ? smallHead : (equalHead != null ? equalHead : bigHead);
     }
 
     public static void arrPartition(Node[] arr, int target) {
@@ -108,6 +170,17 @@ public class Code03_SmallerEqualBigger {
         System.out.println();
     }
 
+    public static Node copyList(Node head) {
+        Node node = new Node(head.value);
+        Node next = node;
+        while (head.next != null) {
+            head = head.next;
+            next.next = new Node(head.value);
+            next = next.next;
+        }
+        return node;
+    }
+
     public static void main(String[] args) {
         int[] arr = {5, 3, 6, 32, 7, 8, 3, 1, 2};
         int target = 3;
@@ -133,8 +206,13 @@ public class Code03_SmallerEqualBigger {
         n7.next = n8;
         n8.next = n9;
         printList(n1);
+        Node node = copyList(n1);
+        printList(node);
         Node head = listPartition1(n1, 3);
+        Node head2 = listPartition2(node, 3);
+        System.out.println("====================");
         printList(head);
+        printList(head2);
     }
 
 }
