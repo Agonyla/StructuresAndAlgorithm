@@ -4,6 +4,7 @@ package class09;
  * @Author Agony
  * @Create 2023/8/20 20:36
  * @Version 1.0
+ * 把单向链表按某值划分为左边小、中间相等、右边大的形式
  */
 public class Code03_SmallerEqualBigger {
 
