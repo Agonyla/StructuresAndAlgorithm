@@ -28,6 +28,10 @@ public class test {
             System.out.println(o);
         }
 
+        System.out.println("================================");
+        String n1 = null;
+        String n2 = null;
+        System.out.println(n1 == n2);
 
     }
 }
