@@ -24,7 +24,6 @@ public class Code06_SuccessorNode {
         if (x == null) {
             return null;
         }
-        Node res = null;
         // 有右孩子 则找到该右树的最左孩子
         if (x.right != null) {
             return getMostLeft(x.right);
