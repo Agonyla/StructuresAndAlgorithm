@@ -33,5 +33,10 @@ public class test {
         String n2 = null;
         System.out.println(n1 == n2);
 
+        System.out.println("========================================");
+        String a = "ab";
+        String b = "bb";
+        System.out.println(a.compareTo(b));
+
     }
 }
