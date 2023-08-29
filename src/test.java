@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 /**
@@ -38,5 +39,14 @@ public class test {
         String b = "bb";
         System.out.println(a.compareTo(b));
 
+        System.out.println("============================");
+
+
+        int[] arr = {4, 2, 6, 8, 44, 8, 5};
+        Arrays.sort(arr);
+        for (int i : arr) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
     }
 }
