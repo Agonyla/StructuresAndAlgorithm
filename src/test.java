@@ -48,5 +48,12 @@ public class test {
             System.out.print(i + " ");
         }
         System.out.println();
+
+        System.out.println("========================");
+
+        int hi = 3;
+        for (hi--; hi >= 0; hi--) {
+            System.out.println("lala");
+        }
     }
 }
