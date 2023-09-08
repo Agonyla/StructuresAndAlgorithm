@@ -4,7 +4,7 @@ package class15;
  * @Author Agony
  * @Create 2023/9/7 20:06
  * @Version 1.0
- * <a href="https://leetcode.cn/problems/number-of-provinces/?utm_source=LCUS&utm_medium=ip_redirect&utm_campaign=transfer2china">省份数量</a>
+ * <a href="https://leetcode.cn/problems/number-of-provinces/">省份数量</a>
  * 关于对角线对称
  * 1 1 0 0
  * 1 1 0 0
@@ -72,9 +72,11 @@ public class Code01_FriendCircles {
             int sizeB = size[fb];
             if (sizeA >= sizeB) {
                 size[fa] = sizeA + sizeB;
+                size[fb] = 0;
                 parent[fb] = fa;
             } else {
                 size[fb] = sizeA + sizeB;
+                size[fa] = 0;
                 parent[fa] = fb;
             }
             sets--;
