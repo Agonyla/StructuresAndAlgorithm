@@ -1,5 +1,10 @@
 package class15;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
+
 /**
  * @Author Agony
  * @Create 2023/9/7 20:37
@@ -140,4 +145,109 @@ public class Code02_NumberOfIslands {
             return sets;
         }
     }
+
+
+    public int numIslands3(char[][] grid) {
+
+        int row = grid.length;
+        int col = grid[0].length;
+        Dot[][] dots = new Dot[row][col];
+        ArrayList<Dot> list = new ArrayList<>();
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    dots[i][j] = new Dot();
+                    list.add(dots[i][j]);
+                }
+            }
+        }
+
+        Union2<Dot> union2 = new Union2<>(list);
+        for (int i = 1; i < row; i++) {
+            if (grid[i - 1][0] == '1' && grid[i][0] == '1') {
+                union2.union(dots[i - 1][0], dots[i][0]);
+            }
+        }
+
+        for (int j = 1; j < col; j++) {
+            if (grid[0][j - 1] == '1' && grid[0][j] == '1') {
+                union2.union(dots[0][j - 1], dots[0][j]);
+            }
+        }
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    if (grid[i - 1][j] == '1') {
+                        union2.union(dots[i][j], dots[i - 1][j]);
+                    }
+                    if (grid[i][j - 1] == '1') {
+                        union2.union(dots[i][j], dots[i][j - 1]);
+                    }
+                }
+            }
+        }
+        return union2.getSets();
+    }
+
+    public static class Node<V> {
+        V value;
+
+        public Node(V v) {
+            value = v;
+        }
+    }
+
+    public static class Dot {
+    }
+
+    public static class Union2<V> {
+        private HashMap<V, Node<V>> nodes;
+        private HashMap<Node<V>, Node<V>> parents;
+        private HashMap<Node<V>, Integer> mapSize;
+
+        public Union2(List<V> values) {
+            nodes = new HashMap<>();
+            parents = new HashMap<>();
+            mapSize = new HashMap<>();
+            for (V value : values) {
+                Node<V> node = new Node<>(value);
+                nodes.put(value, node);
+                parents.put(node, node);
+                mapSize.put(node, 1);
+            }
+        }
+
+        public Node<V> findFather(Node<V> cur) {
+            Stack<Node<V>> stack = new Stack<>();
+            while (cur != parents.get(cur)) {
+                stack.push(cur);
+                cur = parents.get(cur);
+            }
+
+            while (!stack.isEmpty()) {
+                parents.put(stack.pop(), cur);
+            }
+            return cur;
+        }
+
+        public void union(V a, V b) {
+            if (findFather(nodes.get(a)) == findFather(nodes.get(b))) {
+                return;
+            }
+            Node<V> fa = parents.get(nodes.get(a));
+            Node<V> fb = parents.get(nodes.get(b));
+            int sizeA = mapSize.get(fa);
+            int sizeB = mapSize.get(fb);
+            Node<V> big = sizeA >= sizeB ? fa : fb;
+            Node<V> small = big == fa ? fb : fa;
+            parents.put(small, big);
+            mapSize.put(big, sizeA + sizeB);
+            mapSize.remove(small);
+        }
+
+        public int getSets() {
+            return mapSize.size();
+        }
+    }
+
 }
