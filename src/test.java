@@ -1,3 +1,5 @@
+import class16.Node;
+
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
@@ -55,5 +57,12 @@ public class test {
         for (hi--; hi >= 0; hi--) {
             System.out.println("lala");
         }
+
+        System.out.println("==============================");
+        Node node = new Node(10);
+        for (Node next : node.nexts) {
+            System.out.println("a");
+        }
+        System.out.println("node = " + node);
     }
 }
