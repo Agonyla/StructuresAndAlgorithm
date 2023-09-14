@@ -7,7 +7,7 @@ import java.util.LinkedList;
  * @Author Agony
  * @Create 2023/9/11 21:47
  * @Version 1.0
- * 图的广度优先遍历
+ * 图的广度优先遍历 => 借助队列实现，在弹出的时候打印
  */
 public class Code01_BFS {
 
