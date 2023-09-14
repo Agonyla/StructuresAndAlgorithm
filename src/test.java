@@ -64,5 +64,12 @@ public class test {
             System.out.println("a");
         }
         System.out.println("node = " + node);
+
+        System.out.println("===================");
+
+        int num1 = 1;
+        int num2 = 10;
+        System.out.println(Integer.compare(num1, num2));
+
     }
 }
