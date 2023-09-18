@@ -18,7 +18,6 @@ public class Code02_PrintAllSubsequences {
 
         char[] chars = str.toCharArray();
         String path = "";
-        int index = 0;
         process(chars, res, 0, path);
         return res;
     }
@@ -46,7 +45,6 @@ public class Code02_PrintAllSubsequences {
         HashSet<String> set = new HashSet<>();
         char[] chars = str.toCharArray();
         String path = "";
-        int index = 0;
         processNoRepeat(chars, set, 0, path);
 
         return new ArrayList<>(set);
