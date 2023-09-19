@@ -51,25 +51,30 @@ public class test {
         }
         System.out.println();
 
-        System.out.println("========================");
+        System.out.println("============for循环hi--测试============");
 
         int hi = 3;
         for (hi--; hi >= 0; hi--) {
-            System.out.println("lala");
+            System.out.println(hi);
         }
 
-        System.out.println("==============================");
+        System.out.println("===============Node 空 nexts 列表测试===============");
         Node node = new Node(10);
         for (Node next : node.nexts) {
             System.out.println("a");
         }
         System.out.println("node = " + node);
 
-        System.out.println("===================");
+        System.out.println("=========Integer.compare()测试==========");
 
         int num1 = 1;
         int num2 = 10;
         System.out.println(Integer.compare(num1, num2));
+
+        System.out.println("==========ASCII测试===========");
+
+        char ch = 'a';
+        System.out.println(ch + 0);
 
     }
 }
