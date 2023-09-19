@@ -74,7 +74,12 @@ public class test {
         System.out.println("==========ASCII测试===========");
 
         char ch = 'a';
-        System.out.println(ch + 0);
+        char ch2 = 'b';
+        System.out.println(ch + 0); // 97
+        System.out.println(ch > 96); // true
+        System.out.println(ch * 2);  // 194
+        System.out.println(ch + ch2); // 195
+        System.out.println(ch + "" + ch2); // ab
 
     }
 }
