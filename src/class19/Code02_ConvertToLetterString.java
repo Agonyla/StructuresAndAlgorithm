@@ -63,7 +63,7 @@ public class Code02_ConvertToLetterString {
         int[] dp = new int[N + 1];
         dp[N] = 1;
 
-        // 返回的是dp[0] 所以要从右到左遍历
+        // 返回的是dp[0]，看递归时的依赖，index依赖index+1位置，所以要从右到左遍历
         for (int index = N - 1; index >= 0; index--) {
 
             if (chars[index] == '0') {
