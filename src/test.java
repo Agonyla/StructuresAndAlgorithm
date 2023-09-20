@@ -81,6 +81,15 @@ public class test {
         System.out.println(ch + ch2); // 195
         System.out.println(ch + "" + ch2); // ab
 
+        char ch3 = '1';  // '1'对应ASCII码49   '0'对应ASCII码48
+        // 字符在运算的过程中，会先转成ASCII的数字，然后再进行运算
+        System.out.println(ch3 * 10); // 490
+        System.out.println(ch3 + 0); // 49
+        System.out.println(ch3 - 0); // 49
+
+        System.out.println(ch3 + '0'); // 97
+        System.out.println(ch3 - '0'); // 1
+
 
         System.out.println("======下半角打印测试========");
 
