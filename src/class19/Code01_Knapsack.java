@@ -75,7 +75,7 @@ public class Code01_Knapsack {
 
         int N = values.length;
         int[][] dp = new int[N + 1][bag + 1];
-
+        // 返回的是dp[0][bag] 所以总的趋势是要从下到上遍历(外层从下到上)，内层都可以
         for (int index = N - 1; index >= 0; index--) {
             for (int rest = 0; rest <= bag; rest++) {
                 // int p1 = 0;
