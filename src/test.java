@@ -81,5 +81,27 @@ public class test {
         System.out.println(ch + ch2); // 195
         System.out.println(ch + "" + ch2); // ab
 
+
+        System.out.println("======下半角打印测试========");
+
+        int N = 8;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j <= i; j++) {
+                System.out.print(" A ");
+            }
+            System.out.println();
+        }
+
+
+        System.out.println("======上半角打印测试========");
+
+        int M = 8;
+        for (int i = 0; i < M; i++) {
+            for (int j = M - i; j > 0; j--) {
+                System.out.print(" A ");
+            }
+            System.out.println();
+        }
+
     }
 }
