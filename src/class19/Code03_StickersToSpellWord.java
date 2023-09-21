@@ -12,7 +12,7 @@ import java.util.HashMap;
  * 例子：str= "babac"，arr = {"ba","c","abcd"}
  * ba + ba + c  3  abcd + abcd 2  abcd+ba 2
  * 所以返回2
- * <a href="https://leetcode.cn/problems/stickers-to-spell-word/">贴纸拼词</a>
+ * <p><a href="https://leetcode.cn/problems/stickers-to-spell-word/">贴纸拼词</a></p>
  */
 public class Code03_StickersToSpellWord {
     public static int minStickers(String[] stickers, String target) {
