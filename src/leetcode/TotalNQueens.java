@@ -10,6 +10,7 @@ package leetcode;
  * <p><a href="https://leetcode.cn/problems/n-queens-ii/">N 皇后 II</a></p>
  */
 public class TotalNQueens {
+    // TODO:在后序的视频里有
     public static int totalNQueens(int n) {
         return 0;
     }
