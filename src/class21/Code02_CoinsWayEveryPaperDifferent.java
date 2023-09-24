@@ -63,7 +63,7 @@ public class Code02_CoinsWayEveryPaperDifferent {
         // rest 取值范围：0~aim
         int[][] dp = new int[N + 1][aim + 1];
         dp[N][0] = 1;
-        // di
+        // 第一列
         for (int i = 0; i < N; i++) {
             dp[i][0] = 1;
         }
