@@ -74,6 +74,8 @@ public class Code03_CoinsWayNoLimit {
             for (int rest = 0; rest <= aim; rest++) {
                 int ways = 0;
                 for (int num = 0; num * arr[index] <= rest; num++) {
+                    // 因为有num * arr[index] <= rest ==> rest - num * arr[index]] >= 0
+                    // 所以不需要加 if 判断
                     ways += dp[index + 1][rest - num * arr[index]];
                 }
                 dp[index][rest] = ways;
