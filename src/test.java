@@ -112,5 +112,9 @@ public class test {
             System.out.println();
         }
 
+        System.out.println("======系统最大加1========");
+        System.out.println(Integer.MAX_VALUE);
+        System.out.println(Integer.MAX_VALUE + 1);
+
     }
 }
