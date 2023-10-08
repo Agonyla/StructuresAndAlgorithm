@@ -91,11 +91,10 @@ public class Code03_NQueens {
         }
         // 可以摆放的位置 => 可摆位置为1
         int position = limit & (~(colLim | leftDiaLim | rightDiaLim));
-        int mostRightOne = 0;
         int res = 0;
         while (position != 0) {
             // 获取position最右侧的1，从最右侧开始尝试放棋
-            mostRightOne = position & (~position + 1);
+            int mostRightOne = position & (~position + 1);
             position -= mostRightOne;
             // 每次放棋之后，leftDiaLim需要与mostRightOne合并然后左移
             // rightDiaLim需要与mostRightOne合并然后右移
