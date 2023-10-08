@@ -66,7 +66,7 @@ public class Code03_NQueens {
 
 
     /**
-     * 使用位运算来记录
+     * 使用位运算来记录 只能处理最多32X32的棋盘
      */
     public static int num2(int n) {
         if (n < 0 || n > 32) {
