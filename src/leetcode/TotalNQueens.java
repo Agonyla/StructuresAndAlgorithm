@@ -10,10 +10,40 @@ package leetcode;
  * <p><a href="https://leetcode.cn/problems/n-queens-ii/">N 皇后 II</a></p>
  */
 public class TotalNQueens {
-    // TODO:在后序的视频里有
+    
     public static int totalNQueens(int n) {
-        return 0;
+        if (n < 0) {
+            return 0;
+        }
+        int[] record = new int[n];
+        return process(n, record, 0);
     }
 
+    public static int process(int n, int[] record, int index) {
+        if (index == n) {
+            return 1;
+        }
+        int ans = 0;
+        for (int j = 0; j < n; j++) {
+            if (isValid(record, index, j)) {
+                record[index] = j;
+                ans += process(n, record, index + 1);
+            }
+        }
+        return ans;
+    }
+
+    public static boolean isValid(int[] record, int index, int j) {
+        for (int i = 0; i < index; i++) {
+            if (record[i] == j || Math.abs(i - index) == Math.abs(record[i] - j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(totalNQueens(8));
+    }
 
 }
