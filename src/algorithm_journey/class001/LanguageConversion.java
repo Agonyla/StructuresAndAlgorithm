@@ -3,7 +3,7 @@ package algorithm_journey.class001;
 /**
  * @author Agony
  * @create 2024/5/21 15:23
- * @describe: // 测试链接 : <a href="https://leetcode.cn/problems/sort-an-array/">...</a>
+ * @describe: // 测试链接 : <a href="https://leetcode.cn/problems/sort-an-array/">排序测试网址</a>
  * // 此时不要求掌握，因为这些排序后续的课都会讲到的
  * // 这里只是想说明代码语言的转换并不困难
  * // 整个系列虽然都是java讲的，但使用不同语言的同学听懂思路之后，想理解代码真的不是问题
