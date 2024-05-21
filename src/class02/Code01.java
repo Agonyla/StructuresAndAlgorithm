@@ -9,6 +9,7 @@ package class02;
 public class Code01 {
 
     public static void getNum(int[] arr) {
+
         
         if (arr == null || arr.length == 0) {
             return;
