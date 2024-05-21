@@ -10,6 +10,7 @@ public class Code01 {
 
     public static void getNum(int[] arr) {
 
+        //int a = 10;
 
         if (arr == null || arr.length == 0) {
             return;
