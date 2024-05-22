@@ -73,9 +73,13 @@ public class Code01_FindNumber {
      * @return
      */
     public static boolean right(int[] arr, int num) {
+        
+        if (arr == null || arr.length == 0) {
+            return false;
+        }
         int ans = -1;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == num) {
+        for (int j : arr) {
+            if (j == num) {
                 return true;
             }
         }
