@@ -5,10 +5,9 @@ import algorithm_journey.utils.MathUtils;
 import java.util.Arrays;
 
 /**
- * 二分搜索
- *
  * @author Agony
  * @create 2024/5/22 20:13
+ * @describe: 二分搜索 (在有序数组确定num存在还是不存在)
  */
 public class Code01_FindNumber {
 
