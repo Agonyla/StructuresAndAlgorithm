@@ -17,7 +17,7 @@ public class Code02_FindLeft {
         int V = 200;
         int times = 10000;
 
-        System.out.println("test begin");
+        System.out.println("algorithm_basic.test begin");
         for (int i = 0; i < times; i++) {
 
             int n = (int) (Math.random() * N);
@@ -35,8 +35,8 @@ public class Code02_FindLeft {
                 break;
             }
         }
-        System.out.println("test end");
-        
+        System.out.println("algorithm_basic.test end");
+
     }
 
 
