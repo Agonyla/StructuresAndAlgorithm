@@ -1,5 +1,7 @@
 package algorithm_journey.class014;
 
+import java.util.Stack;
+
 /**
  * @author Agony
  * @create 2024/5/25 22:02
@@ -15,5 +17,30 @@ package algorithm_journey.class014;
  */
 public class StackToQueue {
 
+    class MyQueue {
 
+        public Stack<Integer> in;
+        public Stack<Integer> out;
+
+
+        public MyQueue() {
+
+        }
+
+        public void push(int x) {
+
+        }
+
+        public int pop() {
+
+        }
+
+        public int peek() {
+
+        }
+
+        public boolean empty() {
+
+        }
+    }
 }
