@@ -33,9 +33,9 @@ public class QueueToStack {
          * @param x
          */
         public void push(int x) {
-            int size = queue.size();
             queue.offer(x);
-            for (int i = 0; i < size; i++) {
+            int size = queue.size();
+            for (int i = 0; i < size - 1; i++) {
                 queue.offer(queue.poll());
             }
         }
