@@ -24,23 +24,43 @@ public class StackToQueue {
 
 
         public MyQueue() {
+            in = new Stack<>();
+            out = new Stack<>();
+        }
 
+        /**
+         * in 栈向 out 栈倒数据
+         * 1. out栈空了才能倒数据
+         * 2. in栈要一次性倒完所有数据
+         */
+        public void inToOut() {
+            if (empty()) {
+                return;
+            }
+            if (out.isEmpty()) {
+                while (!in.isEmpty()) {
+                    out.push(in.pop());
+                }
+            }
         }
 
         public void push(int x) {
-
+            in.push(x);
+            inToOut();
         }
 
         public int pop() {
-
+            inToOut();
+            return out.pop();
         }
 
         public int peek() {
-
+            inToOut();
+            return out.peek();
         }
 
         public boolean empty() {
-
+            return in.isEmpty() && out.isEmpty();
         }
     }
 }
