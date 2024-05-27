@@ -17,6 +17,11 @@ import java.util.Stack;
  */
 public class StackToQueue {
 
+    /**
+     * 使用两个栈实现队列
+     * 加入的数添加到in栈，再由in栈弹出到out栈
+     * out栈弹出实现队列先进先出
+     */
     class MyQueue {
 
         public Stack<Integer> in;
