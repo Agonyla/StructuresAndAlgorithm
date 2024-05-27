@@ -71,6 +71,7 @@ public class GetMinStack {
             return min.peek();
         }
     }
+    
 
     // 提交时把类名、构造方法改成MinStack
     static class MinStack2 {
