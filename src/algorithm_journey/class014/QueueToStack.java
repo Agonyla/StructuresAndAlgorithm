@@ -19,7 +19,10 @@ import java.util.Queue;
 public class QueueToStack {
 
 
-    class MyStack {
+    /**
+     * 每次添加新元素的时候都把前面的元素依次弹出添加到队尾实现栈
+     */
+    static class MyStack {
 
         public Queue<Integer> queue;
 
@@ -55,7 +58,7 @@ public class QueueToStack {
 
 
     // 另一种实现
-    class MyStack1 {
+    static class MyStack1 {
 
         public Queue<Integer> queue;
         public Queue<Integer> help;
