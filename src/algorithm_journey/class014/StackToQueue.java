@@ -22,7 +22,7 @@ public class StackToQueue {
      * 加入的数添加到in栈，再由in栈弹出到out栈
      * out栈弹出实现队列先进先出
      */
-    class MyQueue {
+    static class MyQueue {
 
         public Stack<Integer> in;
         public Stack<Integer> out;
