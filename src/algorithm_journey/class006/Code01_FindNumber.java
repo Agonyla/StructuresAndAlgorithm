@@ -17,7 +17,7 @@ public class Code01_FindNumber {
         int V = 1000;
         int times = 10000;
 
-        System.out.println("algorithm_basic.test begin");
+        System.out.println("test begin");
         for (int i = 0; i < times; i++) {
 
             int n = (int) (Math.random() * N);
@@ -31,7 +31,7 @@ public class Code01_FindNumber {
                 break;
             }
         }
-        System.out.println("algorithm_basic.test end");
+        System.out.println("test end");
     }
 
 

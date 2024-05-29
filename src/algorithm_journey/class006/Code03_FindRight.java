@@ -16,7 +16,7 @@ public class Code03_FindRight {
         int V = 200;
         int times = 40000;
 
-        System.out.println("algorithm_basic.test begin");
+        System.out.println("test begin");
         for (int i = 0; i < times; i++) {
 
             int n = (int) (Math.random() * N);
@@ -37,7 +37,7 @@ public class Code03_FindRight {
             // System.out.println("num = " + num);
             // System.out.println("ans1 = " + ans1);
         }
-        System.out.println("algorithm_basic.test end");
+        System.out.println("test end");
     }
 
 
