@@ -76,6 +76,7 @@ public class SmallSum {
         long ans = 0;
         long sum = 0;
         for (int j = m + 1, i = l; j <= r; j++) {
+            // 这里两个判断条件无先后要求，因为不会导致数组越界
             while (arr[i] <= arr[j] && i <= m) {
                 sum += arr[i++];
             }
