@@ -69,12 +69,12 @@ public class QuickSort {
      * 用两个静态变量记录等于x值的范围
      * <p>
      * 流程:
-     * 小于x的边界 a
-     * 大于x的边界 b
+     * 小于x的边界 l
+     * 大于x的边界 r
      * 遍历指针 i
-     * arr[i] < x 时 swap(a,i), a++, i++;
+     * arr[i] < x 时 swap(l,i), l++, i++;
      * arr[i] == x 时候 i++;
-     * arr[i] > x 时 swap(b,i), b--;
+     * arr[i] > x 时 swap(r,i), r--;
      *
      * @param arr 数组
      * @param l   左边界下标
@@ -82,23 +82,21 @@ public class QuickSort {
      * @param x   传入值（数组上的一个随机位置值）
      */
     public static void partition(int[] arr, int l, int r, int x) {
-        int a = l;
-        int b = r;
         int i = l;
-        while (i <= b) {
+        while (i <= r) {
             if (arr[i] < x) {
-                swap(arr, a, i);
-                a++;
+                swap(arr, l, i);
+                l++;
                 i++;
             } else if (arr[i] > x) {
-                swap(arr, b, i);
-                b--;
+                swap(arr, r, i);
+                r--;
             } else {
                 i++;
             }
         }
-        first = a;
-        last = b;
+        first = l;
+        last = r;
     }
 
 
