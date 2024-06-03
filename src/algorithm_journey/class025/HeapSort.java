@@ -57,6 +57,7 @@ public class HeapSort {
     /**
      * i 位置的数，向上调整大根堆
      * i 位置的数，父节点: (i - 1) / 2
+     * 如果当前节点大于父节点就交换
      *
      * @param arr 数组
      * @param i   i 位置下标
@@ -71,6 +72,7 @@ public class HeapSort {
     /**
      * i 位置的数，向下调整大根堆
      * i 位置的数，左节点: i * 2 + 1，右节点: i * 2 + 2
+     * 如果当前节点小于子节点就交换
      *
      * @param arr  数组
      * @param i    i 位置下标
