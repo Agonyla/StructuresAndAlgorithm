@@ -26,7 +26,8 @@ public class HeapSort {
         if (arr == null || arr.length < 2) {
             return arr;
         }
-        heapSort(arr);
+        // heapSortTopToBottom(arr);
+        heapSortBottomToTop(arr);
         return arr;
     }
 
@@ -40,14 +41,38 @@ public class HeapSort {
      * 头节点位置 heapify 一下
      * -> 头节点又是最大值
      * 往复做，直到size==1
+     * <p>
+     * 从顶到底建立大根堆，O(n * logn)
+     * 依次弹出堆内最大值并排好序，O(n * logn)
+     * 整体时间复杂度O(n * logn)
      *
-     * @param arr
+     * @param arr 数组
      */
-    public static void heapSort(int[] arr) {
+    public static void heapSortTopToBottom(int[] arr) {
         int size = arr.length;
         for (int i = 0; i < size; i++) {
             heapInsert(arr, i);
         }
+        while (size > 1) {
+            swap(arr, 0, --size);
+            heapify(arr, 0, size);
+        }
+    }
+
+
+    /**
+     * 从底到顶建立大根堆，O(n)
+     * 依次弹出堆内最大值并排好序，O(n * logn)
+     * 整体时间复杂度O(n * logn)
+     *
+     * @param arr 数组
+     */
+    public static void heapSortBottomToTop(int[] arr) {
+        int n = arr.length;
+        for (int i = n - 1; i >= 0; i--) {
+            heapify(arr, i, n);
+        }
+        int size = n;
         while (size > 1) {
             swap(arr, 0, --size);
             heapify(arr, 0, size);
