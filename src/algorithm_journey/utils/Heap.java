@@ -47,36 +47,58 @@ public class Heap {
 
     private void heapify(int i) {
         int l = 2 * i + 1;
-        // todo 这里优化一下
-        // 大根堆
-        if (BIG.equals(type)) {
-            while (l < size) {
-                int r = l + 1;
-                int bigger = r < size && heap[l] < heap[r] ? r : l;
-                if (heap[i] >= heap[bigger]) {
-                    break;
-                } else {
-                    swap(i, bigger);
-                    i = bigger;
-                    l = 2 * i + 1;
-                }
+   
+        while (l < size) {
+            int r = l + 1;
+            int best = r < size && compare(heap[r], heap[l]) ? r : l;
+            if (compare(heap[best], heap[i])) {
+                swap(i, best);
+                i = best;
+                l = 2 * i + 1;
+            } else {
+                break;
             }
         }
-        // 小根堆
-        if (SMALL.equals(type)) {
-            while (l < size) {
-                int r = l + 1;
-                int smaller = r < size && heap[l] > heap[r] ? r : l;
-                if (heap[i] <= heap[smaller]) {
-                    break;
-                } else {
-                    swap(i, smaller);
-                    i = smaller;
-                    l = 2 * i + 1;
-                }
-            }
-        }
+        // // 大根堆
+        // if (BIG.equals(type)) {
+        //     while (l < size) {
+        //         int r = l + 1;
+        //         int bigger = r < size && heap[l] < heap[r] ? r : l;
+        //         if (heap[i] >= heap[bigger]) {
+        //             break;
+        //         } else {
+        //             swap(i, bigger);
+        //             i = bigger;
+        //             l = 2 * i + 1;
+        //         }
+        //     }
+        // }
+        // // 小根堆
+        // if (SMALL.equals(type)) {
+        //     while (l < size) {
+        //         int r = l + 1;
+        //         int smaller = r < size && heap[l] > heap[r] ? r : l;
+        //         if (heap[i] <= heap[smaller]) {
+        //             break;
+        //         } else {
+        //             swap(i, smaller);
+        //             i = smaller;
+        //             l = 2 * i + 1;
+        //         }
+        //     }
+        // }
     }
+
+    // todo 增加 add、peak、heapInsert等方法
+
+    public int pop() {
+        //     todo
+        int ans = heap[0];
+        swap(0, --size);
+        heapify(0);
+        return ans;
+    }
+
 
     private boolean compare(int x, int y) {
         return BIG.equals(type) ? x > y : x < y;
