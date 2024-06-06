@@ -1,16 +1,27 @@
 package algorithm_journey.class029;
 
 /**
+ * 用异或运算交换两数的值
+ *
  * @author Agony
  * @create 2024/6/6 09:51
  */
 public class SwapExclusiveOr {
 
-    // todo 完成剩余的内容
+
     public static void main(String[] args) {
-        int[] arr = {3, 3};
 
+        int a = 10;
+        int b = 20;
+        System.out.println("a = " + a);
+        System.out.println("b = " + b);
+        a = a ^ b;
+        b = a ^ b;
+        a = a ^ b;
+        System.out.println("a = " + a);
+        System.out.println("b = " + b);
 
+        int[] arr = {1, 3};
         System.out.println(arr[0]);
         System.out.println(arr[1]);
     }
