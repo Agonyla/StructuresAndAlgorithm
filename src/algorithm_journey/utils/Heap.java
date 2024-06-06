@@ -11,6 +11,7 @@ public class Heap {
 
     public int length = 100001;
     public int[] heap;
+    // 堆长度
     public int size;
     public String type;
 
@@ -21,13 +22,13 @@ public class Heap {
     public Heap(int length, String type) {
         this.length = length;
         heap = new int[this.length];
-        this.size = length;
+        this.size = 0;
         this.type = type;
     }
 
     public Heap(String type) {
         heap = new int[this.length];
-        this.size = this.length;
+        this.size = 0;
         this.type = type;
     }
 
@@ -47,7 +48,7 @@ public class Heap {
 
     private void heapify(int i) {
         int l = 2 * i + 1;
-   
+
         while (l < size) {
             int r = l + 1;
             int best = r < size && compare(heap[r], heap[l]) ? r : l;
@@ -91,17 +92,48 @@ public class Heap {
 
     // todo 增加 add、peak、heapInsert等方法
 
+
+    public void heapInsert(int val) {
+
+            
+    }
+
+    public void add(int val) {
+        if (isFull()) {
+            return;
+        }
+        heap[size++] = val;
+    }
+
     public int pop() {
-        //     todo
+        if (isEmpty()) {
+            throw new RuntimeException("Heap is Empty");
+        }
         int ans = heap[0];
         swap(0, --size);
         heapify(0);
         return ans;
     }
 
+    public int peak() {
+        if (isEmpty()) {
+            throw new RuntimeException("Heap is Empty");
+        }
+        return heap[0];
+    }
+
 
     private boolean compare(int x, int y) {
         return BIG.equals(type) ? x > y : x < y;
+    }
+
+
+    public boolean isFull() {
+        return size == length;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     private void swap(int i, int j) {
