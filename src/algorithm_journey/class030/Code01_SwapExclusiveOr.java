@@ -1,4 +1,4 @@
-package algorithm_journey.class029;
+package algorithm_journey.class030;
 
 /**
  * 用异或运算交换两数的值
@@ -6,7 +6,7 @@ package algorithm_journey.class029;
  * @author Agony
  * @create 2024/6/6 09:51
  */
-public class SwapExclusiveOr {
+public class Code01_SwapExclusiveOr {
 
 
     public static void main(String[] args) {
