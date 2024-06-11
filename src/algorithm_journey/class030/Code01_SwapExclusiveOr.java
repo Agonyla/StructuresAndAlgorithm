@@ -2,6 +2,8 @@ package algorithm_journey.class030;
 
 /**
  * 用异或运算交换两数的值
+ * 异或 ^ 快速记忆❕❕❕-> 无进位相加!!!
+ * a^0=a, a^a=0
  *
  * @author Agony
  * @create 2024/6/6 09:51
