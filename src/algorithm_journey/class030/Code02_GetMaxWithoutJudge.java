@@ -12,7 +12,19 @@ public class Code02_GetMaxWithoutJudge {
 
 
     public static void main(String[] args) {
+        int a = -3;
+        int b = Integer.MAX_VALUE;
+        int c = a - b;
 
+        System.out.println("a = " + a);
+        System.out.println("b = " + b);
+        System.out.println("c = " + c);
+
+
+        int max = getMax(a, b);
+        int max2 = getMax2(a, b);
+        System.out.println("max = " + max);
+        System.out.println("max2 = " + max2);
     }
 
 
@@ -41,7 +53,71 @@ public class Code02_GetMaxWithoutJudge {
     public static int flip(int n) {
         return n ^ 1;
     }
+    
 
-    // todo
+    /**
+     * c = a - b
+     * c>=0 returnA=1
+     * c<0 returnB=1
+     * 可能有溢出的风险 (a很小，b很大)
+     * 通过直接判断signC的符号不稳定
+     *
+     * @param a
+     * @param b
+     * @return 较大值
+     */
+    public static int getMax(int a, int b) {
+        // write code here
+        int c = a - b;
+        int returnA = getSign(c);
+        int returnB = flip(returnA);
+        // returnA 和 returnB 一定有一个是1，一个是0;
+        return returnA * a + returnB * b;
+    }
 
+    /**
+     * @param a
+     * @param b
+     * @return
+     */
+    public static int getMax2(int a, int b) {
+
+        int c = a - b;
+        int signA = getSign(a);
+        int signB = getSign(b);
+        int signC = getSign(c);
+
+        // a,b符号不同 -> diffAB=1
+        // a,b符号相同 -> diffAB=0
+        // a>=0,b>=0
+        // a<0 , b<0
+        // -> diffAB=0;
+        int diffAB = signA ^ signB;
+
+        // a,b符号相同 -> sameAB=1
+        // a,b符号不同 -> sameAB=0
+        int sameAB = flip(diffAB);
+
+        // 1. diffAB=1 (a,b符号不同)
+        // 1) a>=0,b<0  signA=1, signB=0 -> returnA=1
+        // 2) a<0,b>=0  signA=0, signB=1 -> returnA=0
+        //
+        // 2. sameAB=1 (a,b符号相同)
+        // 1) a>=b>=0 -> signC=1 -> returnA=1
+        // 2) 0>=b>=a -> signC=0 -> returnA=0
+        int returnA = diffAB * signA + sameAB * signC;
+        int returnB = flip(returnA);
+        return returnA * a + returnB * b;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
