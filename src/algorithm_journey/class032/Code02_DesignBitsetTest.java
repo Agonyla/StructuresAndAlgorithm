@@ -69,10 +69,15 @@ public class Code02_DesignBitsetTest {
         // "fix",       5       000101001011000000
         // "unfix",     3       000001001011000000
 
-
+        System.out.println("===================");
         new Bitset(18);
         bs.fix(3);
         bs.unfix(8);
+        bs.fix(11);
+        bs.flip();
+        bs.unfix(3);
+        bs.flip();
+        System.out.println(bs.count());
 
         // todo 验证一下
 
