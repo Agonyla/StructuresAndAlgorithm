@@ -70,16 +70,16 @@ public class Code02_DesignBitsetTest {
         // "unfix",     3       000001001011000000
 
         System.out.println("===================");
-        new Bitset(18);
+        bs = new Bitset(18);
         bs.fix(3);
         bs.unfix(8);
         bs.fix(11);
         bs.flip();
         bs.unfix(3);
         bs.flip();
+        System.out.println(bs.toString());
         System.out.println(bs.count());
 
-        // todo 验证一下
 
     }
 
@@ -123,7 +123,7 @@ public class Code02_DesignBitsetTest {
                 // 0: 存在
                 // 因为只有当该位为1时才执行
                 if ((arr[index] & 1 << bit) != 0) {
-                    // 所以可以用 arr[index] ^= 1 << bit;
+                    // 也可以用 arr[index] ^= 1 << bit;
                     arr[index] &= ~(1 << bit);
                     ones++;
                     zeros--;
@@ -140,13 +140,22 @@ public class Code02_DesignBitsetTest {
             int index = idx / 32;
             int bit = idx % 32;
             if (!reverse) {
-                if ((arr[index] & 1 << bit) == 1) {
+                // 1: 存在
+                // 0: 不存在
+                // 把该位置0
+                // 不能用(arr[index] & 1 << bit) == 1 别的位可能是1，怎么能用结果是不是1来判断，
+                // 可以把arr[index]>>>bit & 1 == 1
+                if ((arr[index] & 1 << bit) != 0) {
                     arr[index] &= ~(1 << bit);
                     ones--;
                     zeros++;
                 }
             } else {
-                if ((arr[index] & 1 << bit) != 1) {
+                // 1: 不存在
+                // 0: 存在
+                // 把该位置1
+                // 判断该位受否为0
+                if ((arr[index] & 1 << bit) == 0) {
                     arr[index] |= 1 << bit;
                     ones--;
                     zeros++;
@@ -189,11 +198,17 @@ public class Code02_DesignBitsetTest {
             // arr[1] = 1100 0110   有9、10、14、15
             // str = 00100010 0110 0011
             StringBuilder sb = new StringBuilder();
+            // bit的状态
             int status = 0;
+            // Bitset的索引
             int index = 0;
-            for (int i = 0; i < limit; i++) {
+            // 数组的数字
+            int number = 0;
+            // Bitset共有limit位，但是 arr 是 (limit + 32 - 1) / 32
+            for (int i = 0; index < limit; i++) {
+                number = arr[i];
                 for (int j = 0; j < 32 && index < limit; j++) {
-                    status = arr[i] >> j & 1;
+                    status = number >> j & 1;
                     status ^= reverse ? 1 : 0;
                     sb.append(status);
                     index++;
@@ -204,3 +219,5 @@ public class Code02_DesignBitsetTest {
     }
 
 }
+
+
