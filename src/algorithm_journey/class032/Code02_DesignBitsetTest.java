@@ -202,16 +202,12 @@ public class Code02_DesignBitsetTest {
             int status = 0;
             // Bitset的索引
             int index = 0;
-            // 数组的数字
-            int number = 0;
             // Bitset共有limit位，但是 arr 是 (limit + 32 - 1) / 32
-            for (int i = 0; index < limit; i++) {
-                number = arr[i];
-                for (int j = 0; j < 32 && index < limit; j++) {
-                    status = number >> j & 1;
+            for (int i = 0; i < (limit + 32 - 1) / 32; i++) {
+                for (int j = 0; j < 32 && index < limit; j++, index++) {
+                    status = arr[i] >> j & 1;
                     status ^= reverse ? 1 : 0;
                     sb.append(status);
-                    index++;
                 }
             }
             return sb.toString();
