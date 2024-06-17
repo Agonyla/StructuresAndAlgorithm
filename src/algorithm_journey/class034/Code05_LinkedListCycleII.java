@@ -15,8 +15,6 @@ package algorithm_journey.class034;
 public class Code05_LinkedListCycleII {
 
 
-    // todo
-
     // 返回链表的第一个入环节点
     // 容器方法
     // 准备一个 hashset ，遍历链表，过程中先检查该节点在不在链表中，不在则放入该节点，在就直接返回
