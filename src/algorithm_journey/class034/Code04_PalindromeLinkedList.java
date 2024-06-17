@@ -12,8 +12,6 @@ package algorithm_journey.class034;
  */
 public class Code04_PalindromeLinkedList {
 
-    // todo
-
     // 判断链表是否是回文结构
     // 容器方法
     // 新建一个栈，把链表依次押入栈中
