@@ -79,4 +79,43 @@ public class MathUtils {
         }
         return true;
     }
+
+    public static class ListNode {
+        public int val;
+        public ListNode next;
+
+        ListNode() {
+        }
+
+        public ListNode(int val) {
+            this.val = val;
+        }
+
+        ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
+
+        @Override
+        public String toString() {
+            return "" + this.val;
+        }
+    }
+
+
+    /**
+     * 打印链表
+     *
+     * @param head
+     */
+    public static void printList(ListNode head) {
+        while (head != null) {
+            if (head.next != null) {
+                System.out.print(head.val + " -> ");
+            } else {
+                System.out.println(head.val);
+            }
+            head = head.next;
+        }
+    }
 }
