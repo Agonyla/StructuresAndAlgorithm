@@ -1,15 +1,25 @@
 package algorithm_journey.class035;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
+ * O(1) 时间插入、删除和获取随机元素
+ *
  * @author: Agony
  * @create: 2024/6/14 11:27
- * @describe:
- * @link:
+ * @describe: 实现RandomizedSet 类：
+ * <p>
+ * RandomizedSet() 初始化 RandomizedSet 对象
+ * bool insert(int val) 当元素 val 不存在时，向集合中插入该项，并返回 true ；否则，返回 false 。
+ * bool remove(int val) 当元素 val 存在时，从集合中移除该项，并返回 true ；否则，返回 false 。
+ * int getRandom() 随机返回现有集合中的一项（测试用例保证调用此方法时集合中至少存在一个元素）。每个元素应该有 相同的概率 被返回。
+ * 你必须实现类的所有函数，并满足每个函数的 平均 时间复杂度为 O(1) 。
+ * @link: <a href="https://leetcode.cn/problems/insert-delete-getrandom-o1/description/">O(1) 时间插入、删除和获取随机元素</a>
  */
 public class Code03_InsertDeleteRandom {
 
-
-    // todo
 
     // 插入、删除和获取随机元素O(1)时间的结构
     // 准备 hashmap 和 arrList
@@ -33,4 +43,54 @@ public class Code03_InsertDeleteRandom {
     // -> hashmap.put(endValue, valueIndex)
     // -> hashmap.remove(value)
 
+
+    static class RandomizedSet {
+
+        public HashMap<Integer, Integer> map;
+        public List<Integer> arr;
+
+        public RandomizedSet() {
+            map = new HashMap<>();
+            arr = new ArrayList<>();
+        }
+
+
+        /**
+         * @param val
+         * @return
+         */
+        public boolean insert(int val) {
+            if (map.containsKey(val)) {
+                return false;
+            }
+            map.put(val, arr.size());
+            arr.add(val);
+            return true;
+        }
+
+        /**
+         * @param val
+         * @return
+         */
+        public boolean remove(int val) {
+            if (!map.containsKey(val)) {
+                return false;
+            }
+            int index = map.get(val);
+            int endValue = arr.get(arr.size() - 1);
+            arr.set(index, endValue);
+            arr.remove(arr.size() - 1);
+            map.put(endValue, index);
+            map.remove(val);
+            return true;
+        }
+
+
+        /**
+         * @return
+         */
+        public int getRandom() {
+            return arr.get((int) (Math.random() * arr.size()));
+        }
+    }
 }
