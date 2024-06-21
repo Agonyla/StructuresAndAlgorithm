@@ -80,6 +80,10 @@ public class MathUtils {
         return true;
     }
 
+
+    /**
+     * 链表节点
+     */
     public static class ListNode {
         public int val;
         public ListNode next;
@@ -116,6 +120,29 @@ public class MathUtils {
                 System.out.println(head.val);
             }
             head = head.next;
+        }
+    }
+
+
+    /**
+     * 二叉树节点
+     */
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
         }
     }
 }
