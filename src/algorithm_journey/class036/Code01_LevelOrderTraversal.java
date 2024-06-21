@@ -28,8 +28,7 @@ public class Code01_LevelOrderTraversal {
         });
 
     }
-
-    // todo
+    
 
     // 二叉树的层序遍历 BFS (Breadth First Search)
     //
