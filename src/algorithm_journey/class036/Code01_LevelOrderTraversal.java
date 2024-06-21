@@ -1,10 +1,14 @@
 package algorithm_journey.class036;
 
+import java.util.List;
+
 /**
+ * 二叉树的层序遍历
+ *
  * @author: Agony
  * @create: 2024/6/19 09:17
- * @describe:
- * @link:
+ * @describe: 给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）
+ * @link: <a href="https://leetcode.cn/problems/binary-tree-level-order-traversal/description/">二叉树的层序遍历</a>
  */
 public class Code01_LevelOrderTraversal {
 
@@ -33,5 +37,36 @@ public class Code01_LevelOrderTraversal {
     //
     // 在重复 size 次的过程中，每次弹出的节点，就是该层所有的节点。
 
+
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    /**
+     * 二叉树的层序遍历
+     *
+     * @param root
+     * @return
+     */
+    public static List<List<Integer>> levelOrder(TreeNode root) {
+
+        // todo
+        return null;
+    }
 
 }
