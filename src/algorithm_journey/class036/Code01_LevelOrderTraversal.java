@@ -28,7 +28,7 @@ public class Code01_LevelOrderTraversal {
         });
 
     }
-    
+
 
     // 二叉树的层序遍历 BFS (Breadth First Search)
     //
@@ -192,6 +192,38 @@ public class Code01_LevelOrderTraversal {
             ans.add(list);
         }
         return ans;
+    }
+
+
+    List<List<Integer>> lists = new ArrayList<>();
+
+    /**
+     * 最优解 -- 可以学习一下
+     *
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> levelOrderBest(TreeNode root) {
+        bfs(root, 0);
+        return lists;
+    }
+
+    public void bfs(TreeNode node, int level) {
+        // 节点真的存在，更新层数
+        if (node == null) {
+            return;
+        }
+        level++;
+        // list的数量要和层数相同
+        if (lists.size() < level) {
+            // 否则，初始化一个新层的子list，存放新层的结果
+            lists.add(new ArrayList<Integer>());
+        }
+        // lists的index从0开始，所以level层存储在lists的level - 1位置
+        lists.get(level - 1).add(node.val);
+        // 递归
+        bfs(node.left, level);
+        bfs(node.right, level);
     }
 
 }
