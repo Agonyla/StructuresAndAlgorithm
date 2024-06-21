@@ -1,6 +1,6 @@
 package algorithm_journey.class036;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 二叉树的层序遍历
@@ -11,6 +11,23 @@ import java.util.List;
  * @link: <a href="https://leetcode.cn/problems/binary-tree-level-order-traversal/description/">二叉树的层序遍历</a>
  */
 public class Code01_LevelOrderTraversal {
+
+
+    public static void main(String[] args) {
+
+        TreeNode head = new TreeNode(3);
+        head.left = new TreeNode(9);
+        head.right = new TreeNode(20);
+        head.right.left = new TreeNode(15);
+        head.right.right = new TreeNode(7);
+
+        List<List<Integer>> lists = levelOrderBetter(head);
+        lists.forEach(list -> {
+            list.forEach(num -> System.out.print(num + " "));
+            System.out.println();
+        });
+
+    }
 
     // todo
 
@@ -59,14 +76,123 @@ public class Code01_LevelOrderTraversal {
 
     /**
      * 二叉树的层序遍历
+     * 普通 bfs
      *
      * @param root
      * @return
      */
     public static List<List<Integer>> levelOrder(TreeNode root) {
 
-        // todo
-        return null;
+        List<List<Integer>> ans = new ArrayList<>();
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        Map<TreeNode, Integer> map = new HashMap<>();
+        if (root == null) {
+            return ans;
+        }
+        queue.add(root);
+        map.put(root, 0);
+
+        while (!queue.isEmpty()) {
+            TreeNode cur = queue.poll();
+            Integer level = map.get(cur);
+            // 如果没有新层就新建
+            if (ans.size() == level) {
+                ans.add(new ArrayList<>());
+            }
+            ans.get(level).add(cur.val);
+            if (cur.left != null) {
+                queue.add(cur.left);
+                map.put(cur.left, level + 1);
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+                map.put(cur.right, level + 1);
+            }
+        }
+        return ans;
+    }
+
+
+    /**
+     * 二叉树的层序遍历
+     * for 循环
+     *
+     * @param root
+     * @return
+     */
+    public static List<List<Integer>> levelOrderBetter(TreeNode root) {
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        if (root == null) {
+            return ans;
+        }
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue.poll();
+                list.add(cur.val);
+                if (cur.left != null) {
+                    queue.add(cur.left);
+
+                }
+                if (cur.right != null) {
+                    queue.add(cur.right);
+                }
+            }
+            ans.add(list);
+        }
+        return ans;
+    }
+
+
+    public static int MAX_LENGTH = 2001;
+
+    public static TreeNode[] queue = new TreeNode[MAX_LENGTH];
+
+    // 左下标
+    public static int l;
+
+    // 有下标
+    public static int r;
+
+
+    /**
+     * 二叉树的层序遍历
+     * 用数组代替 linkedList
+     *
+     * @param root
+     * @return
+     */
+    public static List<List<Integer>> levelOrderBetterByArr(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+
+        if (root == null) {
+            return ans;
+        }
+        // 队列清零
+        l = r = 0;
+        queue[r++] = root;
+        while (l < r) {
+            int size = r - l;
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue[l++];
+                list.add(cur.val);
+                if (cur.left != null) {
+                    queue[r++] = cur.left;
+                }
+                if (cur.right != null) {
+                    queue[r++] = cur.right;
+                }
+            }
+            ans.add(list);
+        }
+        return ans;
     }
 
 }
