@@ -11,6 +11,13 @@ import java.util.Arrays;
 public class MathUtils {
 
 
+    public static void main(String[] args) {
+        // 获取根目录
+        String userDir = System.getProperty("user.dir");
+        System.out.println("userDir = " + userDir);
+    }
+
+
     /**
      * 交换数组两个位置的数
      *
@@ -155,7 +162,7 @@ public class MathUtils {
     public static void bfs(TreeNode head) {
 
         TreeNode[] queue = new TreeNode[10001];
-        
+
         int l = 0, r = 0;
         queue[r++] = head;
         while (l < r) {
