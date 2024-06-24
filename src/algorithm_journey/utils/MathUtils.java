@@ -132,7 +132,7 @@ public class MathUtils {
         public TreeNode left;
         public TreeNode right;
 
-        TreeNode() {
+        public TreeNode() {
         }
 
         public TreeNode(int val) {
@@ -144,5 +144,34 @@ public class MathUtils {
             this.left = left;
             this.right = right;
         }
+    }
+
+
+    /**
+     * 按层遍历二叉树
+     *
+     * @param head
+     */
+    public static void bfs(TreeNode head) {
+
+        TreeNode[] queue = new TreeNode[10001];
+        int l = 0, r = 0;
+        queue[r++] = head;
+        while (l < r) {
+            int size = r - l;
+            // for循环表示每一层的节点
+            // 也可以把这个for循环去掉，但是加上感觉更清晰一点
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = queue[l++];
+                System.out.print(cur.val + " ");
+                if (cur.left != null) {
+                    queue[r++] = cur.left;
+                }
+                if (cur.right != null) {
+                    queue[r++] = cur.right;
+                }
+            }
+        }
+        System.out.println();
     }
 }
