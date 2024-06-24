@@ -155,6 +155,7 @@ public class MathUtils {
     public static void bfs(TreeNode head) {
 
         TreeNode[] queue = new TreeNode[10001];
+        
         int l = 0, r = 0;
         queue[r++] = head;
         while (l < r) {
