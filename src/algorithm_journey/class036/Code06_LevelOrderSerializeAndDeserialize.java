@@ -29,7 +29,6 @@ public class Code06_LevelOrderSerializeAndDeserialize {
 
     }
 
-    // todo
 
     // 二叉树按层序列化和反序列化
 
