@@ -151,6 +151,26 @@ public class MathUtils {
             this.left = left;
             this.right = right;
         }
+
+        @Override
+        public String toString() {
+            return String.valueOf(this.val);
+        }
+    }
+
+
+    /**
+     * 先序遍历二叉树
+     *
+     * @param head
+     */
+    public static void preTreeNode(TreeNode head) {
+        if (head == null) {
+            return;
+        }
+        System.out.print(head.val + " ");
+        preTreeNode(head.left);
+        preTreeNode(head.right);
     }
 
 
