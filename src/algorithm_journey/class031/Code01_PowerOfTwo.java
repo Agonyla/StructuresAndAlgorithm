@@ -12,8 +12,7 @@ package algorithm_journey.class031;
  */
 public class Code01_PowerOfTwo {
 
-
-    //todo
+    
     public static void main(String[] args) {
         System.out.println(isPowerOfTwo(1));
         System.out.println(isPowerOfTwo(16));
