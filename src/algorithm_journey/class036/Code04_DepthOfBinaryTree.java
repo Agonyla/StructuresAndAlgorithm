@@ -31,6 +31,7 @@ public class Code04_DepthOfBinaryTree {
 
 
         System.out.println(minDepth(head));
+        System.out.println(minD(head));
     }
 
 
@@ -58,8 +59,26 @@ public class Code04_DepthOfBinaryTree {
         int right = maxDepth(root.right);
         return Math.max(left, right) + 1;
 
-        //
+        // 可以一用这种写法
         // return root == null ? 0 : Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+
+        // 或者直接用 求最小深度的写法
+        // if (root == null) {
+        //     return 0;
+        // }
+        // if (root.left == null && root.right == null) {
+        //     return 1;
+        // }
+        // int left = Integer.MIN_VALUE;
+        // int right = Integer.MIN_VALUE;
+        // if (root.left != null) {
+        //     left = maxDepth(root.left);
+        // }
+        // if (root.right != null) {
+        //     right = maxDepth(root.right);
+        // }
+        // return Math.max(left, right) + 1;
+
     }
 
 
@@ -87,6 +106,25 @@ public class Code04_DepthOfBinaryTree {
         }
         if (root.right != null) {
             right = minDepth(root.right);
+        }
+        return Math.min(left, right) + 1;
+    }
+
+    /**
+     * leetcode 上的一种解法
+     *
+     * @param root
+     * @return
+     */
+    public static int minD(TreeNode root) {
+
+        if (root == null) {
+            return 0;
+        }
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        if (left == 0 || right == 0) {
+            return left + right + 1;
         }
         return Math.min(left, right) + 1;
     }
