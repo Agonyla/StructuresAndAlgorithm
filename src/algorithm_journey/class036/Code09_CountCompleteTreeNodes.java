@@ -8,6 +8,10 @@ package algorithm_journey.class036;
  */
 public class Code09_CountCompleteTreeNodes {
 
+
+    public static void main(String[] args) {
+        
+    }
     // todo
 
     // 求完全二叉树的节点个数
