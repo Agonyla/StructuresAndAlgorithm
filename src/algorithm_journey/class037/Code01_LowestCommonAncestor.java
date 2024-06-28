@@ -20,8 +20,6 @@ public class Code01_LowestCommonAncestor {
     }
 
 
-    // todo
-
     // 普通二叉树上寻找两个节点的最近公共祖先
     //
     // q，p 两个节点
