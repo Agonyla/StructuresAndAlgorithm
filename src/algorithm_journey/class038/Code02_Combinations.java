@@ -27,5 +27,5 @@ public class Code02_Combinations {
     // 1 个 1，往path中添加1个1，调用 f(arr, j, size) size这时候是 1
     // 2 个 1，往path中添加2个1，调用 f(arr, j, size) size这时候是 2
     // 3 个 1，往path中添加3个1，调用 f(arr, j, size) size这时候是 3
-    //
+    // 时间复杂度: o(n * 2^n)
 }
