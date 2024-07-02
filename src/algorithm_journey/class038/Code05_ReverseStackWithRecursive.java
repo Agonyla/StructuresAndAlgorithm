@@ -1,5 +1,7 @@
 package algorithm_journey.class038;
 
+import java.util.Stack;
+
 /**
  * @author: Agony
  * @create: 2024/7/1 20:04
@@ -17,4 +19,31 @@ public class Code05_ReverseStackWithRecursive {
     // 用递归函数自己带空间，先取出来，再放进去
 
     // reverse 函数， 调用 bottomOut 拿出栈底的元素，然后调用自己，再把拿出来的元素放进去
+
+
+    /**
+     * 返回栈底元素，上面元素保持相对次序压下来
+     *
+     * @param stack
+     * @return
+     */
+    public static int bottomOut(Stack<Integer> stack) {
+
+
+        return 0;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
