@@ -41,6 +41,18 @@ public class MathUtils {
         System.out.println();
     }
 
+
+    /**
+     * 打印数组
+     *
+     * @param arr
+     */
+    public static void printArr(Object[] arr) {
+        Arrays.stream(arr).forEach(obj -> System.out.print(obj + " "));
+        System.out.println();
+    }
+
+
     /**
      * 产生一个长度为 n 最大值为 v 的随机数组
      *
