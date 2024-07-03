@@ -10,7 +10,24 @@ import java.util.Stack;
  */
 public class Code05_ReverseStackWithRecursive {
 
-    // todo
+
+    public static void main(String[] args) {
+
+        Stack<Integer> stack = new Stack<>();
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
+        stack.push(4);
+        stack.push(5);
+
+        stack.forEach(num -> System.out.print(num + " "));
+        System.out.println();
+
+        reverse(stack);
+
+        stack.forEach(num -> System.out.print(num + " "));
+        System.out.println();
+    }
 
     // 用递归函数逆序栈
     // 熟练掌握 Code05, Code06 对递归的熟悉程度会有质的飞跃
@@ -22,7 +39,26 @@ public class Code05_ReverseStackWithRecursive {
 
 
     /**
+     * 逆序栈 -> 把栈逆序
+     * <p>
+     * 拿出底部元素，让下层把栈逆序
+     * 此时栈已逆序，再把底部元素压进去
+     *
+     * @param stack
+     */
+    public static void reverse(Stack<Integer> stack) {
+        // base case
+        if (stack.isEmpty()) {
+            return;
+        }
+        int bottom = bottomOut(stack);
+        reverse(stack);
+        stack.push(bottom);
+    }
+
+    /**
      * 返回栈底元素，上面元素保持相对次序压下来
+     * <p>
      * 相当于一层一层调用，每一层把栈顶元素拿出来，然后用变量记录
      * 每一层拿一个，到最后一个了拿完直接返回给上层，上层把之前记录的变量压入，再把拿到的值返回给上层
      * 有一种从上往下把一层层的东西移开，把最下面的取出来，再把一层层复原的感觉
