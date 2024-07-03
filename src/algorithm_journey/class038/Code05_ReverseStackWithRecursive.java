@@ -23,14 +23,23 @@ public class Code05_ReverseStackWithRecursive {
 
     /**
      * 返回栈底元素，上面元素保持相对次序压下来
+     * 相当于一层一层调用，每一层把栈顶元素拿出来，然后用变量记录
+     * 每一层拿一个，到最后一个了拿完直接返回给上层，上层把之前记录的变量压入，再把拿到的值返回给上层
+     * 有一种从上往下把一层层的东西移开，把最下面的取出来，再把一层层复原的感觉
      *
      * @param stack
      * @return
      */
     public static int bottomOut(Stack<Integer> stack) {
 
+        Integer ans = stack.pop();
+        if (stack.isEmpty()) {
+            return ans;
+        }
 
-        return 0;
+        int last = bottomOut(stack);
+        stack.push(ans);
+        return last;
     }
 
 }
