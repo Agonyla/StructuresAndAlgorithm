@@ -216,6 +216,7 @@ public class Code01_BasicCalculatorIII {
      * @param operators 字符链表
      * @return 计算结果
      */
+    @Deprecated
     public static int myCompute(ArrayList<Integer> numbers, ArrayList<Character> operators) {
 
         Integer ans = numbers.remove(0);
