@@ -38,6 +38,7 @@ public class NQueens1_1_1 {
 
     /**
      * N皇后
+     * 时间复杂度更差了呜呜呜
      *
      * @param n
      * @return
