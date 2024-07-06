@@ -34,6 +34,7 @@ public class NQueens1Better {
 
     /**
      * N皇后
+     * 最优解
      *
      * @param n
      * @return
