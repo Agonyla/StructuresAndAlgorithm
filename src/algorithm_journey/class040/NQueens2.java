@@ -1,34 +1,127 @@
 package algorithm_journey.class040;
 
 /**
+ * N 皇后 II
+ *
  * @author: Agony
- * @create: 2024/7/5 10:58
- * @describe:
- * @link:
+ * @create: 2024/7/3 15:07
+ * @describe: n 皇后问题 研究的是如何将 n 个皇后放置在 n × n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+ * <p>
+ * 给你一个整数 n ，返回 n 皇后问题 不同的解决方案的数量。
+ * @link: <a href="https://leetcode.cn/problems/n-queens-ii/description/">N 皇后 II</a>
  */
 public class NQueens2 {
 
-    // todo
+
+    public static void main(String[] args) {
+        System.out.println(totalNQueens(1));    // 1
+        System.out.println(totalNQueens(2));    // 0
+        System.out.println(totalNQueens(3));    // 2
+        System.out.println(totalNQueens(4));    // 2
+        System.out.println(totalNQueens(5));    // 10
+        System.out.println(totalNQueens(6));    // 4
+        System.out.println(totalNQueens(7));    // 40
+        System.out.println(totalNQueens(8));    // 92
+    }
 
     // N皇后问题
-    // 位运算解决
-
+    //
     // 思路
-    // 设计函数 int f(int limit, int col, int left, int right)
+    // 设计函数 int f(int[] path, int i, int n)
     // return -> 一共有几种摆法
-    // limit -> 表示几皇后问题 limit = 00111111, 表示这是6皇后问题（有几个1就表示几皇后）
-    // col   ->  哪些列已经放过了，如我在第0行的第2列放了1，那么在下一行中 col = 0000100，在下一行中，第1列就不能放置了
-    // left -> 表示左下角不能放了，如我在第0行的第2列放了1，那么在下一行中 left = 0000010，在下一行中，第1列就不能放置了
-    // right -> 表示右下角不能放了，如我在第0行的第2列放了1，那么在下一行中 right = 0001000，在下一行中，第3列就不能放置了
-    // 那么在第1行 ban = 0001110，在有1的位置都不能放
-    // 然后需要反转一下
-    // candidate = limit & (~ban) = 0110001
-    // 只有在 1 位置 上可以放
-    // 然后通过 while循环直到candidate都为0
-    // 取出 candidate最右侧的1依次尝试
-    // place=candidate&(-candidate)
-    // 把最右侧的1置0
-    // candidate ^= place
-    // 到下一层去尝试
-    // 直到 col == limit 表示所有的列的放满了，说明这是一种可行的方式
+    // path -> 路径用来记录一行摆放的位置，如 path = {1,3,0,2}
+    // 表示第 0 行摆在第 1 列；第 1 行摆在第 3 列；第 2 行摆在第0列；第 3 行摆在第 2 列
+    // i -> 表示当前来到第几行
+    // n -> 表示 n 皇后问题
+    // 到第 i 行了
+    // 从 0 到 n 每一列都去尝试能不能放
+
+    // 验证能不能摆放
+    // 不能摆放在同一列 或者 对角线
+    // 当前想在 i 行，j 列摆放
+    // k 从 0 到 i for循环
+    // 如果 path[k]==j || Math.abs(k-i) == Math.abs(path[k]-j) 那么就摆不了
+    // 位于同一列：path[k]==j
+    // 位于同一对角线：Math.abs(k-i) == Math.abs(path[k]-j) -> 斜率一样
+
+
+    /**
+     * N皇后
+     *
+     * @param n n行n列
+     * @return 摆放总数
+     */
+    public static int totalNQueens(int n) {
+
+        return f(new int[n], 0, n);
+    }
+
+
+    /**
+     * 求解摆法
+     *
+     * @param path 路径，记录每一放放在第几列
+     * @param i    第i行
+     * @param n    n皇后问题
+     * @return 求解数
+     */
+    public static int f(int[] path, int i, int n) {
+
+        // 来到边界，表示之前的摆法没问题
+        if (i == path.length) {
+            return 1;
+        }
+        int ans = 0;
+        // 当前行的每一列尝试
+        for (int j = 0; j < n; j++) {
+            if (check(path, i, j)) {
+                path[i] = j;
+                ans += f(path, i + 1, n);
+            }
+        }
+        return ans;
+    }
+
+
+    /**
+     * 检查能否在 i 行，j 列摆放
+     *
+     * @param path 路径
+     * @param i    第i行
+     * @param j    第j列
+     * @return 能否摆放
+     */
+    public static boolean check(int[] path, int i, int j) {
+
+        for (int k = 0; k < i; k++) {
+            // 摆放的位置与之前放的位置在同一列或者在对角线
+            if (path[k] == j || Math.abs(k - i) == Math.abs(path[k] - j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
