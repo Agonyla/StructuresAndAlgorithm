@@ -9,7 +9,12 @@ package algorithm_journey.class041;
 public class Code01_GcdAndLcm {
 
 
-    // todo
+    public static void main(String[] args) {
+        long a = 12;
+        long b = 16;
+        System.out.println(gcd(a, b));
+
+    }
 
     // 求最大公约数、最小公倍数
     // 辗转相除法
@@ -45,4 +50,30 @@ public class Code01_GcdAndLcm {
     // 思路
     // 在求得的最大公约数，
     // 一个数除以最大公约数再乘另一个数就是最小公倍数
+
+
+    /**
+     * 最大公约数
+     * Greatest common divisor
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public static long gcd(long a, long b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
+
+    /**
+     * 最小公倍数
+     * Least common multiple
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public static long lcm(long a, long b) {
+        return a / gcd(a, b) * b;
+    }
 }
