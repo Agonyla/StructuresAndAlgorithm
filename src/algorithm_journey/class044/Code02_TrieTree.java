@@ -1,51 +1,94 @@
 package algorithm_journey.class044;
 
+import java.io.*;
+import java.util.Arrays;
+
 /**
- * 实现 Trie （前缀树） II
+ * 字典树的实现
  *
  * @author: Agony
  * @create: 2024/7/10 10:05
- * @describe: 前缀树（trie ，发音为 "try"）是一个树状的数据结构，用于高效地存储和检索一系列字符串的前缀。前缀树有许多应用，如自动补全和拼写检查。
- * <p>
- * 实现前缀树 Trie 类：
- * <p>
- * Trie() 初始化前缀树对象。
- * void insert(String word) 将字符串 word 插入前缀树中。
- * int countWordsEqualTo(String word) 返回前缀树中字符串 word 的实例个数。
- * int countWordsStartingWith(String prefix) 返回前缀树中以 prefix 为前缀的字符串个数。
- * void erase(String word) 从前缀树中移除字符串 word 。
- * @link: <a href="https://leetcode.cn/problems/implement-trie-ii-prefix-tree/description/">实现 Trie （前缀树） II</a>
+ * @describe: 字典树又称为前缀树或者Trie树，是处理字符串常用的数据结构。
+ * 假设组成所有单词的字符仅是‘a’～‘z’，
+ * 请实现字典树的结构，并包含以下四个主要的功能。
+ * void insert(String word)：添加word，可重复添加；
+ * void delete(String word)：删除word，如果word添加过多次，仅删除一次；
+ * boolean search(String word)：查询word是否在字典树中出现过(完整的出现过，前缀式不算)；
+ * int prefixNumber(String pre)：返回以字符串pre作为前缀的单词数量。
+ * 现在给定一个m，表示有m次操作，每次操作都为以上四种操作之一。
+ * 每次操作会给定一个整数op和一个字符串word，op代表一个操作码，
+ * 如果op为1，则代表添加word，
+ * op为2则代表删除word，
+ * op为3则代表查询word是否在字典树中，
+ * op为4代表返回以word为前缀的单词数量（数据保证不会删除不存在的word）。
+ * @link: <a href="https://www.nowcoder.com/practice/7f8a8553ddbf4eaab749ec988726702b">字典树的实现</a>
  */
 public class Code02_TrieTree {
 
 
-    // todo 其实是没问题的，但是leetcode运行好像有问题，不知道是不是没有重置的缘故，还是直接用牛客提交吧！！！
+    public static void main(String[] args) throws IOException {
+        // Trie trie = new Trie();
+        // trie.insert("apple");                                           // 插入 "apple"。
+        // trie.insert("apple");                                           // 插入另一个 "apple"。
+        // System.out.println(trie.search("apple"));                  // 有两个 "apple" 实例，所以返回 2。
+        // System.out.println(trie.prefixNumber("app"));         // "app" 是 "apple" 的前缀，所以返回 2。
+        // trie.delete("apple");                                            // 移除一个 "apple"。
+        // System.out.println(trie.search("apple"));                  // 现在只有一个 "apple" 实例，所以返回 1。
+        // System.out.println(trie.prefixNumber("app"));         // 返回 1
+        // trie.delete("apple");                                            // 移除 "apple"。现在前缀树是空的。
+        // System.out.println(trie.prefixNumber("app"));        // 返回 0
+        //
+        //
+        // System.out.println("=============");
+        // //["Trie","countWordsEqualTo","countWordsStartingWith","countWordsStartingWith","countWordsEqualTo","insert","erase","countWordsStartingWith"]
+        // //[[],["keos"],["ke"],["keos"],["keos"],["keos"],["keos"],["keo"]]
+        // trie = new Trie();
+        // System.out.println(trie.search("keos"));
+        // System.out.println(trie.prefixNumber("ke"));
+        // System.out.println(trie.prefixNumber("keos"));
+        // System.out.println(trie.search("keos"));
+        // trie.insert("keos");
+        // trie.delete("keos");
+        // System.out.println(trie.prefixNumber("keo"));
 
 
-    public static void main(String[] args) {
-        Trie trie = new Trie();
-        trie.insert("apple");                                           // 插入 "apple"。
-        trie.insert("apple");                                           // 插入另一个 "apple"。
-        System.out.println(trie.countWordsEqualTo("apple"));                  // 有两个 "apple" 实例，所以返回 2。
-        System.out.println(trie.countWordsStartingWith("app"));         // "app" 是 "apple" 的前缀，所以返回 2。
-        trie.erase("apple");                                            // 移除一个 "apple"。
-        System.out.println(trie.countWordsEqualTo("apple"));                  // 现在只有一个 "apple" 实例，所以返回 1。
-        System.out.println(trie.countWordsStartingWith("app"));         // 返回 1
-        trie.erase("apple");                                            // 移除 "apple"。现在前缀树是空的。
-        System.out.println(trie.countWordsStartingWith("app"));        // 返回 0
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        String line = null;
+        while ((line = in.readLine()) != null) {
+            build();
+            m = Integer.parseInt(line);
+            for (int i = 0; i < m; i++) {
 
-
-        System.out.println("=============");
-        //["Trie","countWordsEqualTo","countWordsStartingWith","countWordsStartingWith","countWordsEqualTo","insert","erase","countWordsStartingWith"]
-        //[[],["keos"],["ke"],["keos"],["keos"],["keos"],["keos"],["keo"]]
-        trie = new Trie();
-        System.out.println(trie.countWordsEqualTo("keos"));
-        System.out.println(trie.countWordsStartingWith("ke"));
-        System.out.println(trie.countWordsStartingWith("keos"));
-        System.out.println(trie.countWordsEqualTo("keos"));
-        trie.insert("keos");
-        trie.erase("keos");
-        System.out.println(trie.countWordsStartingWith("keo"));
+                splits = in.readLine().split(" ");
+                op = Integer.parseInt(splits[0]);
+                // switch (op) {
+                //     case 1:
+                //         insert(splits[1]);
+                //         break;
+                //     case 2:
+                //         delete(splits[1]);
+                //         break;
+                //     case 3:
+                //         out.println(search(splits[1]) < 1 ? "NO" : "YES");
+                //         break;
+                //     case 4:
+                //         out.println(prefixNumber(splits[1]));
+                //         break;
+                //
+                // }
+                switch (op) {
+                    case 1 -> insert(splits[1]);
+                    case 2 -> delete(splits[1]);
+                    case 3 -> out.println(search(splits[1]) < 1 ? "NO" : "YES");
+                    case 4 -> out.println(prefixNumber(splits[1]));
+                }
+            }
+            clear();
+        }
+        out.flush();
+        in.close();
+        out.close();
     }
 
     // 静态数组实现前缀树
@@ -77,108 +120,118 @@ public class Code02_TrieTree {
     // 	3.	如果tree[1][2]为0，说明还没有任何单词通过这个路径，那么你需要创建一个新的节点（假设为节点2），并设置tree[1][2] = 2。
     // 	4.	接着，移动到节点2，重复这个过程，直到单词的所有字符都被处理。
 
+    public static int m, op;
+
+    public static String[] splits;
+
+    public static int MAX_LENGTH = 150001;
+
+    public static int[][] tree = new int[MAX_LENGTH][26];
+
+    public static int[] pass = new int[MAX_LENGTH];
+
+    public static int[] end = new int[MAX_LENGTH];
+
+    public static int cnt;
+
+
+    public static void build() {
+        cnt = 1;
+    }
 
     /**
-     * 静态数组实现
+     * 将字符串 word 插入前缀树中
+     *
+     * @param word
      */
-    static class Trie {
-
-
-        public static int MAX_LENGTH = 150001;
-
-        public static int[][] tree = new int[MAX_LENGTH][26];
-
-        public static int[] pass = new int[MAX_LENGTH];
-
-        public static int[] end = new int[MAX_LENGTH];
-
-        public static int cnt;
-
-
-        public Trie() {
-            cnt = 1;
-        }
-
-        /**
-         * 将字符串 word 插入前缀树中
-         *
-         * @param word
-         */
-        public void insert(String word) {
-            int cur = 1;
+    public static void insert(String word) {
+        int cur = 1;
+        pass[cur]++;
+        for (int i = 0; i < word.length(); i++) {
+            int path = word.charAt(i) - 'a';
+            if (tree[cur][path] == 0) {
+                tree[cur][path] = ++cnt;
+            }
+            cur = tree[cur][path];
             pass[cur]++;
-            for (int i = 0; i < word.length(); i++) {
-                int path = word.charAt(i) - 'a';
-                if (tree[cur][path] == 0) {
-                    tree[cur][path] = ++cnt;
-                }
-                cur = tree[cur][path];
-                pass[cur]++;
-            }
-            end[cur]++;
         }
+        end[cur]++;
+    }
 
 
-        /**
-         * 返回前缀树中字符串 word 的实例个数
-         *
-         * @param word
-         * @return
-         */
-        public int countWordsEqualTo(String word) {
-            int cur = 1;
-            for (int i = 0; i < word.length(); i++) {
-                int path = word.charAt(i) - 'a';
-                if (tree[cur][path] == 0) {
-                    return 0;
-                }
-                cur = tree[cur][path];
+    /**
+     * 返回前缀树中字符串 word 的实例个数
+     *
+     * @param word
+     * @return
+     */
+    public static int search(String word) {
+        int cur = 1;
+        for (int i = 0; i < word.length(); i++) {
+            int path = word.charAt(i) - 'a';
+            if (tree[cur][path] == 0) {
+                return 0;
             }
-            return end[cur];
+            cur = tree[cur][path];
         }
+        return end[cur];
+    }
 
 
-        /**
-         * 返回前缀树中以 prefix 为前缀的字符串个数
-         *
-         * @param prefix
-         * @return
-         */
-        public int countWordsStartingWith(String prefix) {
+    /**
+     * 返回前缀树中以 prefix 为前缀的字符串个数
+     *
+     * @param prefix
+     * @return
+     */
+    public static int prefixNumber(String prefix) {
 
-            int cur = 1;
-            for (int i = 0; i < prefix.length(); i++) {
-                int path = prefix.charAt(i) - 'a';
-                if (tree[cur][path] == 0) {
-                    return 0;
-                }
-                cur = tree[cur][path];
+        int cur = 1;
+        for (int i = 0; i < prefix.length(); i++) {
+            int path = prefix.charAt(i) - 'a';
+            if (tree[cur][path] == 0) {
+                return 0;
             }
-            return pass[cur];
-
+            cur = tree[cur][path];
         }
+        return pass[cur];
+
+    }
 
 
-        /**
-         * 从前缀树中移除字符串 word
-         *
-         * @param word
-         */
-        public void erase(String word) {
-            if (countWordsEqualTo(word) < 1) {
+    /**
+     * 从前缀树中移除字符串 word
+     *
+     * @param word
+     */
+    public static void delete(String word) {
+        if (search(word) < 1) {
+            return;
+        }
+        int cur = 1;
+        for (int i = 0; i < word.length(); i++) {
+            int path = word.charAt(i) - 'a';
+            if (--pass[tree[cur][path]] == 0) {
+                tree[cur][path] = 0;
                 return;
             }
-            int cur = 1;
-            for (int i = 0; i < word.length(); i++) {
-                int path = word.charAt(i) - 'a';
-                if (--pass[tree[cur][path]] == 0) {
-                    tree[cur][path] = 0;
-                    return;
-                }
-                cur = tree[cur][path];
-            }
-            end[cur]--;
+            cur = tree[cur][path];
         }
+        end[cur]--;
     }
+
+
+    /**
+     * 前缀树复原
+     */
+    public static void clear() {
+        for (int i = 0; i < cnt; i++) {
+            Arrays.fill(tree[i], 0);
+            pass[i] = 0;
+            end[i] = 0;
+        }
+
+    }
+
 
 }
