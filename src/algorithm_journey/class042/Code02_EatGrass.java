@@ -10,7 +10,6 @@ import java.util.Objects;
  */
 public class Code02_EatGrass {
 
-    // todo
 
     public static void main(String[] args) {
         for (int i = 0; i < 60; i++) {
