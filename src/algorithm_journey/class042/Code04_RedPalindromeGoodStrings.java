@@ -62,7 +62,6 @@ public class Code04_RedPalindromeGoodStrings {
     public static int f(char[] path, int i) {
 
         if (i == path.length) {
-            // todo 验证字符串是不是好串
             int cnt = 0;
             for (int j = 0; j < path.length; j++) {
                 for (int k = j + 1; k < path.length; k++) {
