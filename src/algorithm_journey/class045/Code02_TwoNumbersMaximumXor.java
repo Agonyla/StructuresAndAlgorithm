@@ -1,10 +1,19 @@
 package algorithm_journey.class045;
 
 /**
+ * 数组中两个数的最大异或值
+ *
  * @author: Agony
  * @create: 2024/7/12 10:12
- * @describe:
- * @link:
+ * @describe: 给你一个整数数组 nums ，返回 nums[i] XOR nums[j] 的最大运算结果，其中 0 ≤ i ≤ j < n 。
+ * <p>
+ * 输入：nums = [3,10,5,25,2,8]
+ * 输出：28
+ * 解释：最大运算结果是 5 XOR 25 = 28
+ * <p>
+ * 输入：nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+ * 输出：127
+ * @link: <a href="https://leetcode.cn/problems/maximum-xor-of-two-numbers-in-an-array/description/">数组中两个数的最大异或值</a>
  */
 public class Code02_TwoNumbersMaximumXor {
 
@@ -29,5 +38,90 @@ public class Code02_TwoNumbersMaximumXor {
     // 那么 只要去set中查询是否存在 x ，能达成want
     // -> set.contains(x) -> x = num * want
 
-    
+
+    public static int findMaximumXOR(int[] nums) {
+        return 0;
+    }
+
+
+    public static int MAX_LENGTH = 3000001;
+
+    // 只存放 1 和 0
+    public static int[][] tree = new int[MAX_LENGTH][2];
+
+    public static int cnt;
+
+
+    // 数组中最大数的最高位
+    public static int high;
+
+    /**
+     * 初始化前缀树
+     *
+     * @param arr
+     */
+    public static void build(int[] arr) {
+        cnt = 1;
+        int max = Integer.MIN_VALUE;
+        for (int i : arr) {
+            max = Math.max(max, i);
+        }
+
+        high = 31 - Integer.numberOfLeadingZeros(max);
+
+        for (int i : arr) {
+            insert(i);
+        }
+
+    }
+
+
+    /**
+     * 把数字插入到前缀树
+     *
+     * @param num
+     */
+    public static void insert(int num) {
+
+        int cur = 1;
+
+        for (int i = high; i >= 0; i--) {
+            int path = (num >> i) & 1;
+            if (tree[cur][path] == 0) {
+                tree[cur][path] = ++cnt;
+            }
+            cur = tree[cur][path];
+        }
+    }
+
+    public static void clear() {
+        for (int i = 0; i < cnt; i++) {
+            tree[i][0] = tree[i][1] = 0;
+        }
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
