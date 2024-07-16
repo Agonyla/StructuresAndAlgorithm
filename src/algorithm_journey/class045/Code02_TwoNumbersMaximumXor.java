@@ -18,7 +18,19 @@ package algorithm_journey.class045;
 public class Code02_TwoNumbersMaximumXor {
 
 
-    // todo
+    public static void main(String[] args) {
+        int[] nums = {3, 10, 5, 25, 2, 8};
+        System.out.println(findMaximumXOR(nums));
+        System.out.println(right(nums));
+
+        nums = new int[]{14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70};
+        System.out.println(findMaximumXOR(nums));
+
+
+        System.out.println("===========");
+
+        System.out.println(right(nums));
+    }
 
     // 数组中两个数的最大异或值
 
@@ -39,8 +51,66 @@ public class Code02_TwoNumbersMaximumXor {
     // -> set.contains(x) -> x = num * want
 
 
+    /**
+     * 暴力求解用于验证
+     *
+     * @param nums
+     * @return
+     */
+    public static int right(int[] nums) {
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                max = Math.max(max, nums[i] ^ nums[j]);
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 求数组中两个数的最大异或值
+     *
+     * @param nums
+     * @return
+     */
     public static int findMaximumXOR(int[] nums) {
-        return 0;
+
+        build(nums);
+        int max = 0;
+        for (int num : nums) {
+            max = Math.max(max, maxXOR(num));
+        }
+        clear();
+        return max;
+    }
+
+
+    /**
+     * 当前数字在前缀树中异或的最大值
+     *
+     * @param num
+     * @return
+     */
+    public static int maxXOR(int num) {
+
+        // 自己异或自己肯定能得到0
+        int ans = 0;
+        int cur = 1;
+        for (int i = high; i >= 0; i--) {
+
+            // num当前位的状态
+            int status = (num >> i) & 1;
+
+            // 想要位的状态
+            int want = status ^ 1;
+            // 如果没有就取相反的状态
+            if (tree[cur][want] == 0) {
+                want ^= 1;
+            }
+            ans |= (status ^ want) << i;
+            cur = tree[cur][want];
+        }
+        return ans;
     }
 
 
@@ -94,6 +164,10 @@ public class Code02_TwoNumbersMaximumXor {
         }
     }
 
+
+    /**
+     * 清除前缀树
+     */
     public static void clear() {
         for (int i = 0; i < cnt; i++) {
             tree[i][0] = tree[i][1] = 0;
