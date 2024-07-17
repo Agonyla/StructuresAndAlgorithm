@@ -225,7 +225,7 @@ public class Code02_TrieTree {
      * 前缀树复原
      */
     public static void clear() {
-        for (int i = 0; i < cnt; i++) {
+        for (int i = 1; i <= cnt; i++) {
             Arrays.fill(tree[i], 0);
             pass[i] = 0;
             end[i] = 0;
