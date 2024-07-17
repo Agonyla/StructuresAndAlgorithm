@@ -169,7 +169,7 @@ public class Code02_TwoNumbersMaximumXor {
      * 清除前缀树
      */
     public static void clear() {
-        for (int i = 0; i < cnt; i++) {
+        for (int i = 1; i <= cnt; i++) {
             tree[i][0] = tree[i][1] = 0;
         }
     }
