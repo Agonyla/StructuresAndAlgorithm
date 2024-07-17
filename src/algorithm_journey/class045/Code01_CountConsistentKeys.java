@@ -173,7 +173,7 @@ public class Code01_CountConsistentKeys {
      * 清除tree
      */
     public static void clear() {
-        for (int i = 0; i < cnt; i++) {
+        for (int i = 1; i <= cnt; i++) {
             Arrays.fill(tree[i], 0);
             pass[i] = 0;
         }
