@@ -1,7 +1,6 @@
 package algorithm_journey.class046;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -21,13 +20,26 @@ import java.util.HashMap;
 public class Code02_LongestSubarraySumEqualsAim {
 
 
-    // todo
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        // todo 把获取输入完成
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
 
+        in.nextToken();
+        N = (int) in.nval;
+        in.nextToken();
+        aim = (int) in.nval;
 
+        for (int i = 0; i < N; i++) {
+            in.nextToken();
+            arr[i] = (int) in.nval;
+        }
+        out.println(compute());
+
+        out.flush();
+        out.close();
+        br.close();
     }
 
 
@@ -56,11 +68,16 @@ public class Code02_LongestSubarraySumEqualsAim {
     // 从map中查询找到最早出现0的位置是2
     // 然后就导致累加和达到aim的最长为 [3,4] 长度为2  当然也可以直接 4-2 来计算
 
+
+    public static int MAX_LENGTH = 100001;
+
+
     // 数组长度
     public static int N;
 
-    public static int[] arr;
+    public static int[] arr = new int[MAX_LENGTH];
 
+    public static HashMap<Integer, Integer> map;
 
     // 累加和
     public static int aim;
@@ -76,22 +93,22 @@ public class Code02_LongestSubarraySumEqualsAim {
         // 0~i位置的累加和
         int ans = 0;
         int sum = 0;
-        HashMap<Integer, Integer> map = new HashMap<>();
+        map = new HashMap<>();
         map.put(0, -1);
         for (int i = 0; i < N; i++) {
             sum += arr[i];
 
-            // 如果sum-aim还没出现过，就把最早出现的位置放入
-            // 如果出现过了，出现的位置为j，那么就说明，j～i这段累加和为aim
-            // 直接比较最大值返回
-            if (!map.containsKey(sum - aim)) {
-                map.put(sum - aim, i);
-            } else {
+            // 如果该前缀和出现过了，出现的位置为j，那么就说明，j～i这段累加和为aim
+            if (map.containsKey(sum - aim)) {
                 ans = Math.max(ans, i - map.get(sum - aim));
             }
+            // 如果map中前缀和还没出现过，那么就把最早出现的位置放入
+            if (!map.containsKey(sum)) {
+                map.put(sum, i);
+            }
+
         }
         return ans;
-
     }
 
 
