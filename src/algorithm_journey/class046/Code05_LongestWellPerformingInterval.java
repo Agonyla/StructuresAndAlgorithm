@@ -19,8 +19,6 @@ import java.util.HashMap;
 public class Code05_LongestWellPerformingInterval {
 
 
-    // todo
-
     public static void main(String[] args) {
 
         int[] arr = {9, 9, 6, 0, 6, 6, 9};
