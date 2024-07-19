@@ -1,14 +1,45 @@
 package algorithm_journey.class047;
 
+import algorithm_journey.utils.MathUtils;
+
 /**
+ * 航班预订统计
+ *
  * @author: Agony
  * @create: 2024/7/18 11:44
- * @describe:
- * @link:
+ * @describe: 这里有 n 个航班，它们分别从 1 到 n 进行编号。
+ * <p>
+ * 有一份航班预订表 bookings ，表中第 i 条预订记录 bookings[i] = [firsti, lasti, seatsi] 意味着在从 firsti 到 lasti （包含 firsti 和 lasti ）的 每个航班 上预订了 seatsi 个座位。
+ * <p>
+ * 请你返回一个长度为 n 的数组 answer，里面的元素是每个航班预定的座位总数。
+ * <p>
+ * 输入：bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5
+ * 输出：[10,55,45,25,25]
+ * 解释：
+ * 航班编号        1   2   3   4   5
+ * 预订记录 1 ：   10  10
+ * 预订记录 2 ：       20  20
+ * 预订记录 3 ：       25  25  25  25
+ * 总座位数：      10  55  45  25  25
+ * 因此，answer = [10,55,45,25,25]
+ * @link: <a href="https://leetcode.cn/problems/corporate-flight-bookings/description/">航班预订统计</a>
  */
 public class Code01_CorporateFlightBookings {
+    
 
-    // todo
+    public static void main(String[] args) {
+
+        int[][] bookings = {
+                {1, 2, 10},
+                {2, 3, 20},
+                {2, 5, 25}
+        };
+        int n = 5;
+        int[] ans = corpFlightBookings(bookings, 5);
+        MathUtils.printArr(ans);
+
+
+    }
 
     // 航班预订统计
 
@@ -22,4 +53,51 @@ public class Code01_CorporateFlightBookings {
     // 只有在L～R这段位置会加V
 
 
+    /**
+     * 返回航班预定数组
+     *
+     * @param bookings 航班信息
+     * @param n        航班个数
+     * @return 航班预定数组，里面的元素是每个航班预定的座位总数
+     */
+    public static int[] corpFlightBookings(int[][] bookings, int n) {
+
+        // todo 为什么n+2，看工位电脑上的解释！！！
+        int[] cnt = new int[n + 2];
+
+        // set
+        for (int i = 0; i < bookings.length; i++) {
+            cnt[bookings[i][0]] += bookings[i][2];
+            cnt[bookings[i][1] + 1] -= bookings[i][2];
+        }
+
+        // build
+        for (int i = 1; i < cnt.length; i++) {
+            cnt[i] += cnt[i - 1];
+        }
+
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            ans[i] = cnt[i + 1];
+        }
+        return ans;
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
