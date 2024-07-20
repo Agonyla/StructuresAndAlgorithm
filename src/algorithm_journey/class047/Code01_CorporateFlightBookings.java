@@ -25,7 +25,7 @@ import algorithm_journey.utils.MathUtils;
  * @link: <a href="https://leetcode.cn/problems/corporate-flight-bookings/description/">航班预订统计</a>
  */
 public class Code01_CorporateFlightBookings {
-    
+
 
     public static void main(String[] args) {
 
@@ -62,7 +62,10 @@ public class Code01_CorporateFlightBookings {
      */
     public static int[] corpFlightBookings(int[][] bookings, int n) {
 
-        // todo 为什么n+2，看工位电脑上的解释！！！
+        // 为什么是n+2
+        // -> 首先，航班编号是从1到n的，所以长度为n+1
+        // -> 其次，差分的时候是在firsti位置+seatsi，在lasti+1位置-seatsi
+        // -> 所以长度为n+2
         int[] cnt = new int[n + 2];
 
         // set
