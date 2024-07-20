@@ -11,6 +11,11 @@ public class Code03_WaterHeight {
 
     // todo
 
+    public static void main(String[] args) {
+
+        
+    }
+
 
     // 一群人落水后求每个位置的水位高度
 
