@@ -1,14 +1,26 @@
 package algorithm_journey.class048;
 
 /**
+ * 最强祝福力场
+ *
  * @author: Agony
  * @create: 2024/7/21 16:34
- * @describe:
- * @link:
+ * @describe: 小扣在探索丛林的过程中，无意间发现了传说中“落寞的黄金之都”。而在这片建筑废墟的地带中，小扣使用探测仪监测到了存在某种带有「祝福」效果的力场。
+ * 经过不断的勘测记录，小扣将所有力场的分布都记录了下来。forceField[i] = [x,y,side] 表示第 i 片力场将覆盖以坐标 (x,y) 为中心，边长为 side 的正方形区域。
+ * <p>
+ * 若任意一点的 力场强度 等于覆盖该点的力场数量，请求出在这片地带中 力场强度 最强处的 力场强度。
+ * <p>
+ * 注意：
+ * 力场范围的边缘同样被力场覆盖
+ * @link: <a href="https://leetcode.cn/problems/xepqZ5/description/">最强祝福力场</a>
  */
 public class Code05_StrongestForceField {
 
     // todo
+
+    public static void main(String[] args) {
+
+    }
 
     // 最强祝福力场
 
@@ -59,4 +71,33 @@ public class Code05_StrongestForceField {
     // build处理，得到二维区域和
     // 返回区域和最大值
 
+
+    /**
+     * 最强祝福力场
+     *
+     * @param forceField
+     * @return
+     */
+    public static int fieldOfGreatestBlessing(int[][] forceField) {
+        return 0;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
