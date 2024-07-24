@@ -8,7 +8,7 @@ import java.io.*;
  * @describe: 新建一个差分数组实现
  * @link:
  */
-public class DiffMatrixLuogu2 {
+public class DiffMatrixNowcoder2 {
 
 
     public static void main(String[] args) throws IOException {
