@@ -12,7 +12,7 @@ public class Code01_FibonacciNumber {
 
     // 斐波那契数
 
-    // 思路：
+    // 实现
     // fib1
     // -> 暴力递归遇到每一项都展开
     // fib2
