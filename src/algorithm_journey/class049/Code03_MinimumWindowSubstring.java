@@ -1,17 +1,24 @@
 package algorithm_journey.class049;
 
 /**
+ * 最小覆盖子串
+ *
  * @author: Agony
  * @create: 2024/7/24 9:13
- * @describe:
- * @link:
+ * @describe: 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+ * <p>
+ * 输入：s = "ADOBECODEBANC", t = "ABC"
+ * 输出："BANC"
+ * 解释：最小覆盖子串 "BANC" 包含来自字符串 t 的 'A'、'B' 和 'C'。
+ * @link: <a href="https://leetcode.cn/problems/minimum-window-substring/description/">最小覆盖子串</a>
  */
 public class Code03_MinimumWindowSubstring {
 
-    // todo
 
     public static void main(String[] args) {
-
+        String s = "ADOBECODEBANC";
+        String t = "ABC";
+        System.out.println(minWindow(s, t));
     }
 
     // 最小覆盖子串
@@ -33,4 +40,58 @@ public class Code03_MinimumWindowSubstring {
     // 更新答案
     // 。。。
     // 循环往复向右滑动，知道右窗口来到字符串边界
+
+
+    /**
+     * 最小覆盖子串
+     *
+     * @param str
+     * @param target
+     * @return
+     */
+    public static String minWindow(String str, String target) {
+
+        if (target.length() > str.length()) {
+            return "";
+        }
+
+        char[] s = str.toCharArray();
+
+        char[] t = target.toCharArray();
+
+        // 记录每个字符出现的个数
+        int[] cnts = new int[256];
+
+        for (char c : t) {
+            cnts[c]--;
+        }
+
+        // 最小字串的长度
+        int length = Integer.MAX_VALUE;
+
+        // 字串开始的位置
+        int start = 0;
+
+        for (int r = 0, l = 0, debt = target.length(); r < str.length(); r++) {
+
+            // 如果当前字符欠款，那么就加入窗口，欠款--
+            if (cnts[s[r]] < 0) {
+                debt--;
+            }
+            cnts[s[r]]++;
+
+            if (debt == 0) {
+
+                // 左窗口尽可能往右缩
+                while (cnts[s[l]] > 0) {
+                    cnts[s[l++]]--;
+                }
+                if (r - l + 1 < length) {
+                    length = r - l + 1;
+                    start = l;
+                }
+            }
+        }
+        return length == Integer.MAX_VALUE ? "" : str.substring(start, start + length);
+    }
 }
