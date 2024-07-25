@@ -1,14 +1,24 @@
 package algorithm_journey.class049;
 
 /**
+ * 替换子串得到平衡字符串
+ *
  * @author: Agony
  * @create: 2024/7/24 11:09
- * @describe:
- * @link:
+ * @describe: 有一个只含有 'Q', 'W', 'E', 'R' 四种字符，且长度为 n 的字符串。
+ * 假如在该字符串中，这四个字符都恰好出现 n/4 次，那么它就是一个「平衡字符串」。
+ * 给你一个这样的字符串 s，请通过「替换一个子串」的方式，使原字符串 s 变成一个「平衡字符串」。
+ * 你可以用和「待替换子串」长度相同的 任何 其他字符串来完成替换。
+ * 请返回待替换子串的最小可能长度。
+ * 如果原字符串自身就是一个平衡字符串，则返回 0。
+ * @link: <a href="https://leetcode.cn/problems/replace-the-substring-for-balanced-string/description/">替换子串得到平衡字符串</a>
  */
 public class Code05_ReplaceTheSubstringForBalancedString {
 
     // todo
+    public static void main(String[] args) {
+
+    }
 
     // 替换子串得到平衡字符串
 
@@ -42,5 +52,43 @@ public class Code05_ReplaceTheSubstringForBalancedString {
     // 下一就直接从3～9这个窗口验证是否能满足，
     // 如果不能，r继续向右滑动
     // 如果可以，更新答案，l向右滑动
+
+
+    /**
+     * 替换子串得到平衡字符串
+     *
+     * @param s
+     * @return
+     */
+    public static int balancedString(String s) {
+
+        char[] str = s.toCharArray();
+
+        int[] arr = new int[str.length];
+        int[] cnts = new int[4];
+        for (int i = 0; i < str.length; i++) {
+            switch (str[i]) {
+                case 'Q' -> {
+                    arr[i] = 0;
+                    cnts[0]++;
+                }
+                case 'W' -> {
+                    arr[i] = 1;
+                    cnts[1]++;
+                }
+                case 'E' -> {
+                    arr[i] = 2;
+                    cnts[2]++;
+                }
+                case 'R' -> {
+                    arr[i] = 3;
+                    cnts[3]++;
+                }
+            }
+        }
+
+
+        return -1;
+    }
 }
 
