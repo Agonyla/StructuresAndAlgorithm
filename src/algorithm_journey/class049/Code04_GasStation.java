@@ -14,7 +14,19 @@ package algorithm_journey.class049;
  */
 public class Code04_GasStation {
 
-    // todo
+
+    public static void main(String[] args) {
+
+
+        int[] gas = {1, 2, 3, 4, 5};
+        int[] costs = {3, 4, 5, 1, 2};
+        System.out.println(canCompleteCircuit(gas, costs));
+
+        gas = new int[]{4, 3, 2, 2, 3};
+        costs = new int[]{3, 2, 5, 1, 2};
+        System.out.println(canCompleteCircuit(gas, costs));
+
+    }
 
     // 加油站
     // 以上题目都是用结尾情况下的答案
@@ -43,7 +55,32 @@ public class Code04_GasStation {
      * @return
      */
     public static int canCompleteCircuit(int[] gas, int[] cost) {
-        return 0;
+
+        int n = gas.length;
+
+        // gas = [4,3,2,2,3], cost = [3,2,5,1,2]
+        // rest = [1,1,-3,1,1]
+        for (int l = 0, r = 0, length = 0, sum = 0; l < n; l++) {
+
+            // 如果sum>=0，继续往右扩
+            while (sum >= 0) {
+                // 走了一圈
+                if (length == n) {
+                    return l;
+                }
+
+                // [l,r),r表示要进来的数
+                r = (l + length++) % n;
+                sum += gas[r] - cost[r];
+            }
+            // 从while中退出，说明无法转一圈
+            // 那么l就从下一个位置开始
+            // 那么length长度--
+            // sum把左窗口的吐出去
+            length--;
+            sum -= gas[l] - cost[l];
+        }
+        return -1;
     }
 
 }
