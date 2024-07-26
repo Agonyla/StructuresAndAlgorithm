@@ -15,9 +15,14 @@ package algorithm_journey.class049;
  */
 public class Code05_ReplaceTheSubstringForBalancedString {
 
-    // todo
+
     public static void main(String[] args) {
 
+        String s = "QWER";
+        System.out.println(balancedString(s));
+
+        s = "QQQW";
+        System.out.println(balancedString(s));
     }
 
     // 替换子串得到平衡字符串
@@ -61,12 +66,15 @@ public class Code05_ReplaceTheSubstringForBalancedString {
      * @return
      */
     public static int balancedString(String s) {
+        int n = s.length();
 
         char[] str = s.toCharArray();
 
-        int[] arr = new int[str.length];
+        // 字符转成数字
+        int[] arr = new int[n];
+        // 词频统计
         int[] cnts = new int[4];
-        for (int i = 0; i < str.length; i++) {
+        for (int i = 0; i < n; i++) {
             switch (str[i]) {
                 case 'Q' -> {
                     arr[i] = 0;
@@ -87,8 +95,53 @@ public class Code05_ReplaceTheSubstringForBalancedString {
             }
         }
 
+        int require = n / 4;
+        int ans = n;
 
-        return -1;
+        for (int r = 0, l = 0; l < n; l++) {
+
+
+            // 窗口[l,r)
+            while (!ok(cnts, r - l, require) && r < n) {
+                cnts[arr[r++]]--;
+            }
+            if (ok(cnts, r - l, require)) {
+                ans = Math.min(ans, r - l);
+            }
+
+            // 如果都没满足，左窗口往右移动，同时cnts词频++
+            cnts[arr[l]]++;
+        }
+
+
+        return ans == n ? 0 : ans;
+    }
+
+
+    /**
+     * 判断除去窗口内的字符是否满足要求
+     *
+     * @param cnts    除去窗口内的词频统计
+     * @param length  窗口长度
+     * @param require 满足要求的数量
+     * @return 是否满足要求
+     */
+    public static boolean ok(int[] cnts, int length, int require) {
+
+
+        for (int i = 0; i < cnts.length; i++) {
+
+            // 如果窗口外有词频大于require的，直接返回false
+            if (cnts[i] > require) {
+                return false;
+            }
+
+            // 如果词频没达到要求，那么就让窗口长度减去插值
+            // 意思是让这个插值变成缺少的字符
+            length -= require - cnts[i];
+        }
+
+        return length == 0;
     }
 }
 
