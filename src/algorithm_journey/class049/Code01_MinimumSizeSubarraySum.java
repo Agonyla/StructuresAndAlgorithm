@@ -20,6 +20,9 @@ package algorithm_journey.class049;
 public class Code01_MinimumSizeSubarraySum {
 
 
+    // todo：关于滑动窗技巧的掌握还不是很熟练！！！把class049的内容重新看一遍！！！
+
+    
     public static void main(String[] args) {
 
         int[] nums = {2, 3, 1, 2, 4, 3};
