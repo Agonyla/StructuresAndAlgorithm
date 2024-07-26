@@ -1,5 +1,7 @@
 package algorithm_journey.class049;
 
+import java.util.Arrays;
+
 /**
  * 至少有 K 个重复字符的最长子串
  *
@@ -12,7 +14,16 @@ package algorithm_journey.class049;
  */
 public class Code07_LongestSubstringWithAtLeastKRepeating {
 
-    // todo
+
+    public static void main(String[] args) {
+
+        String s = "aaabb";
+        System.out.println(longestSubstring(s, 3));
+
+
+        s = "ababbc";
+        System.out.println(longestSubstring(s, 2));
+    }
 
     // 至少有K个重复字符的最长子串
 
@@ -39,11 +50,53 @@ public class Code07_LongestSubstringWithAtLeastKRepeating {
     /**
      * 至少有K个重复字符的最长子串
      *
-     * @param s
+     * @param str
      * @param k
      * @return
      */
-    public static int longestSubstring(String s, int k) {
-        return 0;
+    public static int longestSubstring(String str, int k) {
+
+        int n = str.length();
+        char[] s = str.toCharArray();
+        // 词频统计
+        int[] cnts = new int[256];
+
+        int ans = 0;
+
+        // 要求字串中有i种字符，求最大值
+        for (int require = 1; require <= 26; require++) {
+
+            Arrays.fill(cnts, 0);
+
+            for (int r = 0, l = 0, collect = 0, satisfy = 0; r < n; r++) {
+
+                cnts[s[r]]++;
+                if (cnts[s[r]] == 1) {
+                    collect++;
+                }
+                if (cnts[s[r]] == k) {
+                    satisfy++;
+                }
+
+                // 收集到的字符大于要求字符种类
+                while (collect > require) {
+
+                    if (cnts[s[l]] == 1) {
+                        collect--;
+                    }
+                    if (cnts[s[l]] == k) {
+                        satisfy--;
+                    }
+                    cnts[s[l++]]--;
+                }
+
+                //
+                if (collect == satisfy) {
+                    ans = Math.max(ans, r - l + 1);
+                }
+            }
+        }
+
+        return ans;
     }
 }
