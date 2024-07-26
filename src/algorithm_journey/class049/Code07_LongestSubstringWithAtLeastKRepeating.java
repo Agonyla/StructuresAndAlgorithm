@@ -1,10 +1,14 @@
 package algorithm_journey.class049;
 
 /**
+ * 至少有 K 个重复字符的最长子串
+ *
  * @author: Agony
  * @create: 2024/7/24 19:05
- * @describe:
- * @link:
+ * @describe: 给你一个字符串 s 和一个整数 k ，请你找出 s 中的最长子串， 要求该子串中的每一字符出现次数都不少于 k 。返回这一子串的长度。
+ * <p>
+ * 如果不存在这样的子字符串，则返回 0。
+ * @link: <a href="https://leetcode.cn/problems/longest-substring-with-at-least-k-repeating-characters/description/">至少有 K 个重复字符的最长子串</a>
  */
 public class Code07_LongestSubstringWithAtLeastKRepeating {
 
@@ -30,4 +34,16 @@ public class Code07_LongestSubstringWithAtLeastKRepeating {
     // satisfy更新，(出现此数<k)
     // 只有当 require==satisfy时
     // 更新答案
+
+
+    /**
+     * 至少有K个重复字符的最长子串
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public static int longestSubstring(String s, int k) {
+        return 0;
+    }
 }
