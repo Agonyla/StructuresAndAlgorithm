@@ -1,6 +1,6 @@
 # 数据结构与算法
 
-[教学地址](https://space.bilibili.com/8888480)
+[视频地址](https://space.bilibili.com/8888480)
 
 [项目地址](https://github.com/algorithmzuo)
 
