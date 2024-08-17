@@ -29,21 +29,26 @@ import java.util.Arrays;
 public class Code04_DecodeWaysII {
 
 
-    // todo
     public static void main(String[] args) {
 
 
         String s = "*";
         System.out.println(numDecodings1(s));
         System.out.println(numDecodings2(s));
+        System.out.println(numDecodings3(s));
+        System.out.println(numDecodings4(s));
 
         s = "1*";
         System.out.println(numDecodings1(s));
         System.out.println(numDecodings2(s));
+        System.out.println(numDecodings3(s));
+        System.out.println(numDecodings4(s));
 
         s = "2*";
         System.out.println(numDecodings1(s));
         System.out.println(numDecodings2(s));
+        System.out.println(numDecodings3(s));
+        System.out.println(numDecodings4(s));
     }
 
     // 解码方法 II
@@ -205,8 +210,122 @@ public class Code04_DecodeWaysII {
     }
 
 
-    // todo 从底到顶
+    /**
+     * 解码方法 II
+     * 从底到顶
+     *
+     * @param str
+     * @return
+     */
+    public static int numDecodings3(String str) {
+        int n = str.length();
+        char[] s = str.toCharArray();
+        long[] dp = new long[n + 1];
+        dp[n] = 1;
+
+        for (int i = n - 1; i >= 0; i--) {
+
+            if (s[i] == '0') {
+                dp[i] = 0;
+            } else {
+                // 自己解码
+                dp[i] = s[i] == '*' ? 9 * dp[i + 1] : dp[i + 1];
+
+                // 和下一个字符一起解码
+                if (i + 1 < s.length) {
+
+                    // 第一个字符是*
+                    if (s[i] == '*') {
+                        // 第二个字符是*
+                        if (s[i + 1] == '*') {
+                            dp[i] += 15 * dp[i + 2];
+                        } else {
+                            dp[i] += (s[i + 1] - '0' > 6) ? dp[i + 2] : 2 * dp[i + 2];
+                        }
+                    } else {
+                        // 第二个字符是*
+                        if (s[i + 1] == '*') {
+                            if (s[i] == '1') {
+                                dp[i] += 9 * dp[i + 2];
+                            }
+                            if (s[i] == '2') {
+                                dp[i] += 6 * dp[i + 2];
+                            }
+                        } else {
+                            if ((s[i] - '0') * 10 + s[i + 1] - '0' <= 26) {
+                                dp[i] += dp[i + 2];
+                            }
+                        }
+                    }
+                }
+            }
+            dp[i] %= mod;
+        }
+        return (int) dp[0];
+    }
+
     // todo 空间压缩
+
+    /**
+     * 解码方法 II
+     * 空间压缩
+     *
+     * @param str
+     * @return
+     */
+    public static int numDecodings4(String str) {
+
+        int n = str.length();
+        char[] s = str.toCharArray();
+
+        long cur = 0;
+        long next = 1;
+        long nextNext = 0;
+
+        for (int i = n - 1; i >= 0; i--) {
+
+            if (s[i] == '0') {
+                cur = 0;
+            } else {
+                // 自己解码
+                cur = s[i] == '*' ? 9 * next : next;
+
+                // 和下一个字符一起解码
+                if (i + 1 < s.length) {
+
+                    // 第一个字符是*
+                    if (s[i] == '*') {
+                        // 第二个字符是*
+                        if (s[i + 1] == '*') {
+                            cur += 15 * nextNext;
+                        } else {
+                            cur += (s[i + 1] - '0' > 6) ? nextNext : 2 * nextNext;
+                        }
+                    } else {
+                        // 第二个字符是*
+                        if (s[i + 1] == '*') {
+                            if (s[i] == '1') {
+                                cur += 9 * nextNext;
+                            }
+                            if (s[i] == '2') {
+                                cur += 6 * nextNext;
+                            }
+                        } else {
+                            if ((s[i] - '0') * 10 + s[i + 1] - '0' <= 26) {
+                                cur += nextNext;
+                            }
+                        }
+                    }
+                }
+            }
+            cur %= mod;
+            nextNext = next;
+            next = cur;
+            cur = 0;
+        }
+        return (int) next;
+    }
+
 }
 
 
