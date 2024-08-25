@@ -1,10 +1,15 @@
 package algorithm_journey.class066;
 
 /**
+ * 环绕字符串中唯一的子字符串
+ *
  * @author: Agony
  * @create: 2024/7/27 16:21
- * @describe:
- * @link:
+ * @describe: 定义字符串 base 为一个 "abcdefghijklmnopqrstuvwxyz" 无限环绕的字符串，所以 base 看起来是这样的：
+ * <p>
+ * "...zabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd....".
+ * 给你一个字符串 s ，请你统计并返回 s 中有多少 不同非空子串 也在 base 中出现。
+ * @link: <a href="https://leetcode.cn/problems/unique-substrings-in-wraparound-string/description/">环绕字符串中唯一的子字符串</a>
  */
 public class Code07_UniqueSubstringsWraparoundString {
 
@@ -28,5 +33,15 @@ public class Code07_UniqueSubstringsWraparoundString {
     // 或者  (cur-pre+25)%26==0 ??? 试一试行不行
     // 更新最大长度
     // 返回dp中的所有值累加和
-    
+
+
+    /**
+     * 环绕字符串中唯一的子字符串
+     *
+     * @param s
+     * @return
+     */
+    public static int findSubstringInWraproundString(String s) {
+        return 0;
+    }
 }
