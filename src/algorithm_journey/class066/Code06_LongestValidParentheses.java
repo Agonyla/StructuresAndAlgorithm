@@ -40,7 +40,7 @@ public class Code06_LongestValidParentheses {
     // 思路：
     // 设计一张dp表 int[] dp = new int[str.length]
     // dp[i]表示以i位置作结尾的最长有效括号的长度
-    // dp[0]=0 -> 默认就是0，当str=""时，该语句有问题
+    // dp[0]=0 -> 默认就是0。当str=""时，该语句有问题，所以不能加 ⚠️⚠️⚠️
     // 如果 str[i]=='('， 那么dp[i]=0
     // 如果 str[i]==')'， 根据 dp[i-1] 的长度往前跳到匹配的位置 p，p=i-dp[i-1]-1   dp[i-1]： 前一个位置的最长有效长度
     // 如果 str[p]=='('， 那么 dp[i]= dp[i-1]+2+dp[p-1]，+2就是因为有连个位置肯定可以配对，然后再加dp[i-1]的有效长度
