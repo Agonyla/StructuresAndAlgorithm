@@ -1,14 +1,24 @@
 package algorithm_journey.class066;
 
 /**
+ * 不同的子序列 II
+ *
  * @author: Agony
  * @create: 2024/7/27 16:52
- * @describe:
- * @link:
+ * @describe: 给定一个字符串 s，计算 s 的 不同非空子序列 的个数。因为结果可能很大，所以返回答案需要对 10^9 + 7 取余 。
+ * <p>
+ * 字符串的 子序列 是经由原字符串删除一些（也可能不删除）字符但不改变剩余字符相对位置的一个新字符串。
+ * <p>
+ * 例如，"ace" 是 "abcde" 的一个子序列，但 "aec" 不是。
+ * @link: <a href="https://leetcode.cn/problems/distinct-subsequences-ii/description/">不同的子序列 II</a>
  */
 public class Code08_DistinctSubsequencesII {
 
     // todo
+
+    public static void main(String[] args) {
+
+    }
 
     // 不同的子序列 II
 
@@ -29,5 +39,20 @@ public class Code08_DistinctSubsequencesII {
     // i=2:{}、{a}、{b}、{ab} + {a}、{aa}、{ba}、{aba} -> {a}重复，新增了3个( all-cnts['a'] )，cnts['a']+=newAdd=4，all+=newAdd=7
     // i=3:{}、{a}、{b}、{ab}、{aa}、{ba}、{aba} + {b}、{ab}、{bb}、{abb}、{aab}、{bab}、{abab} -> {b}、{ab}重复，新增了5个( all-cnts['b'] )，cnts['b']+=newAdd=7，all+=newAdd=12
     // all:{}、{a}、{b}、{ab}、{aa}、{ba}、{aba}、{bb}、{abb}、{aab}、{bab}、{abab}
-    
+
+
+    public static int mod = 1000000007;
+
+
+    /**
+     * 不同的子序列 II
+     *
+     * @param s
+     * @return
+     */
+    public static int distinctSubseqII(String s) {
+
+        return 0;
+    }
+
 }
