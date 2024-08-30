@@ -18,6 +18,11 @@ public class Code08_DistinctSubsequencesII {
 
     public static void main(String[] args) {
 
+        System.out.println((int) Math.pow(2, 5));
+
+        System.out.println(distinctSubseqII("abc"));
+        System.out.println(distinctSubseqII("aba"));
+        System.out.println(distinctSubseqII("aaa"));
     }
 
     // 不同的子序列 II
@@ -27,10 +32,19 @@ public class Code08_DistinctSubsequencesII {
     // cnts[0]表示以'a'结尾的字符串个数
     // cnts[25]表示以'z'结尾的字符串个数
     // int all=1。表示一开始就有一个空字符串
-    // int newAdd=0。表示新增字符串 (以str[i]位置最为结尾的新增字符串)
+    // int newAdd=0。表示新增字符串 (以str[i]位置作为结尾的新增字符串)
     // newAdd=all-cnts[str[i]] -> 新增=所有字符串的个数-表中该字符有的个数
     // cnts[str[i]]+=newAdd -> 表中的个数+=新增的个数
     // all+=newAdd -> 所有字符串+=新增的个数
+    //
+    //
+    // 在过程中，在保留原有的子序列下，给每一个子序列末尾都添加了一个str[i]，但是考虑到有重复的问题，所以还要减去之前表里记录的
+    // 所有 ->  newAdd=all-cnts[str[i]]
+    // 如s="ab"
+    // 一开始只有 {}
+    // i=0，{},{a}
+    // i=1，{},{a},{b},{ab}
+    //
     //
     // 如 s="abab"
     // 一开始：{}，all=1
@@ -51,8 +65,29 @@ public class Code08_DistinctSubsequencesII {
      * @return
      */
     public static int distinctSubseqII(String s) {
+        
+        int[] dp = new int[26];
+        char[] str = s.toCharArray();
 
-        return 0;
+        int all = 1;
+        for (int i = 0, newAdd; i < str.length; i++) {
+            newAdd = (all - dp[str[i] - 'a'] + mod) % mod;
+            dp[str[i] - 'a'] = (dp[str[i] - 'a'] + newAdd) % mod;
+            all = (all + newAdd) % mod;
+        }
+        return (all - 1 + mod) % mod;
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
