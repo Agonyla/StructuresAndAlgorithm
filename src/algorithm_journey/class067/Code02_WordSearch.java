@@ -1,10 +1,14 @@
 package algorithm_journey.class067;
 
 /**
+ * 单词搜索
+ *
  * @author: Agony
  * @create: 2024/8/1 22:26
- * @describe:
- * @link:
+ * @describe: 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+ * <p>
+ * 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+ * @link: <a href="https://leetcode.cn/problems/word-search/description/">单词搜索</a>
  */
 public class Code02_WordSearch {
 
@@ -29,6 +33,12 @@ public class Code02_WordSearch {
     // 不仅仅是i, j, k这三个值来决定返回值
     // 在过程中 board 会发生变化，所以这个board的状况也会导致返回值发生变化
     // 所以不能改成动态规划
+
+
+    public static boolean exist(char[][] board, String word) {
+
+        return false;
+    }
 }
 
 
