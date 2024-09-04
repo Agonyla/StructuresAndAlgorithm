@@ -14,7 +14,6 @@ package algorithm_journey.class066;
  */
 public class Code08_DistinctSubsequencesII {
 
-    // todo
 
     public static void main(String[] args) {
 
@@ -65,7 +64,7 @@ public class Code08_DistinctSubsequencesII {
      * @return
      */
     public static int distinctSubseqII(String s) {
-        
+
         int[] dp = new int[26];
         char[] str = s.toCharArray();
 
