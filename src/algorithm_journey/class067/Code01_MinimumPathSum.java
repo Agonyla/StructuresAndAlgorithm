@@ -12,7 +12,7 @@ package algorithm_journey.class067;
  */
 public class Code01_MinimumPathSum {
 
-    // todo
+    
     public static void main(String[] args) {
 
 
@@ -421,7 +421,7 @@ public class Code01_MinimumPathSum {
 
             // 最后一个单独更新
             dp[n - 1] += grid[i][n - 1];
-            
+
             for (int j = n - 2; j >= 0; j--) {
                 dp[j] = Math.min(dp[j], dp[j + 1]) + grid[i][j];
             }
