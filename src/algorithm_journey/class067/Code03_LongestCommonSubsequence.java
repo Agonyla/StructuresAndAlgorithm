@@ -1,14 +1,43 @@
 package algorithm_journey.class067;
 
 /**
+ * 最长公共子序列
+ *
  * @author: Agony
  * @create: 2024/9/1 14:55
- * @describe:
- * @link:
+ * @describe: 给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+ * <p>
+ * 一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+ * <p>
+ * 例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+ * 两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+ * @link: <a href="https://leetcode.cn/problems/longest-common-subsequence/description/">最长公共子序列</a>
  */
 public class Code03_LongestCommonSubsequence {
 
+
     // todo
+    public static void main(String[] args) {
+
+        String text1 = "abcde";
+        String text2 = "ace";
+        System.out.println(longestCommonSubsequence1(text1, text2));
+        System.out.println(longestCommonSubsequence2(text1, text2));
+        System.out.println(longestCommonSubsequence3(text1, text2));
+
+        text1 = "abc";
+        text2 = "abc";
+        System.out.println(longestCommonSubsequence1(text1, text2));
+        System.out.println(longestCommonSubsequence2(text1, text2));
+        System.out.println(longestCommonSubsequence3(text1, text2));
+
+        text1 = "abc";
+        text2 = "def";
+        System.out.println(longestCommonSubsequence1(text1, text2));
+        System.out.println(longestCommonSubsequence2(text1, text2));
+        System.out.println(longestCommonSubsequence3(text1, text2));
+
+    }
 
     // 最长公共子序列
     //
@@ -59,6 +88,167 @@ public class Code03_LongestCommonSubsequence {
     // backup = dp[i]
     // dp[i] = ... leftUp
     // leftUp = backup
+
+
+    /**
+     * 最长公共子序列 - 暴力递归
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence1(String text1, String text2) {
+
+        char[] s1 = text1.toCharArray();
+        char[] s2 = text2.toCharArray();
+        int len1 = text1.length();
+        int len2 = text2.length();
+
+        return f1(s1, s2, len1 - 1, len2 - 1);
+    }
+
+
+    /**
+     * 暴力递归
+     *
+     * @param s1 字符数组s1
+     * @param s2 字符数组s2
+     * @param i1 s1从0到i1
+     * @param i2 s2从0到i2
+     * @return s1从0到i1 和 s2从0到i2 的最长公共子序列
+     */
+    public static int f1(char[] s1, char[] s2, int i1, int i2) {
+
+        // base case
+        if (i1 < 0 || i2 < 0) {
+            return 0;
+        }
+
+        // 最长公共子序列不包含最后一个
+        int p1 = f1(s1, s2, i1 - 1, i2 - 1);
+        // s1从0位置出发到i1 与 s2从0位置出发到i2-1的最长公共子序列一样
+        int p2 = f1(s1, s2, i1, i2 - 1);
+        // s1从0位置出发到i1-1 与 s2从0位置出发到i2的最长公共子序列一样
+        int p3 = f1(s1, s2, i1 - 1, i2);
+        // 最长公共子序列包含最后一个
+        int p4 = s1[i1] == s2[i2] ? p1 + 1 : 0;
+
+
+        return Math.max(p1, Math.max(p2, Math.max(p3, p4)));
+    }
+
+
+    /**
+     * 最长公共子序列 - 暴力递归 - 优化
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence2(String text1, String text2) {
+
+        char[] s1 = text1.toCharArray();
+        char[] s2 = text2.toCharArray();
+        int len1 = text1.length();
+        int len2 = text2.length();
+
+        return f2(s1, s2, len1, len2);
+    }
+
+
+    /**
+     * 暴力递归 - 优化
+     *
+     * @param s1   字符数组s1
+     * @param s2   字符数组s2
+     * @param len1 前缀长度
+     * @param len2 浅醉长度
+     * @return s1字符串前缀长度为len1 与 s2字符串前缀长度为len2，这两个字符串的最长公共子序列
+     */
+    public static int f2(char[] s1, char[] s2, int len1, int len2) {
+
+        if (len1 == 0 || len2 == 0) {
+            return 0;
+        }
+
+        if (s1[len1 - 1] == s2[len2 - 1]) {
+            return f2(s1, s2, len1 - 1, len2 - 1) + 1;
+        } else {
+
+            return Math.max(f2(s1, s2, len1 - 1, len2), f2(s1, s2, len1, len2 - 1));
+        }
+    }
+
+
+    /**
+     * 最长公共子序列 - 记忆化搜索
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence3(String text1, String text2) {
+        char[] s1 = text1.toCharArray();
+        char[] s2 = text2.toCharArray();
+        int len1 = text1.length();
+        int len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+
+        for (int i = 0; i <= len1; i++) {
+            for (int j = 0; j <= len2; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return f3(s1, s2, len1, len2, dp);
+    }
+
+    /**
+     * 记忆化搜索
+     *
+     * @param s1
+     * @param s2
+     * @param len1
+     * @param len2
+     * @param dp
+     * @return
+     */
+    public static int f3(char[] s1, char[] s2, int len1, int len2, int[][] dp) {
+
+        if (len1 == 0 || len2 == 0) {
+            return 0;
+        }
+        if (dp[len1][len2] != -1) {
+            return dp[len1][len2];
+        }
+
+        int ans = 0;
+        if (s1[len1 - 1] == s2[len2 - 1]) {
+            ans = f3(s1, s2, len1 - 1, len2 - 1, dp) + 1;
+        } else {
+            ans = Math.max(f3(s1, s2, len1 - 1, len2, dp), f3(s1, s2, len1, len2 - 1, dp));
+        }
+        dp[len1][len2] = ans;
+        return dp[len1][len2];
+    }
+
+    /**
+     * 最长公共子序列 - 动态规划
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence4(String text1, String text2) {
+
+
+        // todo
+        return 1;
+    }
+
+
+    //===============================================
+    //===============================================
+    //===============================================
 
 
     /**
