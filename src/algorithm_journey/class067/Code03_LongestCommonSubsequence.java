@@ -1,5 +1,7 @@
 package algorithm_journey.class067;
 
+import java.util.Arrays;
+
 /**
  * 最长公共子序列
  *
@@ -16,7 +18,6 @@ package algorithm_journey.class067;
 public class Code03_LongestCommonSubsequence {
 
 
-    // todo
     public static void main(String[] args) {
 
         String text1 = "abcde";
@@ -24,18 +25,24 @@ public class Code03_LongestCommonSubsequence {
         System.out.println(longestCommonSubsequence1(text1, text2));
         System.out.println(longestCommonSubsequence2(text1, text2));
         System.out.println(longestCommonSubsequence3(text1, text2));
+        System.out.println(longestCommonSubsequence4(text1, text2));
+        System.out.println(longestCommonSubsequence5(text1, text2));
 
         text1 = "abc";
         text2 = "abc";
         System.out.println(longestCommonSubsequence1(text1, text2));
         System.out.println(longestCommonSubsequence2(text1, text2));
         System.out.println(longestCommonSubsequence3(text1, text2));
+        System.out.println(longestCommonSubsequence4(text1, text2));
+        System.out.println(longestCommonSubsequence5(text1, text2));
 
         text1 = "abc";
         text2 = "def";
         System.out.println(longestCommonSubsequence1(text1, text2));
         System.out.println(longestCommonSubsequence2(text1, text2));
         System.out.println(longestCommonSubsequence3(text1, text2));
+        System.out.println(longestCommonSubsequence4(text1, text2));
+        System.out.println(longestCommonSubsequence5(text1, text2));
 
     }
 
@@ -77,7 +84,7 @@ public class Code03_LongestCommonSubsequence {
     //
     // 空间压缩
     // 一维数组代替dp表
-    // s1，s2中s1表示长的，长的作行，短的作列，一维数组选取较短的那个
+    // s1，s2中s1表示长的，长的作行，短的作列，一维数组选取较短的那个 (节省空间)
     // 因为每一个位置依赖三个位置，如来到 i 位置， dp[i-1]表示左边已经更新的位置，dp[i]表示上边还未更新的位置
     // 因此需要单独一个变量来表示左上的位置，
     // 在每次跟新前先用该变脸记录原来的值，表示左上角的位置
@@ -241,8 +248,57 @@ public class Code03_LongestCommonSubsequence {
     public static int longestCommonSubsequence4(String text1, String text2) {
 
 
-        // todo
-        return 1;
+        char[] s1 = text1.toCharArray();
+        char[] s2 = text2.toCharArray();
+        int m = text1.length();
+        int n = text2.length();
+
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int len1 = 1; len1 <= m; len1++) {
+            for (int len2 = 1; len2 <= n; len2++) {
+                if (s1[len1 - 1] == s2[len2 - 1]) {
+                    dp[len1][len2] = dp[len1 - 1][len2 - 1] + 1;
+                } else {
+                    dp[len1][len2] = Math.max(dp[len1 - 1][len2], dp[len1][len2 - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+
+    /**
+     * 最长公共子序列 - 动态规划 + 空间压缩
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence5(String text1, String text2) {
+
+
+        // s1 指向较长的字符串
+        char[] s1 = text1.length() >= text2.length() ? text1.toCharArray() : text2.toCharArray();
+        char[] s2 = Arrays.equals(s1, text1.toCharArray()) ? text2.toCharArray() : text1.toCharArray();
+
+        int m = s1.length;
+        int n = s2.length;
+        int[] dp = new int[n + 1];
+        for (int len1 = 1; len1 <= m; len1++) {
+
+            int leftUp = 0, backup;
+            for (int len2 = 1; len2 <= n; len2++) {
+                backup = dp[len2];
+                if (s1[len1 - 1] == s2[len2 - 1]) {
+                    dp[len2] = leftUp + 1;
+                } else {
+                    dp[len2] = Math.max(dp[len2 - 1], dp[len2]);
+                }
+                leftUp = backup;
+            }
+        }
+        return dp[n];
     }
 
 
