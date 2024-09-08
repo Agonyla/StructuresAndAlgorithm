@@ -1,10 +1,14 @@
 package algorithm_journey.class067;
 
 /**
+ * 矩阵中的最长递增路径
+ *
  * @author: Agony
  * @create: 2024/9/4 13:20
- * @describe:
- * @link:
+ * @describe: 给定一个 m x n 整数矩阵 matrix ，找出其中 最长递增路径 的长度。
+ * <p>
+ * 对于每个单元格，你可以往上，下，左，右四个方向移动。 你 不能 在 对角线 方向上移动或移动到 边界外（即不允许环绕）。
+ * @link: <a href="https://leetcode.cn/problems/longest-increasing-path-in-a-matrix/description/">矩阵中的最长递增路径</a>
  */
 public class Code06_LongestIncreasingPath {
 
@@ -25,4 +29,17 @@ public class Code06_LongestIncreasingPath {
     // 由于每个位置依赖都比较复杂(只依赖比自己大的位置)
     // 位置依赖整理起来比较复杂，所以只需要记忆化搜索的版本即可
     //
+
+
+    /**
+     * 矩阵中的最长递增路径
+     *
+     * @param matrix
+     * @return
+     */
+    public int longestIncreasingPath(int[][] matrix) {
+
+
+        return 1;
+    }
 }
