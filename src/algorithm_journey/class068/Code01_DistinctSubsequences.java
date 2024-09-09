@@ -10,7 +10,7 @@ package algorithm_journey.class068;
  */
 public class Code01_DistinctSubsequences {
 
-    
+
     // 不同的子序列
     //
     // 能不能自己先做一下暴力递归，然后慢慢改成动态规划❕❕❕
@@ -21,6 +21,7 @@ public class Code01_DistinctSubsequences {
     // 这里可能有问题🙋🙋🙋
     // i==0 -> return 0    ||  j==0 -> return 1  ❓❓❓
     // j==0 -> return 0    ||  i==0&&j==0 -> return 1  ❓❓❓
+    // ✅✅✅ -> i==0&&j==0 return1; i==0 return 0; j==0 return 1;
     // 可能性
     // 1. str[i]==str[j]
     // -> 调用 f(i-1,j) + f(i-1, j-1)
@@ -29,7 +30,7 @@ public class Code01_DistinctSubsequences {
     // f(i-1,j-1)表示使用当前字符匹配，然后去匹配target的前一个字符
     // 2. str[i]!=str[j]
     // -> 调用 f(i-1)
-    // .... 先猜想到这里
+    // .... 先猜想到这里 ✅✅✅
     //
     // 应该也可以和class067的第一题类似，有从(i,j)位置出发到末尾的的总个数
     // 设计 int f(char[] str, char[] target, int i, int j) -> 返回在str中从第i个字符开始到末尾组成的子序列能够严格等于target中从第j个字符开始到末尾组成的字符串 的个数
