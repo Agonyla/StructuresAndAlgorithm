@@ -1,15 +1,16 @@
 package algorithm_journey.class068;
 
 /**
+ * 不同的子序列
+ *
  * @author: Agony
  * @create: 2024/9/5 10:24
- * @describe:
- * @link:
+ * @describe: 给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数，结果需要对 109 + 7 取模。
+ * @link: <a href="https://leetcode.cn/problems/distinct-subsequences/description/">不同的子序列</a>
  */
 public class Code01_DistinctSubsequences {
 
-    // todo
-    //
+    
     // 不同的子序列
     //
     // 能不能自己先做一下暴力递归，然后慢慢改成动态规划❕❕❕
@@ -57,6 +58,253 @@ public class Code01_DistinctSubsequences {
     // 来到i位置
     // dp[i]表示上方的值
     // dp[i-1]表示左上方的值
+
+
+    public static void main(String[] args) {
+
+        // 3
+        String s = "rabbbit";
+        String t = "rabbit";
+        System.out.println(numDistinct1(s, t));
+        System.out.println(numDistinct2(s, t));
+        System.out.println(numDistinct3(s, t));
+        System.out.println(numDistinct4(s, t));
+        System.out.println(numDistinct5(s, t));
+
+
+        // 5
+        s = "babgbag";
+        t = "bag";
+        System.out.println(numDistinct1(s, t));
+        System.out.println(numDistinct2(s, t));
+        System.out.println(numDistinct3(s, t));
+        System.out.println(numDistinct4(s, t));
+        System.out.println(numDistinct5(s, t));
+
+        s = "eee";
+        t = "eee";
+        System.out.println(numDistinct4(s, t));
+        System.out.println(numDistinct5(s, t));
+    }
+
+
+    /**
+     * 不同的子序列 - 暴力递归
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public static int numDistinct1(String s, String t) {
+
+
+        return f1(s.toCharArray(), t.toCharArray(), s.length(), t.length());
+    }
+
+
+    /**
+     * 暴力递归
+     *
+     * @param s1 字符数组s1
+     * @param s2 字符数组s2
+     * @param i  s1 前 i 个字符
+     * @param j  s2 前 j 个字符
+     * @return s1前i个字符组成的子序列等于 s2前j个字符组成字符串的 个数
+     */
+    public static int f1(char[] s1, char[] s2, int i, int j) {
+
+        if (i == 0 && j == 0) {
+            return 1;
+        }
+        if (i == 0) {
+            return 0;
+        }
+        if (j == 0) {
+            return 1;
+        }
+
+        int ans = 0;
+        // 最后一个字符相同
+        if (s1[i - 1] == s2[j - 1]) {
+            // s1，s2最后一个字符选择匹配 + s1,s2最后一个字符选择不匹配
+            ans = f1(s1, s2, i - 1, j - 1) + f1(s1, s2, i - 1, j);
+        } else {
+            ans = f1(s1, s2, i - 1, j);
+        }
+
+        return ans;
+
+    }
+
+
+    /**
+     * 不同的子序列 - 记忆化搜索
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public static int numDistinct2(String s, String t) {
+
+
+        char[] s1 = s.toCharArray();
+        char[] s2 = t.toCharArray();
+        int len1 = s.length();
+        int len2 = t.length();
+        int[][] dp = new int[s1.length + 1][s2.length + 1];
+        for (int i = 0; i <= len1; i++) {
+            for (int j = 0; j <= len2; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return f2(s1, s2, len1, len2, dp);
+    }
+
+
+    /**
+     * 记忆化搜索
+     *
+     * @param s1
+     * @param s2
+     * @param i
+     * @param j
+     * @param dp
+     * @return
+     */
+    public static int f2(char[] s1, char[] s2, int i, int j, int[][] dp) {
+        if (i == 0 && j == 0) {
+            return 1;
+        }
+        if (i == 0) {
+            return 0;
+        }
+        if (j == 0) {
+            return 1;
+        }
+
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+
+        int ans = 0;
+        // 最后一个字符相同
+        if (s1[i - 1] == s2[j - 1]) {
+            // s1，s2最后一个字符选择匹配 + s1,s2最后一个字符选择不匹配
+            ans = f2(s1, s2, i - 1, j - 1, dp) + f2(s1, s2, i - 1, j, dp);
+        } else {
+            ans = f2(s1, s2, i - 1, j, dp);
+        }
+        dp[i][j] = ans;
+        return ans;
+    }
+
+
+    /**
+     * 不同的子序列 - 动态规划
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public static int numDistinct3(String s, String t) {
+
+
+        char[] s1 = s.toCharArray();
+        char[] s2 = t.toCharArray();
+        int len1 = s.length();
+        int len2 = t.length();
+
+        int[][] dp = new int[len1 + 1][len2 + 1];
+
+        for (int i = 0; i <= len1; i++) {
+            dp[i][0] = 1;
+        }
+
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+
+
+    /**
+     * 不同的子序列 - 动态规划 + 空间压缩
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public static int numDistinct4(String s, String t) {
+
+
+        char[] s1 = s.toCharArray();
+        char[] s2 = t.toCharArray();
+        int len1 = s.length();
+        int len2 = t.length();
+
+        int[] dp = new int[len2 + 1];
+
+        dp[0] = 1;
+        int leftUp = 0;
+        int backup = 0;
+        for (int i = 1; i <= len1; i++) {
+            leftUp = dp[0];
+            for (int j = 1; j <= len2; j++) {
+                backup = dp[j];
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[j] = leftUp + dp[j];
+                }
+                leftUp = backup;
+            }
+        }
+        return dp[len2];
+    }
+
+
+    /**
+     * 小修改
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public static int numDistinct5(String s, String t) {
+
+
+        char[] s1 = s.toCharArray();
+        char[] s2 = t.toCharArray();
+        int len1 = s.length();
+        int len2 = t.length();
+
+        int[] dp = new int[len2 + 1];
+
+        dp[0] = 1;
+        for (int i = 1; i <= len1; i++) {
+
+            // 这里可以从右往左遍历
+            // 因为从递归中可以看出，每个位置依赖左上位置和上边位置
+            // 从右往左遍历时，来到j位置，dp[j]表示上边的值，dp[j-1]就是左上的值
+            // 不需要申请额外变量来表示左上的值了
+            for (int j = len2; j >= 1; j--) {
+
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[j] = dp[j] + dp[j - 1];
+                }
+            }
+        }
+        return dp[len2];
+    }
+
+
+    // ==============================================
+    // ==============================================
+    // ==============================================
 
 
     // gpt答案
