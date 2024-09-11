@@ -1,9 +1,17 @@
 package algorithm_journey.class068;
 
 /**
+ * 有效涂色问题
+ *
  * @author: Agony
  * @create: 2024/9/6 11:56
- * @describe:
+ * @describe: 给定n、m两个参数
+ * 一共有n个格子，每个格子可以涂上一种颜色，颜色在m种里选
+ * 当涂满n个格子，并且m种颜色都使用了，叫一种有效方法
+ * 求一共有多少种有效的涂色方法
+ * 1 <= n, m <= 5000
+ * 结果比较大请 % 1000000007 之后返回
+ * 对数器验证
  * @link:
  */
 public class Code04_FillCellsUseAllColorsWays {
@@ -35,4 +43,42 @@ public class Code04_FillCellsUseAllColorsWays {
     //
     // 动态规划 + 空间压缩
     // 自己写❗❗❗
+
+
+    /**
+     * 有效涂色问题 - 暴力递归
+     *
+     * @param n 格子总数n
+     * @param m 颜色数量m
+     * @return
+     */
+    public static int ways1(int n, int m) {
+
+        return 1;
+    }
+
+
+    /**
+     * 暴力递归  好像有问题❓❓❓ -> 要用带路径的暴力递归
+     *
+     * @param i 前i个格子
+     * @param j 用了j种颜色
+     * @return 返回前i个格子涂了j种颜色方法数
+     */
+    public static int f(int i, int j) {
+
+
+        return 1;
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
