@@ -1,5 +1,7 @@
 package algorithm_journey.class068;
 
+import java.util.Arrays;
+
 /**
  * 有效涂色问题
  *
@@ -16,7 +18,6 @@ package algorithm_journey.class068;
  */
 public class Code04_FillCellsUseAllColorsWays {
 
-    // todo
 
     // 有效涂色问题
     //
@@ -28,7 +29,7 @@ public class Code04_FillCellsUseAllColorsWays {
     // dp[i][j] 表示 前i个格子已经涂好了j种颜色的方法
     // 可能性分析：
     // 1. 前i-1个格子已经涂好了j种颜色
-    // -> dp[i][j] = dp[i-1][j] * 3
+    // -> dp[i][j] = dp[i-1][j] * j (从之前涂过的颜色中选一种涂)
     // 2. 前i-1个格子已经涂好了j-1种颜色
     // -> dp[i][j] = dp[i-1][j-1] * (m - (j-1))
     // 位置依赖：
@@ -45,6 +46,27 @@ public class Code04_FillCellsUseAllColorsWays {
     // 自己写❗❗❗
 
 
+    public static void main(String[] args) {
+
+
+        int N = 9;
+        int M = 9;
+        System.out.println("功能测试开始");
+        for (int n = 1; n <= N; n++) {
+            for (int m = 1; m <= M; m++) {
+                int ans1 = ways1(n, m);
+                int ans2 = waysTest(n, m);
+                int ans3 = ways2(n, m);
+                if (ans1 != ans2 || ans1 != ans3) {
+                    System.out.println("出错了!");
+                }
+            }
+        }
+        System.out.println("功能测试结束");
+
+
+    }
+
     /**
      * 有效涂色问题 - 暴力递归
      *
@@ -54,23 +76,99 @@ public class Code04_FillCellsUseAllColorsWays {
      */
     public static int ways1(int n, int m) {
 
-        return 1;
+        return f(n, m, n, m);
     }
 
 
     /**
-     * 暴力递归  好像有问题❓❓❓ -> 要用带路径的暴力递归
+     * 暴力递归  好像有问题❓❓❓ -> 没有问题❕❕❕
      *
+     * @param n 格子数量
+     * @param m 颜色数量
      * @param i 前i个格子
      * @param j 用了j种颜色
      * @return 返回前i个格子涂了j种颜色方法数
      */
-    public static int f(int i, int j) {
+    public static int f(int n, int m, int i, int j) {
 
+        if (i < j) {
+            return 0;
+        }
+        if (i == 0 && j == 0) {
+            return 1;
+        }
+        if (i == 0 || j == 0) {
+            return 0;
+        }
 
-        return 1;
+        // 前i-1个格子已经涂好了j种颜色
+        int p1 = f(n, m, i - 1, j) * j;
+        // 前i-1个格子已经涂了j-1种颜色
+        int p2 = f(n, m, i - 1, j - 1) * (m - j + 1);
+
+        return p1 + p2;
     }
 
+
+    /**
+     * 有效涂色问题 - 动态规划
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public static int ways2(int n, int m) {
+
+
+        int[][] dp = new int[n + 1][m + 1];
+        dp[0][0] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                int p1 = dp[i - 1][j] * j;
+                int p2 = dp[i - 1][j - 1] * (m - j + 1);
+                dp[i][j] = p1 + p2;
+            }
+        }
+        return dp[n][m];
+    }
+
+
+    /**
+     * 测试
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public static int waysTest(int n, int m) {
+        return fTest(new int[n], new boolean[m + 1], 0, n, m);
+    }
+
+    // 把所有填色的方法暴力枚举
+    // 然后一个一个验证是否有效
+    // 这是一个带路径的递归
+    // 无法改成动态规划
+    public static int fTest(int[] path, boolean[] set, int i, int n, int m) {
+        if (i == n) {
+            Arrays.fill(set, false);
+            int colors = 0;
+            for (int c : path) {
+                if (!set[c]) {
+                    set[c] = true;
+                    colors++;
+                }
+            }
+            return colors == m ? 1 : 0;
+        } else {
+            int ans = 0;
+            for (int j = 1; j <= m; j++) {
+                path[i] = j;
+                ans += fTest(path, set, i + 1, n, m);
+            }
+            return ans;
+        }
+    }
 
 }
 
