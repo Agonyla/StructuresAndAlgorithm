@@ -1,10 +1,18 @@
 package algorithm_journey.class069;
 
 /**
+ * 盈利计划
+ *
  * @author: Agony
  * @create: 2024/9/10 10:44
- * @describe:
- * @link:
+ * @describe: 集团里有 n 名员工，他们可以完成各种各样的工作创造利润。
+ * <p>
+ * 第 i 种工作会产生 profit[i] 的利润，它要求 group[i] 名成员共同参与。如果成员参与了其中一项工作，就不能参与另一项工作。
+ * <p>
+ * 工作的任何至少产生 minProfit 利润的子集称为 盈利计划 。并且工作的成员总数最多为 n 。
+ * <p>
+ * 有多少种计划可以选择？因为答案很大，所以 返回结果模 10^9 + 7 的值。
+ * @link: <a href="https://leetcode.cn/problems/profitable-schemes/description/">盈利计划</a>
  */
 public class Code02_ProfitableSchemes {
 
@@ -52,7 +60,27 @@ public class Code02_ProfitableSchemes {
     // 当一层更新完之后，该层都表示上一层的值
     // (r, i) 都依赖其所有左边及下边的值 (也就是该位置对应的上一层所有左边及下边的值)
     // 内容与上一类似
+
+
+    /**
+     * 盈利计划
+     *
+     * @param n
+     * @param minProfit
+     * @param group
+     * @param profit
+     * @return
+     */
+    public static int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+
+        return 1;
+    }
 }
+
+
+
+
+
 
 
 
