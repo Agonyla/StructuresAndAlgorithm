@@ -62,8 +62,69 @@ public class Code02_ProfitableSchemes {
     // 内容与上一类似
 
 
+    public static void main(String[] args) {
+
+        int n = 5;
+        int minProfit = 3;
+        int[] group = {2, 2};
+        int[] profit = {2, 3};
+        System.out.println(profitableSchemes1(n, minProfit, group, profit));
+        System.out.println(profitableSchemes2(n, minProfit, group, profit));
+
+        n = 10;
+        minProfit = 5;
+        group = new int[]{2, 3, 5};
+        profit = new int[]{6, 7, 8};
+        System.out.println(profitableSchemes1(n, minProfit, group, profit));
+        System.out.println(profitableSchemes2(n, minProfit, group, profit));
+    }
+
+
     /**
-     * 盈利计划
+     * 盈利计划 - 暴力递归
+     *
+     * @param n         最多工作成员
+     * @param minProfit 最少利润
+     * @param group     每种工作的人员数组
+     * @param profit    每种工作能产生的利润
+     * @return 返回有多少种选择
+     */
+    public static int profitableSchemes1(int n, int minProfit, int[] group, int[] profit) {
+
+        return f1(group, profit, n, minProfit, 0);
+    }
+
+    /**
+     * 暴力递归
+     *
+     * @param group
+     * @param profit
+     * @param n      目前还剩多少员工可以使用
+     * @param p      还剩多少利润需要完成
+     * @param i      当前来到第i份工作
+     * @return 返回多少种选择
+     */
+    public static int f1(int[] group, int[] profit, int n, int p, int i) {
+
+        if (n <= 0) {
+            return p > 0 ? 0 : 1;
+        }
+
+        if (i == group.length) {
+            return p > 0 ? 0 : 1;
+        }
+
+        // 不选择当前工作
+        int p1 = f1(group, profit, n, p, i + 1);
+        // 选择当前工作
+        int p2 = f1(group, profit, n - group[i], p - profit[i], i + 1);
+
+        return p1 + p2;
+    }
+
+
+    /**
+     * 盈利计划 - 记忆化搜索
      *
      * @param n
      * @param minProfit
@@ -71,11 +132,80 @@ public class Code02_ProfitableSchemes {
      * @param profit
      * @return
      */
-    public static int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+    public static int profitableSchemes2(int n, int minProfit, int[] group, int[] profit) {
+
+        int len = group.length;
+        int[][][] dp = new int[n + 1][minProfit + 1][len];
+
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= minProfit; j++) {
+                for (int k = 0; k < len; k++) {
+                    dp[i][j][k] = -1;
+                }
+            }
+        }
+
+        return f2(group, profit, n, minProfit, 0, dp);
+    }
+
+
+    /**
+     * 记忆化搜索
+     *
+     * @param group
+     * @param profit
+     * @param n
+     * @param p
+     * @param i
+     * @param dp
+     * @return
+     */
+    public static int f2(int[] group, int[] profit, int n, int p, int i, int[][][] dp) {
+
+
+        if (n <= 0) {
+            return p > 0 ? 0 : 1;
+        }
+
+        if (i == group.length) {
+            return p > 0 ? 0 : 1;
+        }
+
+        if (dp[n][p][i] != -1) {
+            return dp[n][p][i];
+        }
+
+        // 不选择当前工作
+        int p1 = f2(group, profit, n, p, i + 1, dp);
+        // 选择当前工作
+        int p2 = f2(group, profit, n - group[i], Math.max(p - profit[i], 0), i + 1, dp);
+
+        dp[n][p][i] = p1 + p2;
+        return dp[n][p][i];
+    }
+
+
+    /**
+     * 盈利计划 - 动态规划
+     *
+     * @param n
+     * @param minProfit
+     * @param group
+     * @param profit
+     * @return
+     */
+    public static int profitableSchemes3(int n, int minProfit, int[] group, int[] profit) {
+
 
         return 1;
     }
+
 }
+
+
+
+
+
 
 
 
