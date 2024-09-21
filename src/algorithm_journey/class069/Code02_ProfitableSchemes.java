@@ -16,7 +16,6 @@ package algorithm_journey.class069;
  */
 public class Code02_ProfitableSchemes {
 
-    // todo
 
     // 盈利计划(多维费用背包)
     //
@@ -36,7 +35,7 @@ public class Code02_ProfitableSchemes {
     // 2️⃣要当前工作  (只有在group[i]<=r的情况下才能选择当前工作)
     //
     // 记忆化搜索
-    // 设计 int[][][] dp = new int[g.length][n+1][minProfit+1] ❓❓❓
+    // 设计 int[][][] dp = new int[g.length][n+1][minProfit+1] ❓❓❓➡️ ✅✅✅
     // ...
     // 注意点⚠️
     // 在上面调用递归的过程中 -> f(g,p,i,r-g[i],s-p[i])是这样调的，没问题
@@ -45,7 +44,7 @@ public class Code02_ProfitableSchemes {
     // 这样就可以解决dp越界问题
     //
     // 动态规划
-    // 设计 dp = new int[g.length+1][n+1][minProfit+1]  因为最上面一层是 i==g.length, 随意是不是初始长度要g.length+1 ❓❓❓
+    // 设计 dp = new int[g.length+1][n+1][minProfit+1]  因为最上面一层是 i==g.length, 所以是不是初始长度要g.length+1 ❓❓❓ ➡️ ✅✅✅
     // 位置依赖：
     // 从递归分析依赖，当来到(i,r,s)位置时，都依赖上一层 (i+1, , )
     // 每一层内的位置是不相互依赖的
@@ -60,6 +59,10 @@ public class Code02_ProfitableSchemes {
     // 当一层更新完之后，该层都表示上一层的值
     // (r, i) 都依赖其所有左边及下边的值 (也就是该位置对应的上一层所有左边及下边的值)
     // 内容与上一类似
+    // 所有二维dp的填表顺序为：
+    // 总体方向从右往左，然后再从上往下
+    // ⚠️⚠️⚠️：这个跳表还是要去画一下图，和单纯的二维动态规划不一样，二维：从上往下变大，从左往右变大
+    // 三维：类似xyz坐标轴，空间压缩后的二维：从左往右变大，从下往上变大
 
 
     public static void main(String[] args) {
@@ -70,6 +73,8 @@ public class Code02_ProfitableSchemes {
         int[] profit = {2, 3};
         System.out.println(profitableSchemes1(n, minProfit, group, profit));
         System.out.println(profitableSchemes2(n, minProfit, group, profit));
+        System.out.println(profitableSchemes3(n, minProfit, group, profit));
+        System.out.println(profitableSchemes4(n, minProfit, group, profit));
 
         n = 10;
         minProfit = 5;
@@ -77,7 +82,22 @@ public class Code02_ProfitableSchemes {
         profit = new int[]{6, 7, 8};
         System.out.println(profitableSchemes1(n, minProfit, group, profit));
         System.out.println(profitableSchemes2(n, minProfit, group, profit));
+        System.out.println(profitableSchemes3(n, minProfit, group, profit));
+        System.out.println(profitableSchemes4(n, minProfit, group, profit));
+
+
+        n = 1;
+        minProfit = 1;
+        group = new int[]{2, 2, 2, 2, 2};
+        profit = new int[]{1, 2, 1, 1, 0};
+        System.out.println(profitableSchemes1(n, minProfit, group, profit));
+        System.out.println(profitableSchemes2(n, minProfit, group, profit));
+        System.out.println(profitableSchemes3(n, minProfit, group, profit));
+        System.out.println(profitableSchemes4(n, minProfit, group, profit));
+
     }
+
+    private static int mod = 1000000007;
 
 
     /**
@@ -99,14 +119,14 @@ public class Code02_ProfitableSchemes {
      *
      * @param group
      * @param profit
-     * @param n      目前还剩多少员工可以使用
+     * @param r      目前还剩多少员工可以使用
      * @param p      还剩多少利润需要完成
      * @param i      当前来到第i份工作
      * @return 返回多少种选择
      */
-    public static int f1(int[] group, int[] profit, int n, int p, int i) {
+    public static int f1(int[] group, int[] profit, int r, int p, int i) {
 
-        if (n <= 0) {
+        if (r <= 0) {
             return p > 0 ? 0 : 1;
         }
 
@@ -115,9 +135,12 @@ public class Code02_ProfitableSchemes {
         }
 
         // 不选择当前工作
-        int p1 = f1(group, profit, n, p, i + 1);
+        int p1 = f1(group, profit, r, p, i + 1);
         // 选择当前工作
-        int p2 = f1(group, profit, n - group[i], p - profit[i], i + 1);
+        int p2 = 0;
+        if (r - group[i] >= 0) {
+            p2 = f1(group, profit, r - group[i], p - profit[i], i + 1);
+        }
 
         return p1 + p2;
     }
@@ -137,10 +160,10 @@ public class Code02_ProfitableSchemes {
         int len = group.length;
         int[][][] dp = new int[n + 1][minProfit + 1][len];
 
-        for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= minProfit; j++) {
-                for (int k = 0; k < len; k++) {
-                    dp[i][j][k] = -1;
+        for (int r = 0; r <= n; r++) {
+            for (int p = 0; p <= minProfit; p++) {
+                for (int i = 0; i < len; i++) {
+                    dp[r][p][i] = -1;
                 }
             }
         }
@@ -154,16 +177,16 @@ public class Code02_ProfitableSchemes {
      *
      * @param group
      * @param profit
-     * @param n
+     * @param r
      * @param p
      * @param i
      * @param dp
      * @return
      */
-    public static int f2(int[] group, int[] profit, int n, int p, int i, int[][][] dp) {
+    public static int f2(int[] group, int[] profit, int r, int p, int i, int[][][] dp) {
 
 
-        if (n <= 0) {
+        if (r <= 0) {
             return p > 0 ? 0 : 1;
         }
 
@@ -171,17 +194,20 @@ public class Code02_ProfitableSchemes {
             return p > 0 ? 0 : 1;
         }
 
-        if (dp[n][p][i] != -1) {
-            return dp[n][p][i];
+        if (dp[r][p][i] != -1) {
+            return dp[r][p][i];
         }
 
         // 不选择当前工作
-        int p1 = f2(group, profit, n, p, i + 1, dp);
+        int p1 = f2(group, profit, r, p, i + 1, dp);
         // 选择当前工作
-        int p2 = f2(group, profit, n - group[i], Math.max(p - profit[i], 0), i + 1, dp);
+        int p2 = 0;
+        if (r - group[i] >= 0) {
+            p2 = f2(group, profit, r - group[i], Math.max(p - profit[i], 0), i + 1, dp);
+        }
 
-        dp[n][p][i] = p1 + p2;
-        return dp[n][p][i];
+        dp[r][p][i] = (p1 + p2) % mod;
+        return dp[r][p][i];
     }
 
 
@@ -196,8 +222,58 @@ public class Code02_ProfitableSchemes {
      */
     public static int profitableSchemes3(int n, int minProfit, int[] group, int[] profit) {
 
+        int len = group.length;
+        int[][][] dp = new int[n + 1][minProfit + 1][len + 1];
 
-        return 1;
+        for (int r = 0; r <= n; r++) {
+            dp[r][0][len] = 1;
+        }
+
+        for (int i = len - 1; i >= 0; i--) {
+            for (int r = 0; r <= n; r++) {
+                for (int p = 0; p <= minProfit; p++) {
+                    int p1 = dp[r][p][i + 1];
+                    int p2 = 0;
+                    if (r - group[i] >= 0) {
+                        p2 = dp[r - group[i]][Math.max(p - profit[i], 0)][i + 1];
+                    }
+                    dp[r][p][i] = (p1 + p2) % mod;
+                }
+            }
+        }
+
+        return dp[n][minProfit][0];
+    }
+
+
+    /**
+     * 盈利计划 - 空间压缩
+     *
+     * @param n
+     * @param minProfit
+     * @param group
+     * @param profit
+     * @return
+     */
+    public static int profitableSchemes4(int n, int minProfit, int[] group, int[] profit) {
+
+        int len = group.length;
+        int[][] dp = new int[n + 1][minProfit + 1];
+        for (int r = 0; r <= n; r++) {
+            dp[r][0] = 1;
+        }
+        for (int i = len - 1; i >= 0; i--) {
+            for (int r = n; r >= 0; r--) {
+                for (int p = minProfit; p >= 0; p--) {
+
+                    int p1 = dp[r][p];
+                    int p2 = r - group[i] >= 0 ? dp[r - group[i]][Math.max(p - profit[i], 0)] : 0;
+                    dp[r][p] = (p1 + p2) % mod;
+                }
+            }
+
+        }
+        return dp[n][minProfit];
     }
 
 }
