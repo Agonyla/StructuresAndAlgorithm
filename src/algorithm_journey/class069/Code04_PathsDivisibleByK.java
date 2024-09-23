@@ -12,7 +12,6 @@ package algorithm_journey.class069;
  */
 public class Code04_PathsDivisibleByK {
 
-    // todo
 
     // 矩阵中和能被 K 整除的路径
     //
@@ -62,17 +61,20 @@ public class Code04_PathsDivisibleByK {
         int k = 3;
         System.out.println(numberOfPaths1(grid, k));
         System.out.println(numberOfPaths2(grid, k));
+        System.out.println(numberOfPaths3(grid, k));
 
 
         grid = new int[][]{{0, 0}};
         k = 5;
         System.out.println(numberOfPaths1(grid, k));
         System.out.println(numberOfPaths2(grid, k));
+        System.out.println(numberOfPaths3(grid, k));
 
         grid = new int[][]{{7, 3, 4, 9}, {2, 3, 6, 2}, {2, 3, 7, 0}};
         k = 1;
         System.out.println(numberOfPaths1(grid, k));
         System.out.println(numberOfPaths2(grid, k));
+        System.out.println(numberOfPaths3(grid, k));
     }
 
 
@@ -206,8 +208,30 @@ public class Code04_PathsDivisibleByK {
         int n = grid[0].length;
         int[][][] dp = new int[m][n][k];
 
+        dp[m - 1][n - 1][grid[m - 1][n - 1] % k] = 1;
 
-        return 1;
+        // 最后一行
+        for (int j = n - 2; j >= 0; j--) {
+            for (int r = 0; r < k; r++) {
+                dp[m - 1][j][r] = dp[m - 1][j + 1][(k + r - grid[m - 1][j] % k) % k];
+            }
+        }
+        // 最后一列
+        for (int i = m - 2; i >= 0; i--) {
+            for (int r = 0; r < k; r++) {
+                dp[i][n - 1][r] = dp[i + 1][n - 1][(k + r - grid[i][n - 1] % k) % k];
+            }
+        }
+
+        for (int i = m - 2; i >= 0; i--) {
+            for (int j = n - 2; j >= 0; j--) {
+                for (int r = 0; r < k; r++) {
+                    int rest = (k + r - grid[i][j] % k) % k;
+                    dp[i][j][r] = (dp[i + 1][j][rest] + dp[i][j + 1][rest]) % mod;
+                }
+            }
+        }
+        return dp[0][0][0];
     }
 
 
