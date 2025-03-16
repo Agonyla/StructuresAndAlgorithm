@@ -42,13 +42,25 @@ public class MathUtils {
     }
 
 
+    // /**
+    //  * 打印数组
+    //  *
+    //  * @param arr
+    //  */
+    // public static void printArr(Object[] arr) {
+    //     Arrays.stream(arr).forEach(obj -> System.out.print(obj + " "));
+    //     System.out.println();
+    // }
+
+
     /**
      * 打印数组
      *
      * @param arr
+     * @param <T>
      */
-    public static void printArr(Object[] arr) {
-        Arrays.stream(arr).forEach(obj -> System.out.print(obj + " "));
+    public static <T> void printArr(T[] arr) {
+        Arrays.stream(arr).forEach(num -> System.out.print(num + " "));
         System.out.println();
     }
 
