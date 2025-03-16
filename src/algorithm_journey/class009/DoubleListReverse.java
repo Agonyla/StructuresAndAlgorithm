@@ -5,7 +5,7 @@ package algorithm_journey.class009;
  * @create 2024/5/24 16:34
  * @describe: 双链表反转
  */
-public class DoubleLIstReverse {
+public class DoubleListReverse {
 
     // 双链表节点
     public static class DoubleListNode {
