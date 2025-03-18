@@ -8,7 +8,7 @@ import java.util.HashMap;
  * @describe: 两数之和
  * @link: <a href="https://leetcode.cn/problems/two-sum/description/">两数之和</a>
  */
-public class TwoSum {
+public class LeetCode1 {
 
 
     /**
