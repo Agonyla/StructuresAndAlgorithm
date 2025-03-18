@@ -40,6 +40,8 @@ public class LeetCode61 {
         }
 
         // 最后一个节点要移动的次数
+        // 如 1 -> 2 -> 3 -> 4
+        // 2 要作头节点，尾节点就要移动到 1， 需要移动1次
         int move = length - k % length;
 
         // 如果要移动 length 次 则直接返回原头节点
