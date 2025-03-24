@@ -34,7 +34,7 @@ public class Code02_LongestSubstringWithoutRepeatingCharacters {
     // 如：s = "abdcdadfe"
     // 左边界 l=0
     // 右边界 r=4，遇到d了
-    // 此时左边界直接来到 i=3
+    // 此时左边界直接来到 i=3 （该字符之前的位置 + 1）
     // 这时右边界遇到 a 了
     // 但是之前 a 的位置+1 小于 现在左边界的位置，所以左边界不更新
     // 怎么实现？
