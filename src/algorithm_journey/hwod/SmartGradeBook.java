@@ -49,12 +49,13 @@ public class SmartGradeBook {
             Student student = new Student();
             student.name = scanner.next();
             int sum = 0;
+            student.score.add(sum);
             for (int j = 0; j < m; j++) {
                 int score = scanner.nextInt();
                 student.score.add(score);
                 sum += score;
             }
-            student.score.add(0, sum);
+            student.score.set(0, sum);
             students.add(student);
         }
 
