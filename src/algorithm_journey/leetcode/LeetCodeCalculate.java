@@ -16,6 +16,10 @@ public class LeetCodeCalculate {
         System.out.println(calculate(s));
     }
 
+
+    // todo 删了自己重新敲一遍
+    
+
     public static int calculate(String s) {
         // 移除所有空格
         s = s.replaceAll("\\s", "");
