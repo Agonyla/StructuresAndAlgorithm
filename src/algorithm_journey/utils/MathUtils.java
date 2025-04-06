@@ -1,6 +1,7 @@
 package algorithm_journey.utils;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * 工具类
@@ -61,6 +62,12 @@ public class MathUtils {
      */
     public static <T> void printArr(T[] arr) {
         Arrays.stream(arr).forEach(num -> System.out.print(num + " "));
+        System.out.println();
+    }
+
+    public static void printList(List<?> list) {
+
+        list.forEach(s -> System.out.print(s + " "));
         System.out.println();
     }
 
