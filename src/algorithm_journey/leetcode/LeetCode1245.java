@@ -16,6 +16,9 @@ public class LeetCode1245 {
 
     }
 
+    // todo 再看一遍
+
+
     private List<Integer>[] graph;
     private int farthestNode = 0;
     private int maxDistance = 0;
