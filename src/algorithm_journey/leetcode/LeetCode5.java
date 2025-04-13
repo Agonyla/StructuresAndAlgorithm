@@ -3,7 +3,8 @@ package algorithm_journey.leetcode;
 /**
  * @author: Agony
  * @create: 2025/4/8 11:10
- * @describe: <a href="https://leetcode.cn/problems/longest-palindromic-substring/?envType=company&envId=huawei&favoriteSlug=huawei-three-months">最长回文子串</a>
+ * @describe: 最长回文子串
+ * <a href="https://leetcode.cn/problems/longest-palindromic-substring/?envType=company&envId=huawei&favoriteSlug=huawei-three-months">最长回文子串</a>
  */
 public class LeetCode5 {
 
