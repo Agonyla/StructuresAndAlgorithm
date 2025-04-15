@@ -16,7 +16,7 @@ package algorithm_journey.class068;
  */
 public class Code02_EditDistance {
 
-    
+
     // 编辑距离
     //
     // 暴力递归 (试一下)❕❕❕
@@ -57,6 +57,8 @@ public class Code02_EditDistance {
 
     public static void main(String[] args) {
 
+        // zikwvkijajpkaicihcffiemzexmwjjlyrylxcuoewdmpivudhmgkuodjaurazdjnlgtpwz
+        // wpnmubqfsnmapqpufmmsphqehjplwjkqspnnpywsvvjilxbcfsrygbelquaalenvkruyltiwqcpdrxgstywaja
 
         // 3
         String word1 = "horse";
@@ -72,6 +74,15 @@ public class Code02_EditDistance {
         word1 = "intention";
         word2 = "execution";
         System.out.println(minDistance1(word1, word2));
+        System.out.println(minDistance2(word1, word2));
+        System.out.println(minDistance3(word1, word2));
+        System.out.println(minDistance4(word1, word2));
+        System.out.println(minDistance5(word1, word2));
+
+        // 73
+        word1 = "zikwvkijajpkaicihcffiemzexmwjjlyrylxcuoewdmpivudhmgkuodjaurazdjnlgtpwz";
+        word2 = "wpnmubqfsnmapqpufmmsphqehjplwjkqspnnpywsvvjilxbcfsrygbelquaalenvkruyltiwqcpdrxgstywaja";
+        // System.out.println(minDistance1(word1, word2));
         System.out.println(minDistance2(word1, word2));
         System.out.println(minDistance3(word1, word2));
         System.out.println(minDistance4(word1, word2));
