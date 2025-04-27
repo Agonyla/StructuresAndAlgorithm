@@ -5,7 +5,8 @@ import java.util.*;
 /**
  * @author: Agony
  * @create: 2025/4/10 10:45
- * @describe: <a href="https://www.nowcoder.com/practice/f9c6f980eeec43ef85be20755ddbeaf4?tpId=37&tqId=21239&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3FtpId%3D37&difficulty=3&judgeStatus=undefined&tags=&title=">购物单</a>
+ * @describe: 购物单
+ * <a href="https://www.nowcoder.com/practice/f9c6f980eeec43ef85be20755ddbeaf4?tpId=37&tqId=21239&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3FtpId%3D37&difficulty=3&judgeStatus=undefined&tags=&title=">购物单</a>
  */
 public class HJ16 {
 
