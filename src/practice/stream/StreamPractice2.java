@@ -87,11 +87,15 @@ public class StreamPractice2 {
         // 3. 按负责人统计已完成工单平均解决天数，并按天数降序排序
         System.out.println(t3(tickets, unfinishedStatus, finishedStatus));
         // 4. 按项目和模块二级分组，统计工单数量
+        System.out.println(t4(tickets, unfinishedStatus, finishedStatus));
         // 5. 按项目收集所有标签，去重并排序
         // 6. 找出每个负责人实际耗时最高的前 2 个工单 ID
+        System.out.println(t6(tickets));
         // 7. 使用 toMap 找出每个模块最近创建的客户影响工单
         // 8. 统计每个项目中 P0/P1 高优先级工单占比
+        System.out.println(t8(tickets));
         // 9. 统计标签出现次数 Top5
+        System.out.println(t9(tickets));
         // 10. 使用 teeing 统计每个项目的工时概览字符串
 
     }
@@ -185,11 +189,123 @@ public class StreamPractice2 {
     }
 
     // 4. 按项目和模块二级分组，统计工单数量
+    public static Map<String, Map<String, Long>> t4(List<Ticket> tickets, Set<String> unfinishedStatus, Set<String> finishedStatus) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.groupingBy(
+                                Ticket::module,
+                                Collectors.counting()
+                        )
+                ));
+    }
 
     // 5. 按项目收集所有标签，去重并排序
+    public static Map<String, Set<String>> t5(List<Ticket> tickets, Set<String> unfinishedStatus, Set<String> finishedStatus) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.flatMapping(
+                                t -> t.labels().stream(),
+                                Collectors.toCollection(TreeSet::new)
+                        )
+                ));
+    }
+
     // 6. 找出每个负责人实际耗时最高的前 2 个工单 ID
+    public static Map<String, List<Integer>> t6(List<Ticket> tickets) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::owner,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparingInt(Ticket::actualHours).reversed())
+                                        .map(Ticket::id)
+                                        .limit(2)
+                                        .toList()
+
+                        ))
+                );
+    }
+
     // 7. 使用 toMap 找出每个模块最近创建的客户影响工单
+    public static Map<String, Ticket> t7(List<Ticket> tickets) {
+
+        return tickets.stream()
+                .filter(Ticket::customerImpact)
+                .collect(Collectors.toMap(
+                        Ticket::module,
+                        Function.identity(),
+                        BinaryOperator.maxBy(Comparator.comparing(Ticket::createdAt).reversed())
+                ));
+    }
+
     // 8. 统计每个项目中 P0/P1 高优先级工单占比
+    public static Map<String, Double> t8(List<Ticket> tickets) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+
+                                    int size = list.size();
+                                    long count = list.stream()
+                                            .filter(t -> List.of("P0", "P1").contains(t.priority()))
+                                            .count();
+
+                                    return (double) count / size;
+                                }
+                        )
+                ));
+    }
+
     // 9. 统计标签出现次数 Top5
+    public static Map<String, Integer> t9(List<Ticket> tickets) {
+        return tickets.stream()
+                .flatMap(
+                        t -> t.labels().stream()
+                )
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        t -> 1,
+                        Integer::sum
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldVal, newVal) -> oldVal,
+                        LinkedHashMap::new
+                ));
+    }
+
     // 10. 使用 teeing 统计每个项目的工时概览字符串
+    public static Map<String, String> t10(List<Ticket> tickets, Set<String> unfinishedStatus, Set<String> finishedStatus) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.teeing(
+                                Collectors.filtering(
+                                        t -> unfinishedStatus.contains(t.status()),
+                                        Collectors.summingInt(Ticket::estimateHours)
+                                ),
+                                Collectors.filtering(
+                                        t -> finishedStatus.contains(t.status()),
+                                        Collectors.summingInt(Ticket::actualHours)
+                                ),
+                                (unfinishedEstimate, finishedActual) ->
+                                        "未完成预估:" + unfinishedEstimate + "h，已完成实际:" + finishedActual + "h"
+                        )
+                ));
+    }
 }
