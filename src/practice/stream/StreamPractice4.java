@@ -2,9 +2,8 @@ package practice.stream;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +121,9 @@ public class StreamPractice4 {
         System.out.println(t3(records));
 
         // 找出每个城市罚金最高的用户姓名，若并列返回全部
+
         // 按图书分类统计总罚金，并按罚金降序排序
+        System.out.println(t5(records));
         // 查询所有罚金大于 0 的记录，并按罚金降序排序
         // 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
         // 按分类分组，收集每个分类下所有图书名称，要求去重
@@ -177,11 +178,125 @@ public class StreamPractice4 {
     }
 
     // 找出每个城市罚金最高的用户姓名，若并列返回全部
+    public static Map<String, List<String>> t4(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+
+                                    BigDecimal maxFine = list.stream()
+                                            .map(BorrowRecord::fine)
+                                            .max(Comparator.comparing(Function.identity()))
+                                            .orElse(BigDecimal.ZERO);
+
+                                    return list.stream()
+                                            .filter(r -> r.fine().compareTo(maxFine) == 0)
+                                            .map(BorrowRecord::userName)
+                                            .toList();
+                                }
+
+                        )
+                ));
+    }
 
     // 按图书分类统计总罚金，并按罚金降序排序
+    public static Map<String, BigDecimal> t5(List<BorrowRecord> records) {
+
+        // return records.stream()
+        //         .collect(Collectors.toMap(
+        //                         BorrowRecord::category,
+        //                         BorrowRecord::fine,
+        //                         BigDecimal::add
+        //                 )
+        //         )
+        //         .entrySet()
+        //         .stream()
+        //         .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+        //         .collect(Collectors.toMap(
+        //                 Map.Entry::getKey,
+        //                 Map.Entry::getValue,
+        //                 (a, b) -> a,
+        //                 LinkedHashMap::new)
+        //         );
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                BorrowRecord::fine,
+                                BigDecimal::add
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new)
+                );
+    }
+
     // 查询所有罚金大于 0 的记录，并按罚金降序排序
+    public static List<BorrowRecord> t6(List<BorrowRecord> records) {
+
+        return records.stream()
+                .filter(r -> r.fine().compareTo(BigDecimal.ZERO) > 0)
+                .sorted(Comparator.comparing(BorrowRecord::fine).reversed())
+                .toList();
+    }
+
     // 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
+    public static Map<String, List<String>> t7(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Map<String, Integer> map = list.stream()
+                                            .map(BorrowRecord::category)
+                                            .collect(Collectors.toMap(
+                                                    Function.identity(),
+                                                    v -> 1,
+                                                    Integer::sum
+                                            ));
+
+                                    Integer maxCount = map.entrySet()
+                                            .stream()
+                                            .max(Map.Entry.comparingByValue())
+                                            .map(Map.Entry::getValue)
+                                            .orElse(0);
+
+                                    return map.entrySet()
+                                            .stream()
+                                            .filter(e -> Objects.equals(e.getValue(), maxCount))
+                                            .map(Map.Entry::getKey)
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 按分类分组，收集每个分类下所有图书名称，要求去重
+    public static Map<String, Set<String>> t8(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.mapping(
+                                BorrowRecord::bookName,
+                                Collectors.toCollection(TreeSet::new)
+                        )
+                ));
+    }
+
     // 统计每个城市最受欢迎的前 2 个图书分类
     // 判断是否存在逾期未归还记录
     // 按用户统计借阅总次数，并按次数降序排序
