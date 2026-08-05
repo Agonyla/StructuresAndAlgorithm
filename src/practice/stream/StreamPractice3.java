@@ -109,7 +109,9 @@ public class StreamPractice3 {
         // 4. 找出每个班级期末不及格科目最多的学生姓名
         System.out.println(t4(records));
         // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
+        System.out.println(t5(records));
         // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
+        System.out.println(t6(records));
         // 7. 找出每个科目的期末最高分学生姓名
         // 8. 判断每个学生期末是否全科及格且无缺考
         // 9. 统计每个班级标签出现次数 Top3
@@ -228,7 +230,67 @@ public class StreamPractice3 {
     }
 
     // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
+    public static Map<String, Double> t5(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(record -> !record.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+
+                                    List<Integer> scores = list.stream()
+                                            .map(ScoreRecord::score)
+                                            .sorted()
+                                            .toList();
+
+                                    if (scores.size() <= 2) {
+                                        return scores.stream()
+                                                .mapToInt(Integer::intValue)
+                                                .average()
+                                                .orElse(0);
+                                    }
+
+                                    return scores.stream()
+                                            .skip(1)
+                                            .limit(scores.size() - 2)
+                                            .mapToInt(Integer::intValue)
+                                            .average()
+                                            .orElse(0);
+                                }
+                        )
+                ));
+    }
+
     // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
+    public static Map<String, Map<String, Integer>> t6(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(record -> !record.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::studentName,
+                        Collectors.collectingAndThen(
+                                Collectors.toMap(
+                                        ScoreRecord::subject,
+                                        ScoreRecord::score,
+                                        Integer::max
+                                ),
+                                map -> map.entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                                                .thenComparing(Map.Entry::getKey))
+                                        .collect(Collectors.toMap(
+                                                Map.Entry::getKey,
+                                                Map.Entry::getValue,
+                                                Integer::max,
+                                                LinkedHashMap::new
+                                        ))
+                        )
+                ));
+    }
     // 7. 找出每个科目的期末最高分学生姓名
     // 8. 判断每个学生期末是否全科及格且无缺考
     // 9. 统计每个班级标签出现次数 Top3
