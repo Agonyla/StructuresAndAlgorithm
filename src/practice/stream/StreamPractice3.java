@@ -105,8 +105,10 @@ public class StreamPractice3 {
         // {高一3班=钱七, 高一2班=王五, 高一1班=张三}
         System.out.println(t1(records));
         // 2. 找出每个班级期末平均分前 2 名学生姓名
-
+        // {高一3班=[钱七, 孙八], 高一2班=[王五, 赵六], 高一1班=[张三, 李四]}
+        System.out.println(t2(records));
         // 3. 找出每个科目期末平均分最高的班级
+        System.out.println(t3(records));
         // 4. 找出每个班级期末不及格科目最多的学生姓名
         // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
         // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
@@ -140,12 +142,53 @@ public class StreamPractice3 {
     }
 
     // 2. 找出每个班级期末平均分前 2 名学生姓名
-    public static Map<String, String> t2(List<ScoreRecord> records) {
+    public static Map<String, List<String>> t2(List<ScoreRecord> records) {
 
-        return null;
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(r -> !r.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .collect(Collectors.groupingBy(
+                                                ScoreRecord::studentName,
+                                                Collectors.averagingInt(ScoreRecord::score)
+                                        )).entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                                        .limit(2)
+                                        .map(Map.Entry::getKey)
+                                        .toList()
+                        )
+                ));
     }
 
     // 3. 找出每个科目期末平均分最高的班级
+    public static Map<String, String> t3(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(record -> !record.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::subject,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .collect(Collectors.groupingBy(
+                                                ScoreRecord::className,
+                                                Collectors.averagingInt(ScoreRecord::score)
+                                        ))
+                                        .entrySet()
+                                        .stream()
+                                        .max(Comparator.comparingDouble(Map.Entry::getValue))
+                                        .map(Map.Entry::getKey)
+                                        .get()
+
+                        )
+                ));
+    }
     // 4. 找出每个班级期末不及格科目最多的学生姓名
     // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
     // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
