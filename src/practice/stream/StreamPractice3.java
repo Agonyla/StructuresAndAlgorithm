@@ -2,6 +2,7 @@ package practice.stream;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -113,9 +114,11 @@ public class StreamPractice3 {
         // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
         System.out.println(t6(records));
         // 7. 找出每个科目的期末最高分学生姓名
+        System.out.println(t7(records));
         // 8. 判断每个学生期末是否全科及格且无缺考
+        System.out.println(t8(records));
         // 9. 统计每个班级标签出现次数 Top3
-        // 10. 找出每个班级“偏科最明显”的学生姓名
+        System.out.println(t9(records));
     }
 
     // 1. 找出每个班级期末总分最高的学生姓名
@@ -291,8 +294,77 @@ public class StreamPractice3 {
                         )
                 ));
     }
+
     // 7. 找出每个科目的期末最高分学生姓名
+    public static Map<String, List<String>> t7(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(record -> !record.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::subject,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Integer maxScore = list.stream()
+                                            .max(Comparator.comparingInt(ScoreRecord::score))
+                                            .map(ScoreRecord::score)
+                                            .orElse(0);
+
+                                    return list.stream()
+                                            .filter(record -> record.score() == maxScore)
+                                            .map(ScoreRecord::studentName)
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 8. 判断每个学生期末是否全科及格且无缺考
+    public static Map<String, Boolean> t8(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::studentName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .allMatch(record -> !record.absent() && record.score() >= 60)
+                        )
+                ));
+    }
+
     // 9. 统计每个班级标签出现次数 Top3
-    // 10. 找出每个班级“偏科最明显”的学生姓名
+    public static Map<String, Map<String, Integer>> t9(List<ScoreRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.flatMapping(
+                                        record -> record.tags().stream(),
+                                        Collectors.toList()
+                                ),
+                                list -> list.stream()
+                                        .collect(Collectors.toMap(
+                                                Function.identity(),
+                                                s -> 1,
+                                                Integer::sum
+                                        ))
+                                        .entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                        .limit(3)
+                                        .collect(Collectors.toMap(
+                                                        Map.Entry::getKey,
+                                                        Map.Entry::getValue,
+                                                        (a, b) -> a,
+                                                        LinkedHashMap::new
+                                                )
+                                        )
+                        )
+                ));
+    }
+
 }
