@@ -2,6 +2,7 @@ package practice.stream;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -118,7 +119,7 @@ public class StreamPractice3 {
     // 1. 找出每个班级期末总分最高的学生姓名
     public static Map<String, String> t1(List<ScoreRecord> records) {
 
-        records.stream()
+        return records.stream()
                 .filter(record -> "FINAL".equals(record.examType()))
                 .filter(r -> !r.absent())
                 .collect(Collectors.groupingBy(
@@ -127,47 +128,19 @@ public class StreamPractice3 {
                                 Collectors.toList(),
                                 list -> list.stream()
                                         .collect(Collectors.groupingBy(
-                                                ScoreRecord::studentId,
+                                                ScoreRecord::studentName,
                                                 Collectors.summingInt(ScoreRecord::score)
-                                        ))
-
+                                        )).entrySet()
+                                        .stream()
+                                        .max(Comparator.comparingInt(Map.Entry::getValue))
+                                        .map(Map.Entry::getKey)
+                                        .orElse("")
                         )
-                ))
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue()
                 ));
-
-        // return records.stream()
-        //         .filter(record -> "FINAL".equals(record.examType()))
-        //         .filter(r -> !r.absent())
-        //         .collect(Collectors.toMap(
-        //                 ScoreRecord::className,
-        //                 Function.identity(),
-        //                 BinaryOperator.maxBy(Comparator.comparingInt(ScoreRecord::score))
-        //         ))
-        //         .entrySet()
-        //         .stream()
-        //         .collect(Collectors.toMap(
-        //                 Map.Entry::getKey,
-        //                 entry -> entry.getValue().studentName()
-        //         ));
-
-        return null;
     }
 
     // 2. 找出每个班级期末平均分前 2 名学生姓名
     public static Map<String, String> t2(List<ScoreRecord> records) {
-        //
-        // records.stream()
-        //         .filter(record -> "FINAL".equals(record.examType()))
-        //         .filter(r -> !r.absent())
-        //         .collect(Collectors.groupingBy(
-        //                 ScoreRecord::className,
-        //
-        //         ))
 
         return null;
     }
