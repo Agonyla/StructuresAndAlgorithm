@@ -1,10 +1,7 @@
 package practice.stream;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -110,6 +107,7 @@ public class StreamPractice3 {
         // 3. 找出每个科目期末平均分最高的班级
         System.out.println(t3(records));
         // 4. 找出每个班级期末不及格科目最多的学生姓名
+        System.out.println(t4(records));
         // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
         // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
         // 7. 找出每个科目的期末最高分学生姓名
@@ -189,7 +187,46 @@ public class StreamPractice3 {
                         )
                 ));
     }
+
     // 4. 找出每个班级期末不及格科目最多的学生姓名
+    public static Map<String, List<String>> t4(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(record -> "FINAL".equals(record.examType()))
+                .filter(record -> !record.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Map<String, Long> collect = list.stream()
+                                            .filter(r -> r.score() < 60)
+                                            .collect(Collectors.groupingBy(
+                                                    ScoreRecord::studentName,
+                                                    Collectors.counting()
+                                            ));
+
+                                    if (collect.isEmpty()) {
+                                        return Collections.emptyList();
+                                    }
+
+                                    Long maxCount = collect.entrySet()
+                                            .stream()
+                                            .max(Comparator.comparingLong(Map.Entry::getValue))
+                                            .map(Map.Entry::getValue)
+                                            .orElse(0L);
+
+                                    return collect.entrySet()
+                                            .stream()
+                                            .filter(entry -> entry.getValue() == maxCount)
+                                            .map(Map.Entry::getKey)
+                                            .sorted()
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
     // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
     // 7. 找出每个科目的期末最高分学生姓名
