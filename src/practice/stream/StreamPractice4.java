@@ -2,6 +2,7 @@ package practice.stream;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -128,9 +129,11 @@ public class StreamPractice4 {
         // 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
         // 按分类分组，收集每个分类下所有图书名称，要求去重
         // 统计每个城市最受欢迎的前 2 个图书分类
+        System.out.println(t9(records));
         // 判断是否存在逾期未归还记录
         // 按用户统计借阅总次数，并按次数降序排序
         // 找出每个分类借阅时长最长的一条记录
+        System.out.println(t12(records));
         // 统计每个标签出现次数 Top5
         // 获取所有城市名称，去重并排序
         // 按用户生成借阅书单，书名按借阅日期倒序排列
@@ -298,10 +301,116 @@ public class StreamPractice4 {
     }
 
     // 统计每个城市最受欢迎的前 2 个图书分类
+    public static Map<String, List<String>> t9(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toMap(
+                                        BorrowRecord::category,
+                                        r -> 1,
+                                        Integer::sum
+                                ),
+                                map -> map.entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                        .limit(2)
+                                        .map(Map.Entry::getKey)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 判断是否存在逾期未归还记录
+    // returnDate == null && dueDate < 2026-07-10
+    // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+    public static Boolean t10(List<BorrowRecord> records) {
+
+        LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+        return records.stream()
+                .anyMatch(r -> r.returnDate() == null
+                        && r.dueDate().isBefore(currentDate));
+    }
+
     // 按用户统计借阅总次数，并按次数降序排序
+    // 按借阅次数降序
+    // 次数相同按用户名升序
+    // 保留排序后的顺序
+    public static Map<String, Long> t11(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(
+                        Map.Entry.<String, Long>comparingByValue()
+                                .reversed()
+                                .thenComparing(Map.Entry.comparingByKey())
+                )
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
     // 找出每个分类借阅时长最长的一条记录
+    // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+    public static Map<String, BorrowRecord> t12(List<BorrowRecord> records) {
+
+        LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparingLong(r ->
+                                                ChronoUnit.DAYS.between(
+                                                        r.borrowDate(),
+                                                        r.returnDate() == null ? currentDate : r.returnDate()
+                                                )
+                                        ))
+                                        .orElse(null)
+                        )
+                ));
+    }
+
     // 统计每个标签出现次数 Top5
+    // 按次数降序
+    // 次数相同按标签名升序
+    public static Map<String, Long> t13(List<BorrowRecord> records) {
+
+        return records.stream()
+                .flatMap(
+                        r -> r.tags().stream()
+                )
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        a -> 1L,
+                        Long::sum
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed()
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
     // 获取所有城市名称，去重并排序
     // 按用户生成借阅书单，书名按借阅日期倒序排列
     // 按是否 VIP 分区，统计两类用户的总罚金
