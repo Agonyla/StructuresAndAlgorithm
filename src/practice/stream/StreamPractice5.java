@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -419,10 +421,113 @@ public class StreamPractice5 {
     }
 
     // 按商家统计完成订单数量，并按数量降序排序
+    public static Map<String, Long> t11(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::merchantName,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+
+    }
+
     // 找出每个餐饮分类评分最高的订单，若评分相同取金额更高的订单
+    public static Map<String, DeliveryOrder> t12(List<DeliveryOrder> orders) {
+
+        // return orders.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 DeliveryOrder::category,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.maxBy(Comparator.comparing(DeliveryOrder::rating)
+        //                                 .thenComparing(DeliveryOrder::amount)),
+        //                         Optional::get
+        //                 )
+        //         ));
+
+        return orders.stream()
+                .collect(Collectors.toMap(
+                        DeliveryOrder::category,
+                        Function.identity(),
+                        BinaryOperator.maxBy(Comparator.comparing(DeliveryOrder::rating)
+                                .thenComparing(DeliveryOrder::amount))
+                ));
+    }
+
     // 统计所有订单标签出现次数 Top5
+    public static Map<String, Integer> t13(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .flatMap(o -> o.tags().stream())
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        s -> 1,
+                        Integer::sum
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+
+        // return orders.stream()
+        //         .flatMap(o -> o.tags().stream())
+        //         .collect(Collectors.groupingBy(
+        //                 Function.identity(),
+        //                 Collectors.counting()
+        //         ))
+        //         .entrySet()
+        //         .stream()
+        //         .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+        //         .limit(5)
+        //         .collect(Collectors.toMap(
+        //                 Map.Entry::getKey,
+        //                 Map.Entry::getValue,
+        //                 (a, b) -> a,
+        //                 LinkedHashMap::new
+        //         ));
+
+    }
+
     // 获取所有城市名称，去重并按自然顺序排序
+    public static Set<String> t14(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .map(DeliveryOrder::city)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     // 按用户生成已完成订单商家列表，按下单时间倒序排列
+    public static Map<String, List<String>> t15(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::userName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(DeliveryOrder::orderTime).reversed())
+                                        .map(DeliveryOrder::merchantName)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 按是否延迟分区，统计两类订单的总配送费
     // 找出每个商家订单最多的城市，若并列返回全部城市
     // 查询使用优惠券金额大于 0 的用户名，去重
