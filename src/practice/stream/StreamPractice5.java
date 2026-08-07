@@ -529,8 +529,104 @@ public class StreamPractice5 {
     }
 
     // 按是否延迟分区，统计两类订单的总配送费
+    public static Map<Boolean, BigDecimal> t16(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.partitioningBy(
+                        DeliveryOrder::delayed,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                DeliveryOrder::deliveryFee,
+                                BigDecimal::add
+                        )
+                ));
+    }
+
     // 找出每个商家订单最多的城市，若并列返回全部城市
+    public static Map<String, List<String>> t17(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::merchantName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Map<String, Integer> map = list.stream()
+                                            .collect(Collectors.toMap(
+                                                    DeliveryOrder::city,
+                                                    t -> 1,
+                                                    Integer::sum
+                                            ));
+
+                                    int maxCount = map.entrySet()
+                                            .stream()
+                                            .max(Map.Entry.comparingByValue())
+                                            .map(Map.Entry::getValue)
+                                            .orElse(0);
+
+                                    return map.entrySet()
+                                            .stream()
+                                            .filter(e -> e.getValue() == maxCount)
+                                            .map(Map.Entry::getKey)
+                                            .toList();
+                                }
+
+                        )
+                ));
+    }
+
     // 查询使用优惠券金额大于 0 的用户名，去重
+    public static List<String> t18(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> o.coupon().compareTo(BigDecimal.ZERO) > 0)
+                .map(DeliveryOrder::userName)
+                .distinct()
+                .toList();
+    }
+
     // 统计每个城市已完成订单平均评分，按平均评分降序排序
+    public static Map<String, Double> t19(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::city,
+                        Collectors.averagingInt(DeliveryOrder::rating)
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue()
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
     // 找出总消费金额最高的前 3 个用户，并保留排序
+    public static Map<String, BigDecimal> t20(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::userName,
+                        Collectors.reducing(BigDecimal.ZERO, DeliveryOrder::amount, BigDecimal::add)
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue()
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByValue()))
+                .limit(3)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 }
