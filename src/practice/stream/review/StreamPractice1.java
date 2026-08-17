@@ -3,6 +3,7 @@ package practice.stream.review;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,10 +72,15 @@ public class StreamPractice1 {
         // 4. 统计每种技能有多少在职员工掌握，并按人数降序排序
         System.out.println(t4(employees));
         // 5. 按部门分组，收集每个部门所有技能，去重并排序
+        System.out.println(t5(employees));
         // 6. 使用 toMap 统计每个职级的在职员工工资总额
+        System.out.println(t6(employees));
         // 7. 使用 toMap 找出每个城市绩效最高的在职员工 ID
+        System.out.println(t7(employees));
         // 8. 按部门分组，获取每个部门绩效前 2 名的在职员工姓名
+        System.out.println(t8(employees));
         // 9. 找出在职员工总工资最高的前 3 个部门
+        System.out.println(t9(employees));
 
     }
 
@@ -182,14 +188,91 @@ public class StreamPractice1 {
                         Employee::dept,
                         Collectors.flatMapping(
                                 employee -> employee.skills().stream(),
-                                Collectors.toCollection(LinkedHashSet::new)
+                                Collectors.toCollection(TreeSet::new)
                         )
                 ));
     }
 
     // 6. 使用 toMap 统计每个职级的在职员工工资总额
-    // 7. 使用 toMap 找出每个城市绩效最高的在职员工 ID
-    // 8. 按部门分组，获取每个部门绩效前 2 名的在职员工姓名
-    // 9. 找出在职员工总工资最高的前 3 个部门
+    public static Map<String, BigDecimal> t6(List<Employee> employees) {
 
+        return employees.stream()
+                .filter(Employee::active)
+                .collect(Collectors.toMap(
+                        Employee::level,
+                        Employee::salary,
+                        BigDecimal::add
+                ));
+    }
+
+    // 7. 使用 toMap 找出每个城市绩效最高的在职员工 ID
+    public static Map<String, Integer> t7(List<Employee> employees) {
+
+        return employees.stream()
+                .filter(Employee::active)
+                .collect(Collectors.toMap(
+                        Employee::city,
+                        Function.identity(),
+                        BinaryOperator.maxBy(Comparator.comparingInt(Employee::score))
+                ))
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        emp -> emp.getValue().id()
+                ));
+    }
+
+    // 8. 按部门分组，获取每个部门绩效前 2 名的在职员工姓名
+    public static Map<String, List<String>> t8(List<Employee> employees) {
+        return employees.stream()
+                .filter(Employee::active)
+                .collect(Collectors.groupingBy(
+                        Employee::dept,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparingInt(Employee::score).reversed())
+                                        .map(Employee::name)
+                                        .limit(2)
+                                        .toList()
+                        )
+                ));
+    }
+
+    // 9. 找出在职员工总工资最高的前 3 个部门
+    public static List<String> t9(List<Employee> employees) {
+
+        // return employees.stream()
+        //         .filter(Employee::active)
+        //         .collect(Collectors.groupingBy(
+        //                 Employee::dept,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.toList(),
+        //                         list -> list.stream()
+        //                                 .map(Employee::salary)
+        //                                 .reduce(BigDecimal.ZERO, BigDecimal::add)
+        //                 )
+        //         ))
+        //         .entrySet()
+        //         .stream()
+        //         .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+        //         .map(Map.Entry::getKey)
+        //         .limit(3)
+        //         .toList();
+
+        return employees.stream()
+                .filter(Employee::active)
+                .collect(Collectors.toMap(
+                        Employee::dept,
+                        Employee::salary,
+                        BigDecimal::add
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .limit(3)
+                .toList();
+    }
 }
