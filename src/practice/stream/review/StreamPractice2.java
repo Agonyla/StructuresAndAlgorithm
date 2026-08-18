@@ -88,8 +88,11 @@ public class StreamPractice2 {
         // 3. 按负责人统计已完成工单平均解决天数，并按天数降序排序
         System.out.println(t3(tickets, finishedStatus));
         // 4. 按项目和模块二级分组，统计工单数量
+        System.out.println(t4(tickets));
         // 5. 按项目收集所有标签，去重并排序
+        System.out.println(t5(tickets));
         // 6. 找出每个负责人实际耗时最高的前 2 个工单 ID
+        System.out.println(t6(tickets));
         // 7. 使用 toMap 找出每个模块最近创建的客户影响工单
         // 8. 统计每个项目中 P0/P1 高优先级工单占比
         // 9. 统计标签出现次数 Top5
@@ -162,8 +165,58 @@ public class StreamPractice2 {
     }
 
     // 4. 按项目和模块二级分组，统计工单数量
+    public static Map<String, Map<String, Long>> t4(List<Ticket> tickets) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.groupingBy(
+                                Ticket::module,
+                                Collectors.counting()
+                        )
+                ));
+
+        // Map<String, Map<String, Integer>>
+        // return tickets.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 Ticket::project,
+        //                 Collectors.toMap(
+        //                         Ticket::module,
+        //                         t -> 1,
+        //                         Integer::sum
+        //                 )
+        //         ));
+    }
+
     // 5. 按项目收集所有标签，去重并排序
+    public static Map<String, Set<String>> t5(List<Ticket> tickets) {
+
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::project,
+                        Collectors.flatMapping(
+                                t -> t.labels().stream(),
+                                Collectors.toCollection(TreeSet::new)
+                        )
+                ));
+    }
+
     // 6. 找出每个负责人实际耗时最高的前 2 个工单 ID
+    public static Map<String, List<Integer>> t6(List<Ticket> tickets) {
+        return tickets.stream()
+                .collect(Collectors.groupingBy(
+                        Ticket::owner,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(Ticket::actualHours).reversed())
+                                        .map(Ticket::id)
+                                        .limit(2)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 7. 使用 toMap 找出每个模块最近创建的客户影响工单
     // 8. 统计每个项目中 P0/P1 高优先级工单占比
     // 9. 统计标签出现次数 Top5
