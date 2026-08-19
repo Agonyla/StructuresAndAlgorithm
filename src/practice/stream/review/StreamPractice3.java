@@ -2,6 +2,7 @@ package practice.stream.review;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -112,14 +113,19 @@ public class StreamPractice3 {
         System.out.println(t4(records));
         // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
         // {高一3班=86.4, 高一2班=89.66666666666667, 高一1班=83.0}
+        System.out.println(t5(records));
         // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
         // {钱七={数学=97, 语文=95, 英语=92, 物理=91}, 李四={数学=81, 英语=78, 语文=76, 物理=59}, 张三={数学=96, 英语=91, 语文=88, 物理=84}, 王五={英语=94, 语文=92, 物理=90, 数学=89}, 孙八={语文=80, 英语=74, 物理=67}, 赵六={数学=93, 英语=88, 物理=86, 语文=85}}
+        System.out.println(t6(records));
         // 7. 找出每个科目的期末最高分学生姓名
         // {物理=[钱七], 数学=[钱七], 语文=[钱七], 英语=[王五]}
+        System.out.println(t7(records));
         // 8. 判断每个学生期末是否全科及格且无缺考
         // {钱七=true, 李四=false, 张三=true, 王五=true, 孙八=false, 赵六=true}
+        System.out.println(t8(records));
         // 9. 统计每个班级标签出现次数 Top3
         // {高一3班={理科=6, 主科=6, 实验=4}, 高一2班={主科=8, 语言=4, 理科=4}, 高一1班={主科=8, 理科=6, 期中=2}}
+        System.out.println(t9(records));
 
     }
 
@@ -236,8 +242,140 @@ public class StreamPractice3 {
     }
 
     // 5. 计算每个班级期末成绩去掉最高分和最低分后的平均分
+    public static Map<String, Double> t5(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(r -> "FINAL".equals(r.examType()))
+                .filter(r -> !r.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<Integer> scores = list.stream()
+                                            .map(ScoreRecord::score)
+                                            .sorted()
+                                            .toList();
+
+                                    if (scores.size() <= 2) {
+                                        return scores.stream()
+                                                .mapToInt(Integer::intValue)
+                                                .average()
+                                                .orElse(0);
+                                    }
+
+                                    return scores.stream()
+                                            .skip(1)
+                                            .limit(scores.size() - 2)
+                                            .mapToInt(Integer::intValue)
+                                            .average()
+                                            .orElse(0);
+                                }
+
+                        )
+                ));
+    }
+
     // 6. 生成每个学生的期末成绩表，科目按成绩降序排列
+    public static Map<String, Map<String, Integer>> t6(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(r -> "FINAL".equals(r.examType()))
+                .filter(r -> !r.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::studentName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .collect(Collectors.toMap(
+                                                ScoreRecord::subject,
+                                                ScoreRecord::score,
+                                                (oldVale, newVale) -> oldVale
+                                        ))
+                                        .entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                        .collect(Collectors.toMap(
+                                                Map.Entry::getKey,
+                                                Map.Entry::getValue,
+                                                (oldVale, newVale) -> oldVale,
+                                                LinkedHashMap::new
+                                        ))
+                        )
+                ));
+    }
+
     // 7. 找出每个科目的期末最高分学生姓名
+    public static Map<String, List<String>> t7(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(r -> "FINAL".equals(r.examType()))
+                .filter(r -> !r.absent())
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::subject,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+
+                                    int maxScore = list.stream()
+                                            .max(Comparator.comparingInt(ScoreRecord::score))
+                                            .map(ScoreRecord::score)
+                                            .orElse(0);
+
+                                    return list.stream()
+                                            .filter(r -> r.score() == maxScore)
+                                            .map(ScoreRecord::studentName)
+                                            .toList();
+                                }
+
+                        )
+                ));
+    }
+
     // 8. 判断每个学生期末是否全科及格且无缺考
+    public static Map<String, Boolean> t8(List<ScoreRecord> records) {
+
+        return records.stream()
+                .filter(r -> "FINAL".equals(r.examType()))
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::studentName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .allMatch(r -> r.score() >= 60 && !r.absent())
+                        )
+
+                ));
+    }
+
     // 9. 统计每个班级标签出现次数 Top3
+    public static Map<String, Map<String, Integer>> t9(List<ScoreRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        ScoreRecord::className,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .flatMap(r -> r.tags().stream())
+                                        .collect(Collectors.toMap(
+                                                Function.identity(),
+                                                t -> 1,
+                                                Integer::sum
+
+                                        ))
+                                        .entrySet()
+                                        .stream()
+                                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                                                .thenComparing(Map.Entry::getKey))
+                                        .limit(3)
+                                        .collect(Collectors.toMap(
+                                                Map.Entry::getKey,
+                                                Map.Entry::getValue,
+                                                (oldVal, newVal) -> oldVal,
+                                                LinkedHashMap::new
+                                        ))
+                        )
+                ));
+    }
 }
