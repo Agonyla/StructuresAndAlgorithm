@@ -2,8 +2,8 @@ package practice.stream.review;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: Agony
@@ -116,10 +116,15 @@ public class StreamPractice4 {
         );
 
         // 1. 查询所有 VIP 用户的借阅记录
+        System.out.println(t1(records));
         // 2. 按城市统计借阅次数
+        System.out.println(t2(records));
         // 3. 查询所有未归还的图书名称
+        System.out.println(t3(records));
         // 4. 找出每个城市罚金最高的用户姓名，若并列返回全部
+        System.out.println(t4(records));
         // 5. 按图书分类统计总罚金，并按罚金降序排序
+        System.out.println(t5(records));
         // 6. 查询所有罚金大于 0 的记录，并按罚金降序排序
         // 7. 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
         // 8. 按分类分组，收集每个分类下所有图书名称，要求去重
@@ -138,10 +143,90 @@ public class StreamPractice4 {
     }
 
     // 1. 查询所有 VIP 用户的借阅记录
+    public static List<BorrowRecord> t1(List<BorrowRecord> records) {
+
+        return records.stream()
+                .filter(BorrowRecord::vip)
+                .toList();
+    }
+
     // 2. 按城市统计借阅次数
+    public static Map<String, Long> t2(List<BorrowRecord> records) {
+
+        // Map<String, Integer> collect = records.stream()
+        //         .collect(Collectors.toMap(
+        //                 BorrowRecord::city,
+        //                 r -> 1,
+        //                 Integer::sum
+        //         ));
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::city,
+                        Collectors.counting()
+                ));
+    }
+
     // 3. 查询所有未归还的图书名称
+    public static List<String> t3(List<BorrowRecord> records) {
+
+        return records.stream()
+                .filter(r -> r.returnDate() == null)
+                .map(BorrowRecord::bookName)
+                .toList();
+    }
+
     // 4. 找出每个城市罚金最高的用户姓名，若并列返回全部
+    public static Map<String, List<String>> t4(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    BigDecimal maxFine = list.stream()
+                                            .max(Comparator.comparing(BorrowRecord::fine))
+                                            .map(BorrowRecord::fine)
+                                            .orElse(BigDecimal.ONE);
+
+                                    if (maxFine.compareTo(BigDecimal.ZERO) == 0) {
+                                        return Collections.emptyList();
+                                    }
+
+                                    return list.stream()
+                                            .filter(r -> maxFine.compareTo(r.fine()) == 0)
+                                            .map(BorrowRecord::userName)
+                                            .distinct()
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 5. 按图书分类统计总罚金，并按罚金降序排序
+    public static Map<String, BigDecimal> t5(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                BorrowRecord::fine,
+                                BigDecimal::add
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed()
+                        .thenComparing(Map.Entry::getKey))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
     // 6. 查询所有罚金大于 0 的记录，并按罚金降序排序
     // 7. 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
     // 8. 按分类分组，收集每个分类下所有图书名称，要求去重
