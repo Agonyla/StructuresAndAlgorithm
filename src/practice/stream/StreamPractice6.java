@@ -337,9 +337,12 @@ public class StreamPractice6 {
     // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
     public static Map<String, List<String>> t17(List<Employee> employees) {
 
+        // 用flatMap，就会丢失 employee信息，
+        // 所有需要通过 map 来保留 对应的员工名称，对于每一个skill，都创建一个map来保存员工姓名
+
         return employees.stream()
                 .flatMap(e -> e.skills().stream()
-                        .map(skill -> new AbstractMap.SimpleEntry<>(
+                        .map(skill -> Map.entry(
                                 skill,
                                 e.name())
                         )
