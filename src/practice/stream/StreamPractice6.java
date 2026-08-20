@@ -106,10 +106,15 @@ public class StreamPractice6 {
         // 10. 部门工资总额排名
         System.out.println(t10(employees));
         // 11. 判断部门是否存在“高薪员工” （工资 >= 20000 属于高新员工）
+        System.out.println(t11(employees));
         // 12. 按部门统计员工姓名
+        System.out.println(t12(employees));
         // 13. 找出工资重复的员工
+        System.out.println(t13(employees));
         // 14. 每个部门工资前两名
+        System.out.println(t14(employees));
         // 15. 找出平均工资最高的部门
+        System.out.println(t15(employees));
         // 16. 生成员工信息 Map （员工姓名 -> 工资）
         // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
         // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
@@ -250,11 +255,72 @@ public class StreamPractice6 {
                         LinkedHashMap::new
                 ));
     }
+
     // 11. 判断部门是否存在“高薪员工” （工资 >= 20000 属于高新员工）
+    public static Map<String, Boolean> t11(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .anyMatch(e -> e.salary() >= 20000)
+                        )
+                ));
+    }
+
     // 12. 按部门统计员工姓名
+    public static Map<String, List<String>> t12(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.mapping(Employee::name, Collectors.toList())
+                ));
+    }
+
     // 13. 找出工资重复的员工
+    public static Map<Double, List<String>> t13(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::salary,
+                        Collectors.mapping(Employee::name, Collectors.toList())
+                ));
+    }
+
     // 14. 每个部门工资前两名
+    public static Map<String, List<Employee>> t14(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparingDouble(Employee::salary).reversed())
+                                        .limit(2)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 15. 找出平均工资最高的部门
+    public static String t15(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.averagingDouble(Employee::salary)
+                ))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("");
+    }
+
     // 16. 生成员工信息 Map （员工姓名 -> 工资）
     // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
     // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
