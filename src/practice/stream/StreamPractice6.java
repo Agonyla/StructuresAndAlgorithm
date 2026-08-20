@@ -1,9 +1,7 @@
 package practice.stream;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -98,10 +96,15 @@ public class StreamPractice6 {
         // 5. 按照部门分组，然后找出每个部门工资最高的员工
         System.out.println(t5(employees));
         // 6. 定义三个年龄段：30岁以下、30~34岁、35岁及以上 按照年龄段对员工分组。
+        System.out.println(t6(employees));
         // 7. 统计全部员工的技能出现次数。
+        System.out.println(t7(employees));
         // 8. 找出出现次数最多的技能，在第 7 题基础上，进一步找出：被最多员工掌握的技能
+        System.out.println(t8(employees));
         // 9. 找出掌握 Java 但不会 Spring/SpringBoot 的员工
+        System.out.println(t9(employees));
         // 10. 部门工资总额排名
+        System.out.println(t10(employees));
         // 11. 判断部门是否存在“高薪员工” （工资 >= 20000 属于高新员工）
         // 12. 按部门统计员工姓名
         // 13. 找出工资重复的员工
@@ -171,10 +174,82 @@ public class StreamPractice6 {
     }
 
     // 6. 定义三个年龄段：30岁以下、30~34岁、35岁及以上 按照年龄段对员工分组。
+    public static Map<String, List<Employee>> t6(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                                r -> {
+                                    if (r.age() < 30) {
+                                        return "30岁以下";
+                                    } else if (r.age() >= 35) {
+                                        return "35岁以上";
+                                    } else {
+                                        return "30~34岁";
+                                    }
+                                },
+                                Collectors.toList()
+                        )
+                );
+    }
+
     // 7. 统计全部员工的技能出现次数。
+    public static Map<String, Integer> t7(List<Employee> employees) {
+
+        return employees.stream()
+                .flatMap(e -> e.skills().stream())
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        s -> 1,
+                        Integer::sum
+                ));
+    }
+
     // 8. 找出出现次数最多的技能，在第 7 题基础上，进一步找出：被最多员工掌握的技能
+    public static List<String> t8(List<Employee> employees) {
+
+        Map<String, Integer> map = t7(employees);
+
+        int maxCount = map.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getValue)
+                .orElse(0);
+
+        return map.entrySet()
+                .stream()
+                .filter(e -> e.getValue() == maxCount)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
     // 9. 找出掌握 Java 但不会 Spring/SpringBoot 的员工
+    public static List<Employee> t9(List<Employee> employees) {
+
+        return employees.stream()
+                .filter(e -> e.skills().contains("Java"))
+                .filter(e -> !e.skills().contains("Spring"))
+                .filter(e -> !e.skills().contains("SpringBoot"))
+                .toList();
+    }
+
     // 10. 部门工资总额排名
+    public static Map<String, Double> t10(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.summingDouble(Employee::salary)
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
     // 11. 判断部门是否存在“高薪员工” （工资 >= 20000 属于高新员工）
     // 12. 按部门统计员工姓名
     // 13. 找出工资重复的员工
