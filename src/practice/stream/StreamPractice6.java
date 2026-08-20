@@ -116,7 +116,9 @@ public class StreamPractice6 {
         // 15. 找出平均工资最高的部门
         System.out.println(t15(employees));
         // 16. 生成员工信息 Map （员工姓名 -> 工资）
+        System.out.println(t16(employees));
         // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
+        System.out.println(t17(employees));
         // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
         // 19. 计算部门工资极差 定义工资极差：最高工资 - 最低工资
         // 20. 每个部门中，掌握技能数量最多的员工。Map<String, Employee>。按部门分组，比较 skills.size()，技能数量相同时，工资高的人获胜，工资再相同时，年龄小的人获胜
@@ -322,7 +324,34 @@ public class StreamPractice6 {
     }
 
     // 16. 生成员工信息 Map （员工姓名 -> 工资）
+    public static Map<String, Double> t16(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.toMap(
+                        Employee::name,
+                        Employee::salary,
+                        (a, b) -> a
+                ));
+    }
+
     // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
+    public static Map<String, List<String>> t17(List<Employee> employees) {
+
+        return employees.stream()
+                .flatMap(e -> e.skills().stream()
+                        .map(skill -> new AbstractMap.SimpleEntry<>(
+                                skill,
+                                e.name())
+                        )
+                )
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(
+                                Map.Entry::getValue,
+                                Collectors.toList())
+                ));
+    }
+
     // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
     // 19. 计算部门工资极差 定义工资极差：最高工资 - 最低工资
     // 20. 每个部门中，掌握技能数量最多的员工。Map<String, Employee>。按部门分组，比较 skills.size()，技能数量相同时，工资高的人获胜，工资再相同时，年龄小的人获胜
