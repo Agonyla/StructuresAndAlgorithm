@@ -2,7 +2,9 @@ package practice.stream.review;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -132,17 +134,29 @@ public class StreamPractice4 {
         // 8. 按分类分组，收集每个分类下所有图书名称，要求去重
         System.out.println(t8(records));
         // 9. 统计每个城市最受欢迎的前 2 个图书分类
+        System.out.println(t9(records));
         // 10. 判断是否存在逾期未归还记录
+        System.out.println(t10(records));
         // 11. 按用户统计借阅总次数，并按次数降序排序
+        System.out.println(t11(records));
         // 12. 找出每个分类借阅时长最长的一条记录
+        System.out.println(t12(records));
         // 13. 统计每个标签出现次数 Top5
+        System.out.println(t13(records));
         // 14. 获取所有城市名称，去重并排序
+        System.out.println(t14(records));
         // 15. 按用户生成借阅书单，书名按借阅日期倒序排列
+        System.out.println(t15(records));
         // 16. 按是否 VIP 分区，统计两类用户的总罚金
+        System.out.println(t16(records));
         // 17. 找出每个作者被借阅次数最多的城市，若并列返回全部城市
+        System.out.println(t17(records));
         // 18. 查询续借次数大于 0 的用户名，去重
+        System.out.println(t18(records));
         // 19. 统计每个分类的平均借阅天数，未归还的按 2026-07-10 作为当前日期计算
+        System.out.println(t19(records));
         // 20. 找出总罚金最高的前 3 个用户，并保留排序
+        System.out.println(t20(records));
     }
 
     // 1. 查询所有 VIP 用户的借阅记录
@@ -311,27 +325,286 @@ public class StreamPractice4 {
     }
 
     // 9. 统计每个城市最受欢迎的前 2 个图书分类
+    public static Map<String, List<String>> t9(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .collect(Collectors.groupingBy(
+                                                BorrowRecord::category,
+                                                Collectors.counting()
+                                        ))
+                                        .entrySet()
+                                        .stream()
+                                        .sorted(
+                                                Map.Entry.<String, Long>comparingByValue()
+                                                        .reversed()
+                                                        .thenComparing(Map.Entry::getKey)
+                                        )
+                                        .limit(2)
+                                        .map(Map.Entry::getKey)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 10. 判断是否存在逾期未归还记录
     // returnDate == null && dueDate < 2026-07-10
     // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+    public static Boolean t10(List<BorrowRecord> records) {
+
+        LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+        return records.stream()
+                .anyMatch(r -> r.returnDate() == null
+                        && r.dueDate().isBefore(currentDate));
+    }
 
     // 11. 按用户统计借阅总次数，并按次数降序排序
     // 按借阅次数降序
     // 次数相同按用户名升序
     // 保留排序后的顺序
+    public static Map<String, Long> t11(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(
+                        Map.Entry.<String, Long>comparingByValue()
+                                .reversed()
+                                .thenComparing(Map.Entry.comparingByKey())
+                )
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 
     // 12. 找出每个分类借阅时长最长的一条记录
     // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+    public static Map<String, BorrowRecord> t12(List<BorrowRecord> records) {
+
+        LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparingLong(r ->
+                                                ChronoUnit.DAYS.between(
+                                                        r.borrowDate(),
+                                                        r.returnDate() == null ? currentDate : r.returnDate()
+                                                )
+                                        ))
+                                        .orElse(null)
+                        )
+                ));
+    }
 
     // 13. 统计每个标签出现次数 Top5
     // 按次数降序
     // 次数相同按标签名升序
+    public static Map<String, Long> t13(List<BorrowRecord> records) {
+
+        return records.stream()
+                .flatMap(
+                        r -> r.tags().stream()
+                )
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        a -> 1L,
+                        Long::sum
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed()
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 
     // 14. 获取所有城市名称，去重并排序
+    public static Set<String> t14(List<BorrowRecord> records) {
+        return records.stream()
+                .map(BorrowRecord::city)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     // 15. 按用户生成借阅书单，书名按借阅日期倒序排列
+    public static Map<String, List<String>> t15(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(
+                                                Comparator.comparing(BorrowRecord::borrowDate)
+                                                        .reversed()
+                                        )
+                                        .map(BorrowRecord::bookName)
+                                        .toList()
+                        )
+                ));
+    }
+
     // 16. 按是否 VIP 分区，统计两类用户的总罚金
+    public static Map<Boolean, BigDecimal> t16(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.partitioningBy(
+                        BorrowRecord::vip,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                BorrowRecord::fine,
+                                BigDecimal::add
+                        )
+                ));
+    }
+
     // 17. 找出每个作者被借阅次数最多的城市，若并列返回全部城市
+    public static Map<String, List<String>> t17(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::author,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Map<String, Integer> map = list.stream()
+                                            .collect(Collectors.toMap(
+                                                    BorrowRecord::city,
+                                                    t -> 1,
+                                                    Integer::sum
+                                            ));
+
+                                    int maxCount = map.entrySet()
+                                            .stream()
+                                            .max(Map.Entry.comparingByValue())
+                                            .map(Map.Entry::getValue)
+                                            .orElse(0);
+
+                                    // int maxCount = map.values()
+                                    //         .stream()
+                                    //         .mapToInt(Integer::intValue)
+                                    //         .max()
+                                    //         .orElse(0);
+
+                                    return map.entrySet()
+                                            .stream()
+                                            .filter(e -> e.getValue() == maxCount)
+                                            .map(Map.Entry::getKey)
+                                            .collect(Collectors.toList());
+                                }
+                        )
+                ));
+    }
+
     // 18. 查询续借次数大于 0 的用户名，去重
+    public static Set<String> t18(List<BorrowRecord> records) {
+
+        return records.stream()
+                .filter(r -> r.renewCount() > 0)
+                .map(BorrowRecord::userName)
+                .collect(Collectors.toSet());
+    }
+
     // 19. 统计每个分类的平均借阅天数，未归还的按 2026-07-10 作为当前日期计算
+    public static Map<String, Double> t19(List<BorrowRecord> records) {
+
+        LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
+        // return records.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 BorrowRecord::category,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.toList(),
+        //                         list -> list.stream()
+        //                                 .mapToLong(r -> {
+        //
+        //                                     LocalDate returnDate = r.returnDate() == null ? currentDate : r.returnDate();
+        //
+        //                                     return ChronoUnit.DAYS.between(r.borrowDate(), returnDate);
+        //                                 })
+        //                                 .average()
+        //                                 .orElse(0.0)
+        //                 )
+        //         ));
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.averagingLong(r ->
+                                ChronoUnit.DAYS.between(
+                                        r.borrowDate(),
+                                        r.returnDate() == null ? currentDate : r.returnDate()
+                                )
+                        )
+                ));
+    }
+
     // 20. 找出总罚金最高的前 3 个用户，并保留排序
+    public static Map<String, BigDecimal> t20(List<BorrowRecord> records) {
+
+        // return records.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 BorrowRecord::userName,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.toList(),
+        //                         list -> list.stream()
+        //                                 .map(BorrowRecord::fine)
+        //                                 .reduce(BigDecimal.ZERO, BigDecimal::add)
+        //                 )
+        //         ))
+        //         .entrySet()
+        //         .stream()
+        //         .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+        //         .limit(3)
+        //         .collect(Collectors.toMap(
+        //                 Map.Entry::getKey,
+        //                 Map.Entry::getValue,
+        //                 (a, b) -> a,
+        //                 LinkedHashMap::new
+        //         ));
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                BorrowRecord::fine,
+                                BigDecimal::add
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue()
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByKey())
+                )
+                .limit(3)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 }
