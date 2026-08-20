@@ -126,8 +126,11 @@ public class StreamPractice4 {
         // 5. 按图书分类统计总罚金，并按罚金降序排序
         System.out.println(t5(records));
         // 6. 查询所有罚金大于 0 的记录，并按罚金降序排序
+        System.out.println(t6(records));
         // 7. 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
+        System.out.println(t7(records));
         // 8. 按分类分组，收集每个分类下所有图书名称，要求去重
+        System.out.println(t8(records));
         // 9. 统计每个城市最受欢迎的前 2 个图书分类
         // 10. 判断是否存在逾期未归还记录
         // 11. 按用户统计借阅总次数，并按次数降序排序
@@ -227,14 +230,103 @@ public class StreamPractice4 {
                         LinkedHashMap::new
                 ));
     }
+
     // 6. 查询所有罚金大于 0 的记录，并按罚金降序排序
+    public static List<BorrowRecord> t6(List<BorrowRecord> records) {
+
+        return records.stream()
+                .filter(r -> r.fine().compareTo(BigDecimal.ZERO) > 0)
+                .sorted(Comparator.comparing(BorrowRecord::fine).reversed())
+                .toList();
+    }
+
     // 7. 找出每个用户借阅次数最多的图书分类，若并列返回全部分类
+    public static Map<String, List<String>> t7(List<BorrowRecord> records) {
+
+        // return records.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 BorrowRecord::userName,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.toList(),
+        //                         list -> {
+        //                             Map<String, Integer> map = list.stream()
+        //                                     .collect(Collectors.toMap(
+        //                                             BorrowRecord::category,
+        //                                             r -> 1,
+        //                                             Integer::sum
+        //                                     ));
+        //
+        //                             int maxCount = map.entrySet()
+        //                                     .stream()
+        //                                     .max(Map.Entry.comparingByValue())
+        //                                     .map(Map.Entry::getValue)
+        //                                     .orElse(0);
+        //
+        //                             return map.entrySet()
+        //                                     .stream()
+        //                                     .filter(e -> e.getValue() == maxCount)
+        //                                     .map(Map.Entry::getKey)
+        //                                     .toList();
+        //                         }
+        //                 )
+        //         ));
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::userName,
+                        Collectors.collectingAndThen(
+                                Collectors.toMap(
+                                        BorrowRecord::category,
+                                        r -> 1,
+                                        Integer::sum
+                                ),
+                                map -> {
+                                    int maxCount = map.entrySet()
+                                            .stream()
+                                            .max(Map.Entry.comparingByValue())
+                                            .map(Map.Entry::getValue)
+                                            .orElse(0);
+
+                                    return map.entrySet()
+                                            .stream()
+                                            .filter(e -> e.getValue() == maxCount)
+                                            .map(Map.Entry::getKey)
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 8. 按分类分组，收集每个分类下所有图书名称，要求去重
+    public static Map<String, Set<String>> t8(List<BorrowRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        BorrowRecord::category,
+                        Collectors.mapping(
+                                BorrowRecord::bookName,
+                                Collectors.toCollection(TreeSet::new)
+                        )
+                ));
+    }
+
     // 9. 统计每个城市最受欢迎的前 2 个图书分类
     // 10. 判断是否存在逾期未归还记录
+    // returnDate == null && dueDate < 2026-07-10
+    // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
     // 11. 按用户统计借阅总次数，并按次数降序排序
+    // 按借阅次数降序
+    // 次数相同按用户名升序
+    // 保留排序后的顺序
+
     // 12. 找出每个分类借阅时长最长的一条记录
+    // LocalDate currentDate = LocalDate.of(2026, 7, 10);
+
     // 13. 统计每个标签出现次数 Top5
+    // 按次数降序
+    // 次数相同按标签名升序
+
     // 14. 获取所有城市名称，去重并排序
     // 15. 按用户生成借阅书单，书名按借阅日期倒序排列
     // 16. 按是否 VIP 分区，统计两类用户的总罚金
