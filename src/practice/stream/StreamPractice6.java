@@ -382,24 +382,33 @@ public class StreamPractice6 {
     // 19. 计算部门工资极差 定义工资极差：最高工资 - 最低工资
     public static Map<String, Double> t19(List<Employee> employees) {
 
+        // return employees.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 Employee::department,
+        //                 Collectors.collectingAndThen(
+        //                         Collectors.toList(),
+        //                         list -> {
+        //                             double maxSalary = list.stream()
+        //                                     .max(Comparator.comparingDouble(Employee::salary))
+        //                                     .map(Employee::salary)
+        //                                     .orElse(0.0);
+        //
+        //                             double minSalary = list.stream()
+        //                                     .min(Comparator.comparingDouble(Employee::salary))
+        //                                     .map(Employee::salary)
+        //                                     .orElse(0.0);
+        //
+        //                             return maxSalary - minSalary;
+        //                         }
+        //                 )
+        //         ));
+
         return employees.stream()
                 .collect(Collectors.groupingBy(
                         Employee::department,
                         Collectors.collectingAndThen(
-                                Collectors.toList(),
-                                list -> {
-                                    double maxSalary = list.stream()
-                                            .max(Comparator.comparingDouble(Employee::salary))
-                                            .map(Employee::salary)
-                                            .orElse(0.0);
-
-                                    double minSalary = list.stream()
-                                            .min(Comparator.comparingDouble(Employee::salary))
-                                            .map(Employee::salary)
-                                            .orElse(0.0);
-
-                                    return maxSalary - minSalary;
-                                }
+                                Collectors.summarizingDouble(Employee::salary),
+                                stat -> stat.getMax() - stat.getMin()
                         )
                 ));
     }
