@@ -120,8 +120,11 @@ public class StreamPractice6 {
         // 17. 技能 → 员工姓名（Java -> [张三, 李四, 王五, 赵六, 周九, 吴十, 冯十三]）
         System.out.println(t17(employees));
         // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
+        System.out.println(t18(employees));
         // 19. 计算部门工资极差 定义工资极差：最高工资 - 最低工资
+        System.out.println(t19(employees));
         // 20. 每个部门中，掌握技能数量最多的员工。Map<String, Employee>。按部门分组，比较 skills.size()，技能数量相同时，工资高的人获胜，工资再相同时，年龄小的人获胜
+        System.out.println(t20(employees));
 
     }
 
@@ -356,7 +359,74 @@ public class StreamPractice6 {
     }
 
     // 18. 统计各部门工资分布。将工资分成：低薪：< 15000，中薪：15000 ~ 19999，高薪：>= 20000 要求形成二级 Map：Map<String, Map<String, Long>>
+    public static Map<String, Map<String, Long>> t18(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.groupingBy(
+                                e -> {
+                                    if (e.salary() < 15000) {
+                                        return "低薪";
+                                    } else if (e.salary() < 20000) {
+                                        return "中薪资";
+                                    } else {
+                                        return "高新";
+                                    }
+                                },
+                                Collectors.counting()
+                        )
+                ));
+    }
+
     // 19. 计算部门工资极差 定义工资极差：最高工资 - 最低工资
+    public static Map<String, Double> t19(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    double maxSalary = list.stream()
+                                            .max(Comparator.comparingDouble(Employee::salary))
+                                            .map(Employee::salary)
+                                            .orElse(0.0);
+
+                                    double minSalary = list.stream()
+                                            .min(Comparator.comparingDouble(Employee::salary))
+                                            .map(Employee::salary)
+                                            .orElse(0.0);
+
+                                    return maxSalary - minSalary;
+                                }
+                        )
+                ));
+    }
+
     // 20. 每个部门中，掌握技能数量最多的员工。Map<String, Employee>。按部门分组，比较 skills.size()，技能数量相同时，工资高的人获胜，工资再相同时，年龄小的人获胜
+    public static Map<String, Employee> t20(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    int maxCount = list.stream()
+                                            .max(Comparator.comparing(e -> e.skills().size()))
+                                            .map(e -> e.skills().size())
+                                            .orElse(0);
+
+                                    return list.stream()
+                                            .filter(e -> e.skills().size() == maxCount)
+                                            .sorted(Comparator.comparingDouble(Employee::salary).reversed()
+                                                    .thenComparing(Employee::age))
+                                            .toList()
+                                            .getFirst();
+                                }
+                        )
+                ));
+    }
 
 }
