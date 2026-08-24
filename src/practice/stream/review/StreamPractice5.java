@@ -2,6 +2,7 @@ package practice.stream.review;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -216,10 +217,15 @@ public class StreamPractice5 {
         // 5. 按餐饮分类统计已完成订单总金额，并按金额降序排序
         System.out.println(t5(orders));
         // 6. 判断是否存在差评订单，评分小于等于 2 视为差评
+        System.out.println(t6(orders));
         // 7. 找出每个用户消费金额最高的餐饮分类，若并列返回全部分类
+        System.out.println(t7(orders));
         // 8. 按城市分组，收集每个城市出现过的商家名称，要求去重并排序
+        System.out.println(t8(orders));
         // 9. 统计每个骑手配送完成订单的平均配送时长
+        System.out.println(t9(orders));
         // 10. 查询所有延迟订单的订单编号
+        System.out.println(t10(orders));
         // 11. 按商家统计完成订单数量，并按数量降序排序
         // 12. 找出每个餐饮分类评分最高的订单，若评分相同取金额更高的订单
         // 13. 统计所有订单标签出现次数 Top5
@@ -307,10 +313,82 @@ public class StreamPractice5 {
     }
 
     // 6. 判断是否存在差评订单，评分小于等于 2 视为差评
+    public static Boolean t6(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .anyMatch(o -> o.rating() <= 2);
+
+    }
+
     // 7. 找出每个用户消费金额最高的餐饮分类，若并列返回全部分类
+    public static Map<String, List<String>> t7(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::userName,
+                        Collectors.collectingAndThen(
+                                Collectors.groupingBy(
+                                        DeliveryOrder::category,
+                                        Collectors.reducing(
+                                                BigDecimal.ZERO,
+                                                DeliveryOrder::amount,
+                                                BigDecimal::add
+                                        )
+                                ),
+                                map -> {
+                                    BigDecimal maxAmount = map.entrySet()
+                                            .stream()
+                                            .max(Map.Entry.comparingByValue())
+                                            .map(Map.Entry::getValue)
+                                            .orElse(BigDecimal.ZERO);
+
+                                    return map.entrySet()
+                                            .stream()
+                                            .filter(e -> e.getValue().compareTo(maxAmount) == 0)
+                                            .map(Map.Entry::getKey)
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 8. 按城市分组，收集每个城市出现过的商家名称，要求去重并排序
+    public static Map<String, Set<String>> t8(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::city,
+                        Collectors.mapping(
+                                DeliveryOrder::merchantName,
+                                Collectors.toCollection(TreeSet::new)
+                        )
+
+                ));
+    }
+
     // 9. 统计每个骑手配送完成订单的平均配送时长
+    public static Map<String, Double> t9(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::riderName,
+                        Collectors.averagingDouble(o -> ChronoUnit.MINUTES.between(
+                                o.orderTime(),
+                                o.deliveredTime()
+                        ))
+                ));
+    }
+
     // 10. 查询所有延迟订单的订单编号
+    public static List<Integer> t10(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(DeliveryOrder::delayed)
+                .map(DeliveryOrder::id)
+                .toList();
+    }
+
     // 11. 按商家统计完成订单数量，并按数量降序排序
     // 12. 找出每个餐饮分类评分最高的订单，若评分相同取金额更高的订单
     // 13. 统计所有订单标签出现次数 Top5
