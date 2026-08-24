@@ -2,8 +2,8 @@ package practice.stream.review;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: Agony
@@ -206,10 +206,15 @@ public class StreamPractice5 {
         );
 
         // 1. 查询所有已完成订单
+        System.out.println(t1(orders));
         // 2. 按城市统计订单数量
+        System.out.println(t2(orders));
         // 3. 获取所有订单金额大于 100 的商家名称，要求去重
+        System.out.println(t3(orders));
         // 4. 找出每个城市订单金额最高的用户姓名，若并列返回全部
+        System.out.println(t4(orders));
         // 5. 按餐饮分类统计已完成订单总金额，并按金额降序排序
+        System.out.println(t5(orders));
         // 6. 判断是否存在差评订单，评分小于等于 2 视为差评
         // 7. 找出每个用户消费金额最高的餐饮分类，若并列返回全部分类
         // 8. 按城市分组，收集每个城市出现过的商家名称，要求去重并排序
@@ -228,10 +233,79 @@ public class StreamPractice5 {
     }
 
     // 1. 查询所有已完成订单
+    public static List<DeliveryOrder> t1(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .toList();
+    }
+
     // 2. 按城市统计订单数量
+    public static Map<String, Long> t2(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::city,
+                        Collectors.counting()
+                ));
+    }
+
     // 3. 获取所有订单金额大于 100 的商家名称，要求去重
+    public static Set<String> t3(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> o.amount().compareTo(BigDecimal.valueOf(100)) > 0)
+                .map(DeliveryOrder::merchantName)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     // 4. 找出每个城市订单金额最高的用户姓名，若并列返回全部
+    public static Map<String, List<String>> t4(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    BigDecimal maxAmount = list.stream()
+                                            .max(Comparator.comparing(DeliveryOrder::amount))
+                                            .map(DeliveryOrder::amount)
+                                            .orElse(BigDecimal.ZERO);
+
+                                    return list.stream()
+                                            .filter(o -> o.amount().compareTo(maxAmount) == 0)
+                                            .map(DeliveryOrder::userName)
+                                            .toList();
+                                }
+                        )
+                ));
+    }
+
     // 5. 按餐饮分类统计已完成订单总金额，并按金额降序排序
+    public static Map<String, BigDecimal> t5(List<DeliveryOrder> orders) {
+
+        return orders.stream()
+                .filter(o -> "COMPLETED".equals(o.status()))
+                .collect(Collectors.groupingBy(
+                        DeliveryOrder::category,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                DeliveryOrder::amount,
+                                BigDecimal::add
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
     // 6. 判断是否存在差评订单，评分小于等于 2 视为差评
     // 7. 找出每个用户消费金额最高的餐饮分类，若并列返回全部分类
     // 8. 按城市分组，收集每个城市出现过的商家名称，要求去重并排序
