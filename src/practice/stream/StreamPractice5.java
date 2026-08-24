@@ -361,7 +361,7 @@ public class StreamPractice5 {
 
                                     return map.entrySet()
                                             .stream()
-                                            .filter(e -> e.getValue().compareTo(BigDecimal.ZERO) == 0)
+                                            .filter(e -> e.getValue().compareTo(maxAmount) == 0)
                                             .map(Map.Entry::getKey)
                                             .toList();
 
