@@ -3,7 +3,10 @@ package practice.stream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author: Agony
@@ -173,4 +176,67 @@ public class StreamPractice7 {
         // 2. 统计每个用户购买过的不同商品 -> Map<Long, List<String>>
 
     }
+
+    // 1. 统计每个部门薪资最高的前 2 名员工 -> Map<String, List<Employee>>
+    // - 按部门分组；
+    // - 每个部门按照工资降序；
+    // - 工资相同时按照年龄升序；
+    // - 每个部门只保留前 2 名。
+    public static Map<String, List<Employee>> t1(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(Employee::salary)
+                                                .reversed()
+                                                .thenComparing(Employee::age)
+                                        )
+                                        .limit(2)
+                                        .toList()
+                        )
+                ));
+    }
+
+    // 2. 统计每个用户购买过的不同商品 -> Map<Long, List<String>>
+    // - Key：用户 ID；
+    // - Value：用户买过的商品名称；
+    // - 商品不能重复；
+    // - 最终商品名按字典序排序
+    public static Map<Long, List<String>> t2(List<Order> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        Order::userId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .flatMap(o -> o.items().stream())
+                                        .map(OrderItem::productName)
+                                        .distinct()
+                                        .sorted()
+                                        .toList()
+                        )
+                ));
+    }
+
+    // 3. 统计商品销售额，并找出销售额最高的前 3 个商品 -> List<Map.Entry<String, BigDecimal>>
+    public static List<Map.Entry<String, BigDecimal>> t3(List<Order> orders) {
+
+        return orders.stream()
+                .flatMap(o -> o.items().stream())
+                .collect(Collectors.toMap(
+                        OrderItem::productName,
+                        OrderItem::amount,
+                        BigDecimal::add
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .limit(3)
+                .toList();
+    }
+
 }
