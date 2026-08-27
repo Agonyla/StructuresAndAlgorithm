@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -172,8 +173,13 @@ public class StreamPractice7 {
         );
 
         // 1. 统计每个部门薪资最高的前 2 名员工 -> Map<String, List<Employee>>
-
+        System.out.println(t1(employees));
         // 2. 统计每个用户购买过的不同商品 -> Map<Long, List<String>>
+        System.out.println(t2(orders));
+        // 3. 统计商品销售额，并找出销售额最高的前 3 个商品 -> List<Map.Entry<String, BigDecimal>>
+        System.out.println(t3(orders));
+        // 4. 找出至少连续登录 3 天的用户 -> Set<Long>
+        System.out.println(t4(loginRecords));
 
     }
 
@@ -237,6 +243,45 @@ public class StreamPractice7 {
                 .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
                 .limit(3)
                 .toList();
+    }
+
+    // 4. 找出至少连续登录 3 天的用户 -> Set<Long>
+    public static Set<Long> t4(List<LoginRecord> records) {
+
+        return records.stream()
+                .collect(Collectors.groupingBy(
+                        LoginRecord::userId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<LocalDate> dates = list.stream()
+                                            .sorted(Comparator.comparing(LoginRecord::loginDate))
+                                            .map(LoginRecord::loginDate)
+                                            .toList();
+
+                                    int consecutive = 1;
+
+                                    for (int i = 1; i < list.size(); i++) {
+
+                                        if (dates.get(i - 1).plusDays(1).equals(dates.get(i))) {
+                                            consecutive++;
+                                        } else {
+                                            consecutive = 0;
+                                        }
+
+                                        if (consecutive >= 3) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
 }
