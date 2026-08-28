@@ -181,6 +181,8 @@ public class StreamPractice7 {
         System.out.println(t5(employees));
         // 6. 构建订单标签的倒排索引 -> Map<String, Set<String>>
         System.out.println(t6(orders));
+        // 7. 按照用户总消费金额划分客户等级 -> Map<String, List<Long>>
+        System.out.println(t7(orders));
 
     }
 
@@ -328,6 +330,45 @@ public class StreamPractice7 {
                                         .map(Map.Entry::getValue)
                                         .sorted()
                                         .collect(Collectors.toCollection(TreeSet::new))
+                        )
+                ));
+    }
+
+    // 7. 按照用户总消费金额划分客户等级 -> Map<String, List<Long>>
+    // >= 20000     -> S
+    // >= 10000     -> A
+    // >= 5000      -> B
+    // < 5000       -> C
+    public static Map<String, List<Long>> t7(List<Order> orders) {
+
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        Order::userId,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                Order::amount,
+                                BigDecimal::add
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        e -> {
+                            if (e.getValue().compareTo(BigDecimal.valueOf(5000L)) < 0) {
+                                return "C";
+                            } else if (e.getValue().compareTo(BigDecimal.valueOf(10000L)) < 0) {
+                                return "B";
+                            } else if (e.getValue().compareTo(BigDecimal.valueOf(20000L)) < 0) {
+                                return "A";
+                            } else {
+                                return "S";
+                            }
+                        },
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .map(Map.Entry::getKey)
+                                        .toList()
                         )
                 ));
     }
