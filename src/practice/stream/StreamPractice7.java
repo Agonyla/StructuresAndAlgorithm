@@ -3,10 +3,7 @@ package practice.stream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -180,6 +177,10 @@ public class StreamPractice7 {
         System.out.println(t3(orders));
         // 4. 找出至少连续登录 3 天的用户 -> Set<Long>
         System.out.println(t4(loginRecords));
+        // 5. 找出每个部门工资最高的员工 -> Map<String, Employee>
+        System.out.println(t5(employees));
+        // 6. 构建订单标签的倒排索引 -> Map<String, Set<String>>
+        System.out.println(t6(orders));
 
     }
 
@@ -282,6 +283,53 @@ public class StreamPractice7 {
                 .filter(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
+    }
+
+    // 5. 找出每个部门工资最高的员工 -> Map<String, Employee>
+    // 年龄小的优先
+    public static Map<String, Employee> t5(List<Employee> employees) {
+
+        return employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::department,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparing(Employee::salary)
+                                                .thenComparing(Employee::age,
+                                                        Comparator.reverseOrder())
+                                        )
+                                        .orElse(null)
+                        )
+                ));
+    }
+
+    // 6. 构建订单标签的倒排索引 -> Map<String, Set<String>>
+    // 0001 -> [ONLINE, NEW]
+    // 0002 -> [ONLINE, VIP]
+    // 0003 -> [VIP]
+    // 0005 -> [ONLINE]
+    // 0006 -> [ONLINE, VIP]
+    // ----------->
+    // ONLINE -> [O001, O002, O005, O006]
+    // VIP    -> [O002, O003, O006]
+    // NEW    -> [O001]
+    public static Map<String, Set<String>> t6(List<Order> orders) {
+
+        return orders.stream()
+                .flatMap(o -> o.tags().stream()
+                        .map(tag -> Map.entry(tag, o.orderId()))
+                )
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .map(Map.Entry::getValue)
+                                        .sorted()
+                                        .collect(Collectors.toCollection(TreeSet::new))
+                        )
+                ));
     }
 
 }
