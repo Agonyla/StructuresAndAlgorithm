@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -183,6 +184,8 @@ public class StreamPractice7 {
         System.out.println(t6(orders));
         // 7. 按照用户总消费金额划分客户等级 -> Map<String, List<Long>>
         System.out.println(t7(orders));
+        // 8. 统计“经常一起购买”的商品组合 -> Map<ProductPair, Long>
+        System.out.println(t8(orders));
 
     }
 
@@ -371,6 +374,122 @@ public class StreamPractice7 {
                                         .toList()
                         )
                 ));
+    }
+
+    // !!! Important
+    // 8. 统计“经常一起购买”的商品组合 -> Map<ProductPair, Long>
+    // 如果一个订单里包含：
+    //
+    // Mouse
+    // Keyboard
+    // Monitor
+    //
+    // 则商品 Pair 有：
+    //
+    // Keyboard + Monitor
+    // Keyboard + Mouse
+    // Monitor + Mouse
+    //
+    // 要求：
+    //
+    // 商品组合不考虑顺序；
+    // (Mouse, Keyboard) 和 (Keyboard, Mouse) 算同一个组合；
+    // 统计每个组合共同出现了多少个订单；
+    // 按出现次数倒序；
+    // 次数相同时按照组合名称排序
+    record ProductPair(String first, String second) {
+
+        static ProductPair of(String a, String b) {
+
+            if (a.compareTo(b) <= 0) {
+                return new ProductPair(a, b);
+            }
+            return new ProductPair(b, a);
+        }
+    }
+
+    public static Map<ProductPair, Long> t8(List<Order> orders) {
+
+        // 这里groupBy有点冗余，可以改成下面那种写法
+        return orders.stream()
+                .collect(Collectors.groupingBy(
+                        Order::orderId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<String> productList = list.stream()
+                                            .flatMap(o -> o.items().stream())
+                                            .map(OrderItem::productName)
+                                            .distinct()
+                                            .toList();
+
+                                    List<ProductPair> pairList = new ArrayList<>();
+
+                                    for (int i = 0; i < productList.size(); i++) {
+                                        for (int j = i + 1; j < productList.size(); j++) {
+                                            pairList.add(ProductPair.of(productList.get(i), productList.get(j)));
+                                        }
+                                    }
+                                    // ab, ac, ad, bc, bd, cd
+
+                                    return pairList;
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .flatMap(e -> e.getValue().stream())
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<ProductPair, Long>comparingByValue()
+                        .reversed()
+                        .thenComparing(e -> e.getKey().first())
+                        .thenComparing(e -> e.getKey().second())
+                )
+                .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (a, b) -> a,
+                                LinkedHashMap::new
+                        )
+                );
+
+        // List<Map.Entry<ProductPair, Long>>
+        // return orders.stream()
+        //         .flatMap(o -> {
+        //             List<String> productList = o.items().stream()
+        //                     .map(OrderItem::productName)
+        //                     .distinct()
+        //                     .toList();
+        //
+        //             List<ProductPair> pairList = new ArrayList<>();
+        //
+        //             for (int i = 0; i < productList.size(); i++) {
+        //                 for (int j = i + 1; j < productList.size(); j++) {
+        //                     pairList.add(ProductPair.of(productList.get(i), productList.get(j)));
+        //                 }
+        //             }
+        //
+        //             return pairList.stream();
+        //
+        //         })
+        //         .collect(Collectors.groupingBy(
+        //                 Function.identity(),
+        //                 Collectors.counting()
+        //         ))
+        //         .entrySet()
+        //         .stream()
+        //         .sorted(Map.Entry.<ProductPair, Long>comparingByValue()
+        //                 .reversed()
+        //                 .thenComparing(e -> e.getKey().first())
+        //                 .thenComparing(e -> e.getKey().second())
+        //         )
+        //         .toList();
+
     }
 
 }
