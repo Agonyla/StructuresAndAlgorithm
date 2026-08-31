@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -170,6 +171,61 @@ public class StreamPractice7 {
                 new LoginRecord(103, LocalDate.of(2026, 8, 2))
         );
 
+        List<UserProfile> profiles = List.of(
+                new UserProfile(
+                        101,
+                        "Alice",
+                        "Shanghai",
+                        LocalDateTime.of(2026, 8, 1, 10, 0)
+                ),
+
+                new UserProfile(
+                        102,
+                        "Bob",
+                        "Beijing",
+                        LocalDateTime.of(2026, 8, 2, 10, 0)
+                ),
+
+                new UserProfile(
+                        101,
+                        "Alice",
+                        "Hangzhou",
+                        LocalDateTime.of(2026, 8, 5, 10, 0)
+                ),
+
+                new UserProfile(
+                        103,
+                        "Charlie",
+                        "Shenzhen",
+                        LocalDateTime.of(2026, 8, 3, 10, 0)
+                ),
+
+                new UserProfile(
+                        102,
+                        "Bob",
+                        "Shanghai",
+                        LocalDateTime.of(2026, 8, 6, 10, 0)
+                )
+        );
+
+        List<ProjectMember> projectMembers = List.of(
+                new ProjectMember("Payment", 1),
+                new ProjectMember("Payment", 2),
+                new ProjectMember("Payment", 10),
+
+                new ProjectMember("Search", 2),
+                new ProjectMember("Search", 3),
+                new ProjectMember("Search", 4),
+
+                new ProjectMember("CRM", 5),
+                new ProjectMember("CRM", 6),
+                new ProjectMember("CRM", 1),
+
+                new ProjectMember("Risk", 10),
+                new ProjectMember("Risk", 11),
+                new ProjectMember("Risk", 4)
+        );
+
         // 1. 统计每个部门薪资最高的前 2 名员工 -> Map<String, List<Employee>>
         System.out.println(t1(employees));
         // 2. 统计每个用户购买过的不同商品 -> Map<Long, List<String>>
@@ -186,6 +242,10 @@ public class StreamPractice7 {
         System.out.println(t7(orders));
         // 8. 统计“经常一起购买”的商品组合 -> Map<ProductPair, Long>
         System.out.println(t8(orders));
+        // 9. 用户资料去重，只保留最新的一条 -> Map<Long, UserProfile>
+        System.out.println(t9(profiles));
+        // 10. 构建“部门 → 项目 → 员工列表”矩阵 -> Map<String, Map<String, List<String>>>
+        System.out.println(t10(projectMembers, employees));
 
     }
 
@@ -490,6 +550,56 @@ public class StreamPractice7 {
         //         )
         //         .toList();
 
+    }
+
+    // 9. 用户资料去重，只保留最新的一条 -> Map<Long, UserProfile>
+    // 保留 updatedAt 最大的记录。
+    public static Map<Long, UserProfile> t9(List<UserProfile> profiles) {
+
+        return profiles.stream()
+                .collect(Collectors.toMap(
+                                UserProfile::userId,
+                                Function.identity(),
+                                BinaryOperator.maxBy(Comparator.comparing(UserProfile::updatedAt))
+                        )
+                );
+    }
+
+    // 10. 构建“部门 → 项目 → 员工列表”矩阵 -> Map<String, Map<String, List<String>>>
+    // Engineering
+    //     Payment -> [Alice, Bob]
+    //     Search  -> [Bob, Charlie, David]
+    //     CRM     -> [Alice]
+    //     Risk    -> [David]
+    //
+    // Finance
+    //     Payment -> [Jack]
+    //     Risk    -> [Jack, Kate]
+
+    // 员工名称按照字母排序。
+    public static Map<String, Map<String, List<String>>> t10(List<ProjectMember> projectMembers,
+                                                             List<Employee> employees) {
+
+        Map<Long, Employee> employeeMap = employees.stream()
+                .collect(Collectors.toMap(
+                        Employee::id,
+                        Function.identity()
+                ));
+
+        return projectMembers.stream()
+                .collect(Collectors.groupingBy(
+                        projectMember -> employeeMap.get(projectMember.employeeId()).department(),
+                        Collectors.groupingBy(
+                                ProjectMember::project,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list2 -> list2.stream()
+                                                .map(projectMember -> employeeMap.get(projectMember.employeeId()).name())
+                                                .sorted()
+                                                .toList()
+                                )
+                        ))
+                );
     }
 
 }
