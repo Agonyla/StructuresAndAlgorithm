@@ -1,7 +1,10 @@
 package practice.stream;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author: Agony
@@ -202,5 +205,51 @@ public class StreamPractice8 {
                 new ExamResult(8, 106, 93, LocalDate.of(2026, 8, 22)),
                 new ExamResult(8, 108, 97, LocalDate.of(2026, 8, 26))
         );
+
+        // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
+        System.out.println(t1(students, studyRecords));
+
     }
+
+    // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
+    // 总学习时间高的优先
+    // 总学习时间相同时，年龄小的优先
+    // 年龄也相同时，id 小的优先
+    public static Map<String, Student> t1(List<Student> students, List<StudyRecord> studyRecords) {
+
+        Map<Long, Integer> studyMap = studyRecords.stream()
+                .collect(Collectors.toMap(
+                        StudyRecord::studentId,
+                        StudyRecord::minutes,
+                        Integer::sum
+                ));
+
+        return students.stream()
+                .collect(Collectors.groupingBy(
+                                Student::city,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream()
+                                                .filter(s -> studyMap.containsKey(s.id()))
+                                                .max(
+                                                        Comparator.comparingInt((Student s) -> studyMap.get(s.id()))
+                                                                .reversed()
+                                                                .thenComparing(Student::age)
+                                                                .thenComparing(Student::id)
+                                                )
+                                                .orElse(null)
+                                )
+                        )
+                );
+    }
+
+    // 2. 每个课程类别学习时间 Top 2 学生 -> Map<String, List<Long>>
+    // 汇总学生在该 category 下所有课程的总学习时间；、
+    // 每个 category 取学习时间最多的前 2 名
+    // 时间相同时 studentId 小的优先
+    public static Map<String, List<Long>> t2(List<Course> courses) {
+
+        return null;
+    }
+
 }
