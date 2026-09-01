@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -208,6 +209,8 @@ public class StreamPractice8 {
 
         // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
         System.out.println(t1(students, studyRecords));
+        // 2. 每个课程类别学习时间 Top 2 学生 -> Map<String, List<Long>>
+        System.out.println(t2(courses, studyRecords));
 
     }
 
@@ -243,13 +246,46 @@ public class StreamPractice8 {
                 );
     }
 
+    // !!!
     // 2. 每个课程类别学习时间 Top 2 学生 -> Map<String, List<Long>>
-    // 汇总学生在该 category 下所有课程的总学习时间；、
+    // 汇总学生在该 category 下所有课程的总学习时间；
     // 每个 category 取学习时间最多的前 2 名
     // 时间相同时 studentId 小的优先
-    public static Map<String, List<Long>> t2(List<Course> courses) {
+    public static Map<String, List<Long>> t2(List<Course> courses, List<StudyRecord> studyRecords) {
 
-        return null;
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        record CategoryStudent(String category, long studentId) {
+        }
+
+        Map<CategoryStudent, Integer> categoryStudentStudyMap = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        studyRecord -> new CategoryStudent(
+                                courseMap.get(studyRecord.courseId()).category(),
+                                studyRecord.studentId()
+                        ),
+                        Collectors.summingInt(StudyRecord::minutes)
+                ));
+
+        return categoryStudentStudyMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getKey().category(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(
+                                                Map.Entry.<CategoryStudent, Integer>comparingByValue().reversed()
+                                                        .thenComparing(e -> e.getKey().studentId())
+                                        )
+                                        .limit(2)
+                                        .map(e -> e.getKey().studentId())
+                                        .toList()
+                        )
+                ));
     }
 
 }
