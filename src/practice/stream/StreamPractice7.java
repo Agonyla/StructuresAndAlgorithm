@@ -332,7 +332,7 @@ public class StreamPractice7 {
                                         if (dates.get(i - 1).plusDays(1).equals(dates.get(i))) {
                                             consecutive++;
                                         } else {
-                                            consecutive = 0;
+                                            consecutive = 1;
                                         }
 
                                         if (consecutive >= 3) {
