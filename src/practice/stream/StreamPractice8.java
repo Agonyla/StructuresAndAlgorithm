@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -211,6 +212,8 @@ public class StreamPractice8 {
         System.out.println(t1(students, studyRecords));
         // 2. 每个课程类别学习时间 Top 2 学生 -> Map<String, List<Long>>
         System.out.println(t2(courses, studyRecords));
+        // 3. 找出学习类别最多的学生 -> List<Student>
+        System.out.println(t3(courses, studyRecords, students));
 
     }
 
@@ -286,6 +289,51 @@ public class StreamPractice8 {
                                         .toList()
                         )
                 ));
+    }
+
+    // 3. 找出学习类别最多的学生 -> List<Student>
+    // 选了课但是没有 StudyRecord 不算真正学习过
+    // 按 studentId ASC
+    public static List<Student> t3(List<Course> courses, List<StudyRecord> studyRecords,
+                                   List<Student> students) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(
+                        Student::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Integer> studentCategoryCount = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                                StudyRecord::studentId,
+                                Collectors.mapping(
+                                        studyRecord -> courseMap.get(studyRecord.courseId()).category(),
+                                        Collectors.collectingAndThen(
+                                                Collectors.toSet(),
+                                                Set::size
+
+                                        )
+                                )
+                        )
+                );
+
+        int maxCount = studentCategoryCount.entrySet()
+                .stream()
+                .max(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getValue)
+                .orElse(0);
+
+        return studentCategoryCount.entrySet().stream()
+                .filter(e -> e.getValue() == maxCount)
+                .map(e -> studentMap.get(e.getKey()))
+                .sorted(Comparator.comparing(Student::id))
+                .toList();
     }
 
 }
