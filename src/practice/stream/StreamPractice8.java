@@ -214,6 +214,8 @@ public class StreamPractice8 {
         System.out.println(t2(courses, studyRecords));
         // 3. 找出学习类别最多的学生 -> List<Student>
         System.out.println(t3(courses, studyRecords, students));
+        // 4. 找出连续学习至少 4 天的学生 -> Set<Long>
+        System.out.println(t4(studyRecords));
 
     }
 
@@ -334,6 +336,45 @@ public class StreamPractice8 {
                 .map(e -> studentMap.get(e.getKey()))
                 .sorted(Comparator.comparing(Student::id))
                 .toList();
+    }
+
+    // 4. 找出连续学习至少 4 天的学生 -> Set<Long>
+    public static Set<Long> t4(List<StudyRecord> studyRecords) {
+
+        Map<Long, Boolean> studentMap = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        StudyRecord::studentId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<LocalDate> dates = list.stream()
+                                            .map(StudyRecord::studyDate)
+                                            .distinct()
+                                            .sorted()
+                                            .toList();
+
+                                    int continueDays = 1;
+                                    for (int i = 1; i < dates.size(); i++) {
+
+                                        if (dates.get(i).equals(dates.get(i - 1).plusDays(1L))) {
+                                            continueDays++;
+                                        } else {
+                                            continueDays = 1;
+                                        }
+
+                                        if (continueDays >= 4) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+                        )
+                ));
+
+        return studentMap.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
 }
