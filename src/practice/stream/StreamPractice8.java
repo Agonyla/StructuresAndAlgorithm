@@ -1,10 +1,7 @@
 package practice.stream;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -218,6 +215,8 @@ public class StreamPractice8 {
         System.out.println(t4(studyRecords));
         // 5. 计算每个学生最长连续学习天数 -> Map<Long, Integer>
         System.out.println(t5(studyRecords));
+        // 6. 找出“共同选课最多”的学生组合 Map<StudentPair, Long>
+        System.out.println(t6(enrollments));
 
     }
 
@@ -412,5 +411,65 @@ public class StreamPractice8 {
                         )
                 ));
     }
+
+    // 6. 找出“共同选课最多”的学生组合 Map<StudentPair, Long>
+    // record StudentPair(long first, long second) {}
+    // 共同课程数量 DESC
+    // first ASC
+    // second ASC
+    // 保持顺序
+    record StudentPair(long first, long second) {
+    }
+
+    public static Map<StudentPair, Long> t6(List<Enrollment> enrollments) {
+
+        Map<Long, ArrayList<StudentPair>> courseMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        Enrollment::courseId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<Long> students = list.stream()
+                                            .map(Enrollment::studentId)
+                                            .distinct()
+                                            .sorted()
+                                            .toList();
+
+                                    ArrayList<StudentPair> studentPairs = new ArrayList<>();
+                                    for (int i = 0; i < students.size(); i++) {
+                                        for (int j = i + 1; j < students.size(); j++) {
+                                            studentPairs.add(new StudentPair(students.get(i), students.get(j)));
+                                        }
+                                    }
+
+                                    return studentPairs;
+                                }
+                        )
+                ));
+
+        return courseMap.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream())
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(
+                        Map.Entry.<StudentPair, Long>comparingByValue()
+                                .reversed()
+                                .thenComparing(e -> e.getKey().first())
+                                .thenComparing(e -> e.getKey().second())
+                )
+                .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (a, b) -> a,
+                                LinkedHashMap::new
+                        )
+                );
+    }
+
+    // 7. 找出每门课程共同选课学生组合 -> Map<StudentPair, Long>
 
 }
