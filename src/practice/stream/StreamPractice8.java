@@ -217,6 +217,8 @@ public class StreamPractice8 {
         System.out.println(t5(studyRecords));
         // 6. 找出“共同选课最多”的学生组合 Map<StudentPair, Long>
         System.out.println(t6(enrollments));
+        // 7. 找出每门课程共同选课学生组合 -> Map<StudentPair, Long>
+        System.out.println(t7(enrollments));
 
     }
 
@@ -471,5 +473,8 @@ public class StreamPractice8 {
     }
 
     // 7. 找出每门课程共同选课学生组合 -> Map<StudentPair, Long>
+    public static Map<StudentPair, Long> t7(List<Enrollment> enrollments) {
+        return t6(enrollments);
+    }
 
 }
