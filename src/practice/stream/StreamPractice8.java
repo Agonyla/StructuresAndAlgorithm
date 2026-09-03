@@ -219,6 +219,8 @@ public class StreamPractice8 {
         System.out.println(t6(enrollments));
         // 7. 找出每门课程共同选课学生组合 -> Map<StudentPair, Long>
         System.out.println(t7(enrollments));
+        // 8. 分析哪些课程最经常被同一个学生一起选择 -> Map<CoursePair, Long>
+        System.out.println(t8(enrollments));
 
     }
 
@@ -477,4 +479,60 @@ public class StreamPractice8 {
         return t6(enrollments);
     }
 
+    // 8. 分析哪些课程最经常被同一个学生一起选择 -> Map<CoursePair, Long>
+    // 有多少不同学生同时选过这两门课
+    // record CoursePair(long first, long second) {}
+    // 1. 共现学生数 DESC；
+    // 2. courseId1 ASC；
+    // 3. courseId2 ASC。
+    // 4. 保持顺序
+    record CoursePair(long first, long second) {
+    }
+
+    public static Map<CoursePair, Long> t8(List<Enrollment> enrollments) {
+
+        Map<Long, ArrayList<CoursePair>> studentCourseMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        Enrollment::studentId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list ->
+                                {
+                                    List<Long> courses = list.stream()
+                                            .map(Enrollment::courseId)
+                                            .distinct()
+                                            .sorted()
+                                            .toList();
+
+                                    ArrayList<CoursePair> coursePairs = new ArrayList<>();
+                                    for (int i = 0; i < courses.size(); i++) {
+                                        for (int j = i + 1; j < courses.size(); j++) {
+                                            coursePairs.add(new CoursePair(courses.get(i), courses.get(j)));
+                                        }
+                                    }
+                                    return coursePairs;
+                                }
+                        )
+                ));
+
+        return studentCourseMap.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream())
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<CoursePair, Long>comparingByValue()
+                        .reversed()
+                        .thenComparing(e -> e.getKey().first())
+                        .thenComparing(e -> e.getKey().second())
+                )
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 }
