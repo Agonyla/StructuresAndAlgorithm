@@ -535,4 +535,20 @@ public class StreamPractice8 {
                         LinkedHashMap::new
                 ));
     }
+
+    // 9. 每个老师最受欢迎的课程(选课学生人数最多) -> Map<String, Course>
+    // 如果选课人数相同：
+    // 1. difficulty 高的优先；
+    // 2. 仍相同，courseId 小的优先
+    // public static Map<String, Course> t9(List<Course> courses, List<Enrollment> enrollments) {
+    //
+    //     Map<Long, Long> couseCountMap = enrollments.stream()
+    //             .collect(Collectors.groupingBy(
+    //                     Enrollment::courseId,
+    //                     Collectors.counting()
+    //             ));
+    //
+    //     return null;
+    // }
+
 }
