@@ -540,15 +540,27 @@ public class StreamPractice8 {
     // 如果选课人数相同：
     // 1. difficulty 高的优先；
     // 2. 仍相同，courseId 小的优先
-    // public static Map<String, Course> t9(List<Course> courses, List<Enrollment> enrollments) {
-    //
-    //     Map<Long, Long> couseCountMap = enrollments.stream()
-    //             .collect(Collectors.groupingBy(
-    //                     Enrollment::courseId,
-    //                     Collectors.counting()
-    //             ));
-    //
-    //     return null;
-    // }
+    public static Map<String, Course> t9(List<Course> courses, List<Enrollment> enrollments) {
+
+        // 每个课程的学生人数
+        Map<Long, Long> couseCountMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        Enrollment::courseId,
+                        Collectors.counting()
+                ));
+
+        return courses.stream()
+                .collect(Collectors.groupingBy(
+                        Course::teacher,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparing((Course course) -> couseCountMap.getOrDefault(course.id(), 0L))
+                                                .thenComparing(Course::difficulty)
+                                                .thenComparing(Course::id, Comparator.reverseOrder()))
+                                        .orElse(null)
+                        )
+                ));
+    }
 
 }
