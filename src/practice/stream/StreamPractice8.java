@@ -221,6 +221,10 @@ public class StreamPractice8 {
         System.out.println(t7(enrollments));
         // 8. 分析哪些课程最经常被同一个学生一起选择 -> Map<CoursePair, Long>
         System.out.println(t8(enrollments));
+        // 9. 每个老师最受欢迎的课程(选课学生人数最多) -> Map<String, Course>
+        System.out.println(t9(courses, enrollments));
+        // 10. 构建城市到课程类别到学生姓名矩阵 -> Map<String, Map<String, List<String>>>
+        System.out.println(t10(students, courses, enrollments));
 
     }
 
@@ -563,4 +567,61 @@ public class StreamPractice8 {
                 ));
     }
 
+    // 10. 构建城市到课程类别到学生姓名矩阵 -> Map<String, Map<String, List<String>>>
+    // Shanghai
+    //     Java
+    //         Alice
+    //         Charlie
+    //         Grace
+    //
+    //     DevOps
+    //         Alice
+    //         Charlie
+    // 一个人在同一类别下只能出现一次
+    // 字典序 ASC
+
+    record CityCategoryStudent(
+            String city,
+            String category,
+            String studentName
+    ) {
+    }
+
+    public static Map<String, Map<String, List<String>>> t10(List<Student> students,
+                                                             List<Course> courses,
+                                                             List<Enrollment> enrollments) {
+
+        Map<Long, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(
+                        Student::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        return enrollments.stream()
+                .map(e -> new CityCategoryStudent(
+                        studentMap.get(e.studentId()).city(),
+                        courseMap.get(e.courseId()).category(),
+                        studentMap.get(e.studentId()).name()
+                ))
+                .distinct()
+                .collect(Collectors.groupingBy(
+                        CityCategoryStudent::city,
+                        Collectors.groupingBy(
+                                CityCategoryStudent::category,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream()
+                                                .map(CityCategoryStudent::studentName)
+                                                .sorted()
+                                                .toList()
+                                )
+                        )
+                ));
+    }
 }
