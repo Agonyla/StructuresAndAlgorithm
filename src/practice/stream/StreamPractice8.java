@@ -227,7 +227,8 @@ public class StreamPractice8 {
         System.out.println(t10(students, courses, enrollments));
         // 11. 构建老师到城市到学生人数矩阵 -> Map<String, Map<String, Long>>
         System.out.println(t11(enrollments, students, courses));
-
+        // 12. 每个课程类别平均最高考试成绩 -> Map<String, Double>
+        System.out.println(t12(examResults, courses));
     }
 
     // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
@@ -674,4 +675,40 @@ public class StreamPractice8 {
                         )
                 ));
     }
+
+    // 12. 每个课程类别平均最高考试成绩 -> Map<String, Double>
+    // 同一学生参加了同一课程的多次考试，取最高成绩
+    record StudentCourse(
+            Long studentId,
+            Long courseId
+    ) {
+
+    }
+
+    public static Map<String, Double> t12(List<ExamResult> examResults, List<Course> courses) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<StudentCourse, Integer> map = examResults.stream()
+                .collect(Collectors.toMap(
+                        e -> new StudentCourse(
+                                e.studentId(),
+                                e.courseId()
+                        ),
+                        ExamResult::score,
+                        Math::max
+                ));
+
+        return map.entrySet()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        e -> courseMap.get(e.getKey().courseId()).category(),
+                        Collectors.averagingInt(Map.Entry::getValue)
+                ));
+    }
+
 }
