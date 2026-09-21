@@ -225,6 +225,8 @@ public class StreamPractice8 {
         System.out.println(t9(courses, enrollments));
         // 10. 构建城市到课程类别到学生姓名矩阵 -> Map<String, Map<String, List<String>>>
         System.out.println(t10(students, courses, enrollments));
+        // 11. 构建老师到城市到学生人数矩阵 -> Map<String, Map<String, Long>>
+        System.out.println(t11(enrollments, students, courses));
 
     }
 
@@ -621,6 +623,54 @@ public class StreamPractice8 {
                                                 .sorted()
                                                 .toList()
                                 )
+                        )
+                ));
+    }
+
+    // 11. 构建老师到城市到学生人数矩阵 -> Map<String, Map<String, Long>>
+    // Tom
+    //     Shanghai -> 3
+    //     Beijing  -> 2
+    //
+    // Mike
+    //     Shenzhen -> 2
+    // 学生只要选过某老师的一门或多门课程，就算该老师的一个学生，不能重复统计学生
+
+    record TeacherCityStudent(
+            String teacher,
+            String city,
+            String student
+    ) {
+    }
+
+    public static Map<String, Map<String, Long>> t11(List<Enrollment> enrollments,
+                                                     List<Student> students,
+                                                     List<Course> courses) {
+
+        Map<Long, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(
+                        Student::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        return enrollments.stream()
+                .map(e -> new TeacherCityStudent(
+                        courseMap.get(e.courseId()).teacher(),
+                        studentMap.get(e.studentId()).city(),
+                        studentMap.get(e.studentId()).name()
+                ))
+                .distinct()
+                .collect(Collectors.groupingBy(
+                        TeacherCityStudent::teacher,
+                        Collectors.groupingBy(
+                                TeacherCityStudent::city,
+                                Collectors.counting()
                         )
                 ));
     }
