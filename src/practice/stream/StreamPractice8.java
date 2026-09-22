@@ -229,6 +229,9 @@ public class StreamPractice8 {
         System.out.println(t11(enrollments, students, courses));
         // 12. 每个课程类别平均最高考试成绩 -> Map<String, Double>
         System.out.println(t12(examResults, courses));
+        // 13. 找出每个学生提升最大的课程 -> Map<Long, Long>
+        System.out.println(t13(examResults, courses));
+
     }
 
     // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
@@ -708,6 +711,78 @@ public class StreamPractice8 {
                 .collect(Collectors.groupingBy(
                         e -> courseMap.get(e.getKey().courseId()).category(),
                         Collectors.averagingInt(Map.Entry::getValue)
+                ));
+    }
+
+    // 13. 找出每个学生提升最大的课程 -> Map<Long, Long>
+    // studentId -> improvement 最大的 courseId
+    // 第一次成绩 = examDate 最早的一次
+    // 最后一次成绩 = examDate 最晚的一次
+    // 并列时：
+    // 1. difficulty 高的课程优先；
+    // 2. 仍相同，courseId 小的优先
+
+    record Improvement(
+            long studentId,
+            long courseId,
+            int improvement
+    ) {
+    }
+
+    public static Map<Long, Long> t13(List<ExamResult> examResults, List<Course> courses) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<StudentCourse, List<ExamResult>> studentCourseExamMap = examResults.stream()
+                .collect(Collectors.groupingBy(
+                        e -> new StudentCourse(
+                                e.studentId(),
+                                e.courseId()
+                        )
+                ));
+
+        List<Improvement> improvementList = studentCourseExamMap.entrySet()
+                .stream()
+                .map(e -> {
+
+                    List<ExamResult> list = e.getValue()
+                            .stream()
+                            .sorted(Comparator.comparing(ExamResult::examDate))
+                            .toList();
+
+                    int first = list.getFirst().score();
+                    int last = list.getLast().score();
+
+                    return new Improvement(
+                            e.getKey().studentId(),
+                            e.getKey().courseId(),
+                            last - first
+                    );
+
+                })
+                .toList();
+
+        return improvementList.stream()
+                .collect(Collectors.groupingBy(
+                        Improvement::studentId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparing(Improvement::improvement)
+                                                .thenComparing(e -> courseMap.get(e.courseId()).difficulty())
+                                                .thenComparing(
+                                                        Improvement::courseId,
+                                                        Comparator.reverseOrder()
+                                                )
+                                        )
+                                        .map(Improvement::courseId)
+                                        .orElse(null)
+
+                        )
                 ));
     }
 
