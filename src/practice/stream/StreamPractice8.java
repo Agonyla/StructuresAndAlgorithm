@@ -862,4 +862,19 @@ public class StreamPractice8 {
                 .toList();
     }
 
+    // 15. 找出偏科最严重的学生 -> List<Long>
+    // 对每个学生：
+    // 1. 先取得每门课程的最高考试成绩；
+    // 2. 找出其中最大成绩；
+    // 3. 找出其中最小成绩；
+    // 4. 定义偏科程度：maxScore - minScore
+    // 返回偏科程度最大的全部学生
+    // studentId ASC
+
+    public static List<Long> t15(List<ExamResult> examResults) {
+
+        // todo
+        return null;
+    }
+
 }
