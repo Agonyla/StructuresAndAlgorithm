@@ -235,6 +235,8 @@ public class StreamPractice8 {
         System.out.println(t14(examResults, studyRecords));
         // 15. 找出偏科最严重的学生 -> List<Long>
         System.out.println(t15(examResults));
+        // 16. 找出每个城市最喜欢的课程类别 -> Map<String, String>
+        System.out.println(t16(studyRecords, students, courses));
 
     }
 
@@ -901,6 +903,75 @@ public class StreamPractice8 {
                 .map(Map.Entry::getKey)
                 .sorted()
                 .toList();
+    }
+
+    // 16. 找出每个城市最喜欢的课程类别 -> Map<String, String>
+    // 最喜欢定义：这个城市的学生，在该 category 上的总学习分钟数最高
+    // 如果总学习分钟相同：
+    // 1. 参与学习的不同学生数量更多者优先；
+    // 2. 如果仍相同，category 字典序小者优先
+
+    record CityCategory(
+            String city,
+            String category
+    ) {
+    }
+
+    public static Map<String, String> t16(List<StudyRecord> studyRecords, List<Student> students, List<Course> courses) {
+
+        Map<Long, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(
+                        Student::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<CityCategory, Integer> studyMap = studyRecords.stream()
+                .collect(Collectors.toMap(
+                        s -> new CityCategory(
+                                studentMap.get(s.studentId()).city(),
+                                courseMap.get(s.courseId()).category()
+                        ),
+                        StudyRecord::minutes,
+                        Integer::sum
+                ));
+
+        Map<CityCategory, Integer> studentCount = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        sr -> new CityCategory(
+                                studentMap.get(sr.studentId()).city(),
+                                courseMap.get(sr.courseId()).category()
+                        ),
+                        Collectors.collectingAndThen(
+                                Collectors.mapping(
+                                        StudyRecord::studentId,
+                                        Collectors.toSet()
+                                ),
+                                Set::size
+                        )
+                ));
+
+        return studyMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getKey().city(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Map.Entry.<CityCategory, Integer>comparingByValue()
+                                                .thenComparing(e -> studentCount.get(e.getKey()))
+                                                .thenComparing(
+                                                        e -> e.getKey().category(),
+                                                        Comparator.reverseOrder())
+                                        )
+                                        .map(e -> e.getKey().category())
+                                        .orElse(null)
+                        )
+                ));
     }
 
 }
