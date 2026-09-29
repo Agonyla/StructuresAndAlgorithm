@@ -233,6 +233,8 @@ public class StreamPractice8 {
         System.out.println(t13(examResults, courses));
         // 14. 学习效率最高的学生 Top 3 -> List<Long>
         System.out.println(t14(examResults, studyRecords));
+        // 15. 找出偏科最严重的学生 -> List<Long>
+        System.out.println(t15(examResults));
 
     }
 
@@ -873,8 +875,32 @@ public class StreamPractice8 {
 
     public static List<Long> t15(List<ExamResult> examResults) {
 
-        // todo
-        return null;
+        Map<StudentCourse, Integer> studentCourseMap = examResults.stream()
+                .collect(Collectors.toMap(
+                        e -> new StudentCourse(
+                                e.studentId(),
+                                e.courseId()
+                        ),
+                        ExamResult::score,
+                        Math::max
+                ));
+
+        Map<Long, IntSummaryStatistics> statisticsMap = studentCourseMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getKey().studentId(),
+                        Collectors.summarizingInt(Map.Entry::getValue)
+                ));
+
+        int maxDiff = statisticsMap.values().stream()
+                .mapToInt(s -> s.getMax() - s.getMin())
+                .max()
+                .orElse(0);
+
+        return statisticsMap.entrySet().stream()
+                .filter(e -> e.getValue().getMax() - e.getValue().getMin() == maxDiff)
+                .map(Map.Entry::getKey)
+                .sorted()
+                .toList();
     }
 
 }
