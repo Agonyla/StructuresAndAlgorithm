@@ -239,6 +239,8 @@ public class StreamPractice8 {
         System.out.println(t16(studyRecords, students, courses));
         // 17. 找出学习时间和考试成绩不匹配的学生课程 -> List<StudentCourse>
         System.out.println(t17(studyRecords, examResults));
+        // 18. 基于相似学生的课程推荐 -> Map<Long, List<Long>>
+        System.out.println(t18(enrollments, courses));
 
     }
 
@@ -1018,6 +1020,68 @@ public class StreamPractice8 {
                 )
                 .map(Map.Entry::getKey)
                 .toList();
+    }
+
+    // 18. 基于相似学生的课程推荐 -> Map<Long, List<Long>>
+    // studentId -> recommendedCourseIds
+    // 对每个学生，寻找和他“选课最相似”的另一个学生
+    // 相似度定义：共同课程数量
+    // 选择最相似学生规则
+    // 1. 共同课程数最多；
+    // 2. 如果多人并列，选择 studentId 最小的。
+    // 推荐课程排序
+    // 1. difficulty DESC；
+    // 2. courseId ASC。
+
+    public static Map<Long, List<Long>> t18(List<Enrollment> enrollments, List<Course> courses) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Set<Long>> studentCourseMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        Enrollment::studentId,
+                        Collectors.mapping(Enrollment::courseId, Collectors.toSet())
+                ));
+
+        return studentCourseMap.keySet().stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        studentId -> {
+
+                            Set<Long> myCourses = studentCourseMap.get(studentId);
+
+                            Long mostSimilarStudentId = studentCourseMap.keySet().stream()
+                                    .filter(id -> !id.equals(studentId))
+                                    .max(Comparator.comparing(
+                                                            (Long otherId) -> myCourses.stream()
+                                                                    .filter(id -> studentCourseMap.get(otherId).contains(id))
+                                                                    .count()
+                                                    )
+                                                    .thenComparing(
+                                                            Function.identity(),
+                                                            Comparator.reverseOrder()
+                                                    )
+                                    )
+                                    .orElse(null);
+
+                            if (mostSimilarStudentId == null) {
+                                return List.of();
+                            }
+
+                            return studentCourseMap.get(mostSimilarStudentId)
+                                    .stream()
+                                    .filter(id -> !myCourses.contains(id))
+                                    .sorted(Comparator.comparing((Long id) -> courseMap.get(id).difficulty()).reversed()
+                                            .thenComparing(Function.identity())
+                                    )
+                                    .toList();
+
+                        }
+                ));
     }
 
 }
