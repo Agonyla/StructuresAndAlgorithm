@@ -1084,4 +1084,28 @@ public class StreamPractice8 {
                 ));
     }
 
+    // 一下两题省略
+
+    // 19. 构建学生学习画像 -> Map<Long, StudentProfile>
+    // record StudentProfile(
+    //         String name,
+    //         int courseCount, 学生选择过的不同课程数量
+    //         int categoryCount, 学生选择过的不同课程类别数量
+    //         int totalStudyMinutes,
+    //         double averageBestScore, 学生各课程最高分的平均值
+    //         String favoriteCategory 总学习分钟最多的 category，时间相同category 字典序小者优先
+    // ) {}
+
+    // 20. 构建老师教学分析报表 -> Map<String, TeacherReport>
+    // record TeacherReport(
+    //         int courseCount, 老师教授多少门不同课程。
+    //         long studentCount, 至少选过该老师一门课的不同学生数。
+    //         int totalStudyMinutes, 学生在这个老师所教授全部课程上的总学习时间。
+    //         double averageBestScore, 该老师全部课程对应的这些最高成绩求平均
+    //         List<String> topStudents 取该老师课程上学习时间最多的前 3 个学生。
+    // 1. 学习时间 DESC；
+    // 2. 该学生在这个老师课程上的最高成绩平均值 DESC；
+    // 3. studentId ASC
+    //
+    // ) {}
 }
