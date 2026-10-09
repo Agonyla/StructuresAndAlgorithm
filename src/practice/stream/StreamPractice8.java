@@ -259,21 +259,18 @@ public class StreamPractice8 {
 
         return students.stream()
                 .collect(Collectors.groupingBy(
-                                Student::city,
-                                Collectors.collectingAndThen(
-                                        Collectors.toList(),
-                                        list -> list.stream()
-                                                .filter(s -> studyMap.containsKey(s.id()))
-                                                .max(
-                                                        Comparator.comparingInt((Student s) -> studyMap.get(s.id()))
-                                                                .reversed()
-                                                                .thenComparing(Student::age)
-                                                                .thenComparing(Student::id)
-                                                )
-                                                .orElse(null)
-                                )
+                        Student::city,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .filter(stu -> studyMap.containsKey(stu.id()))
+                                        .max(Comparator.comparing((Student stu) -> studyMap.getOrDefault(stu.id(), 0))
+                                                .thenComparing(Student::age, Comparator.reverseOrder())
+                                                .thenComparing(Student::id, Comparator.reverseOrder())
+                                        )
+                                        .orElse(null)
                         )
-                );
+                ));
     }
 
     // !!!
