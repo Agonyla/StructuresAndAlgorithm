@@ -216,6 +216,8 @@ public class StreamPractice8 {
         System.out.println(t3(students, courses, studyRecords));
         // 4. 找出连续学习至少 4 天的学生 -> Set<Long>
         System.out.println(t4(studyRecords));
+        // 5. 计算每个学生最长连续学习天数 -> Map<Long, Integer>
+        System.out.println(t5(studyRecords));
 
     }
 
@@ -375,6 +377,39 @@ public class StreamPractice8 {
                 .filter(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
+    }
+
+    // 5. 计算每个学生最长连续学习天数 -> Map<Long, Integer>
+    // 在题 4 上升级
+    public static Map<Long, Integer> t5(List<StudyRecord> studyRecords) {
+
+        return studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        StudyRecord::studentId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    List<LocalDate> dates = list.stream()
+                                            .map(StudyRecord::studyDate)
+                                            .distinct()
+                                            .sorted()
+                                            .toList();
+
+                                    int continuousDay = 1;
+                                    int longestDay = 1;
+
+                                    for (int i = 1; i < dates.size(); i++) {
+                                        if (dates.get(i).equals(dates.get(i - 1).plusDays(1))) {
+                                            continuousDay++;
+                                            longestDay = Math.max(continuousDay, longestDay);
+                                        } else {
+                                            continuousDay = 1;
+                                        }
+                                    }
+                                    return longestDay;
+                                }
+                        )
+                ));
     }
 
 }
