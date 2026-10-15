@@ -221,6 +221,9 @@ public class StreamPractice8 {
         System.out.println(t7(enrollments));
         // 8. 分析哪些课程最经常被同一个学生一起选择 -> Map<CoursePair, Long>
         System.out.println(t8(enrollments));
+        // 9. 每个老师最受欢迎的课程(选课学生人数最多) -> Map<String, Course>
+        System.out.println(t9_1(courses, enrollments));
+        System.out.println(t9_2(courses, enrollments));
 
     }
 
@@ -533,6 +536,87 @@ public class StreamPractice8 {
                         Map.Entry::getValue,
                         (e1, e2) -> e1,
                         LinkedHashMap::new
+                ));
+    }
+
+    // 9. 每个老师最受欢迎的课程(选课学生人数最多) -> Map<String, Course>
+    // 如果选课人数相同：
+    // 1. difficulty 高的优先；
+    // 2. 仍相同，courseId 小的优先
+
+    record TeacherCourse(
+            String teacher,
+            long courseId
+    ) {
+    }
+
+    public static Map<String, Course> t9_1(List<Course> courses, List<Enrollment> enrollments) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<TeacherCourse, Integer> teacherCourseCountMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        e -> new TeacherCourse(
+                                courseMap.get(e.courseId()).teacher(),
+                                e.courseId()
+                        ),
+                        Collectors.collectingAndThen(
+                                Collectors.mapping(
+                                        Enrollment::studentId,
+                                        Collectors.toSet()
+                                ),
+                                Set::size
+                        )
+                ));
+
+        return teacherCourseCountMap.entrySet().stream()
+                .sorted(Map.Entry.<TeacherCourse, Integer>comparingByValue().reversed()
+                        .thenComparing(
+                                e -> courseMap.get(e.getKey().courseId()).difficulty(),
+                                Comparator.reverseOrder()
+                        )
+                        .thenComparing(e -> e.getKey().courseId())
+                )
+                .collect(Collectors.toMap(
+                        e -> e.getKey().teacher(),
+                        e -> courseMap.get(e.getKey().courseId()),
+                        (c1, c2) -> c1,
+                        LinkedHashMap::new
+                ));
+    }
+
+    public static Map<String, Course> t9_2(List<Course> courses, List<Enrollment> enrollments) {
+
+        Map<Long, Integer> courseCountMap = enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        Enrollment::courseId,
+                        Collectors.collectingAndThen(
+                                Collectors.mapping(
+                                        Enrollment::studentId,
+                                        Collectors.toSet()
+                                ),
+                                Set::size
+                        )
+                ));
+
+        return courses.stream()
+                .collect(Collectors.groupingBy(
+                        Course::teacher,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .max(Comparator.comparing((Course c) -> courseCountMap.getOrDefault(c.id(), 0))
+                                                .thenComparing(Course::difficulty)
+                                                .thenComparing(Course::id,
+                                                        Comparator.reverseOrder()
+                                                )
+                                        )
+                                        .orElse(null)
+                        )
                 ));
     }
 
