@@ -228,6 +228,8 @@ public class StreamPractice8 {
         System.out.println(t10_1(students, courses, enrollments));
         System.out.println(t10_2(students, courses, enrollments));
 
+        System.out.println(t11(students, courses, enrollments));
+
     }
 
     // 1. 每个城市学习时间最多的学生 -> Map<String, Student>
@@ -725,6 +727,68 @@ public class StreamPractice8 {
                                 )
                         )
                 ));
+    }
+
+    // 11. 构建老师到城市到学生人数矩阵 -> Map<String, Map<String, Long>>
+    // Tom
+    //     Shanghai -> 3
+    //     Beijing  -> 2
+    //
+    // Mike
+    //     Shenzhen -> 2
+    // 学生只要选过某老师的一门或多门课程，就算该老师的一个学生，不能重复统计学生
+
+    record TeacherCity(
+            String teacher,
+            String city
+    ) {
+    }
+
+    public static Map<String, Map<String, Long>> t11(List<Student> students,
+                                                     List<Course> courses,
+                                                     List<Enrollment> enrollments) {
+
+        Map<Long, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(
+                        Student::id,
+                        Function.identity()
+                ));
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        return enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        e -> courseMap.get(e.courseId()).teacher(),
+                        Collectors.groupingBy(
+                                e -> studentMap.get(e.studentId()).city(),
+                                Collectors.mapping(
+                                        Enrollment::studentId,
+                                        Collectors.collectingAndThen(
+                                                Collectors.toSet(),
+                                                set -> (long) set.size()
+                                        )
+                                )
+                        )
+                ));
+
+        // return enrollments.stream()
+        //         .collect(Collectors.groupingBy(
+        //                 e -> courseMap.get(e.courseId()).teacher(),
+        //                 Collectors.groupingBy(
+        //                         e -> studentMap.get(e.studentId()).city(),
+        //                         Collectors.collectingAndThen(
+        //                                 Collectors.toList(),
+        //                                 list -> list.stream()
+        //                                         .map(Enrollment::studentId)
+        //                                         .distinct()
+        //                                         .count()
+        //                         )
+        //                 )
+        //         ));
     }
 
 }
