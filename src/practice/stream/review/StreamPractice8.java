@@ -227,8 +227,10 @@ public class StreamPractice8 {
         // 10. 构建城市到课程类别到学生姓名矩阵 -> Map<String, Map<String, List<String>>>
         System.out.println(t10_1(students, courses, enrollments));
         System.out.println(t10_2(students, courses, enrollments));
-
+        // 11. 构建老师到城市到学生人数矩阵 -> Map<String, Map<String, Long>>
         System.out.println(t11(students, courses, enrollments));
+        // 12. 每个课程类别平均最高考试成绩 -> Map<String, Double>
+        System.out.println(t12(courses, examResults));
 
     }
 
@@ -789,6 +791,78 @@ public class StreamPractice8 {
         //                         )
         //                 )
         //         ));
+    }
+
+    // 12. 每个课程类别平均最高考试成绩 -> Map<String, Double>
+    // 同一学生参加了同一课程的多次考试，取最高成绩
+    // 某一课程下，需要记录所有学生的最高成绩，而不是该课程的最高成绩
+
+    /**
+     * 以下是 记录课程的最高成绩，然后再平均
+     */
+    // record CategoryCourse(
+    //         String category,
+    //         long courseId
+    // ) {
+    //
+    // }
+    //
+    // public static Map<String, Double> t12(List<Course> courses, List<ExamResult> examResults) {
+    //
+    //     Map<Long, Course> courseMap = courses.stream()
+    //             .collect(Collectors.toMap(
+    //                     Course::id,
+    //                     Function.identity()
+    //             ));
+    //
+    //     Map<CategoryCourse, Integer> categCourseScoreMap = examResults.stream()
+    //             .collect(Collectors.toMap(
+    //                     e -> new CategoryCourse(
+    //                             courseMap.get(e.courseId()).category(),
+    //                             e.courseId()
+    //                     ),
+    //                     ExamResult::score,
+    //                     Integer::max
+    //             ));
+    //
+    //     return categCourseScoreMap.entrySet().stream()
+    //             .collect(Collectors.groupingBy(
+    //                             ccs -> ccs.getKey().category(),
+    //                             Collectors.averagingInt(Map.Entry::getValue)
+    //                     )
+    //             );
+    // }
+
+    record CourseStudent(
+            long courseId,
+            long studentId
+    ) {
+
+    }
+
+    public static Map<String, Double> t12(List<Course> courses, List<ExamResult> examResults) {
+
+        Map<Long, Course> courseMap = courses.stream()
+                .collect(Collectors.toMap(
+                        Course::id,
+                        Function.identity()
+                ));
+
+        Map<CourseStudent, Integer> courseStudentScoreMap = examResults.stream()
+                .collect(Collectors.toMap(
+                        e -> new CourseStudent(
+                                e.courseId(),
+                                e.studentId()
+                        ),
+                        ExamResult::score,
+                        Integer::max
+                ));
+
+        return courseStudentScoreMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        css -> courseMap.get(css.getKey().courseId()).category(),
+                        Collectors.averagingInt(Map.Entry::getValue)
+                ));
     }
 
 }
