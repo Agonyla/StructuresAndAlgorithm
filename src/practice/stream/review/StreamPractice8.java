@@ -233,6 +233,8 @@ public class StreamPractice8 {
         System.out.println(t12(courses, examResults));
         // 13. 找出每个学生提升最大的课程 -> Map<Long, Long>
         System.out.println(t13(courses, examResults));
+        // 14. 学习效率最高的学生 Top 3 -> List<Long>
+        System.out.println(t14(examResults, studyRecords));
 
     }
 
@@ -923,6 +925,77 @@ public class StreamPractice8 {
                                         .orElse(null)
                         )
                 ));
+    }
+
+    // 14. 学习效率最高的学生 Top 3 -> List<Long>
+    // 该学生所有课程的最高考试成绩总和 / 总学习小时数
+    // 排序规则
+    // 1. 效率 DESC
+    // 2. 总学习时间 DESC
+    // 3. studentId ASC
+
+    public static List<Long> t14(List<ExamResult> examResults, List<StudyRecord> studyRecords) {
+
+        Map<CourseStudent, Integer> courseStudentScoreMap = examResults.stream()
+                .collect(Collectors.toMap(
+                        e -> new CourseStudent(
+                                e.courseId(),
+                                e.studentId()
+                        ),
+                        ExamResult::score,
+                        Integer::max
+                ));
+
+        // 每个学生的最高考试成绩之和
+        Map<Long, Integer> studentScoreMap = courseStudentScoreMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getKey().studentId(),
+                        Collectors.summingInt(Map.Entry::getValue)
+                ));
+
+        // Map<CourseStudent, Integer> courseStudentStudyMap = studyRecords.stream()
+        //         .collect(Collectors.toMap(
+        //                 e -> new CourseStudent(
+        //                         e.courseId(),
+        //                         e.studentId()
+        //                 ),
+        //                 StudyRecord::minutes,
+        //                 Integer::sum
+        //         ));
+        //
+        // Map<Long, Integer> studentStudyMap = courseStudentStudyMap.entrySet().stream()
+        //         .collect(Collectors.groupingBy(
+        //                 e -> e.getKey().studentId(),
+        //                 Collectors.summingInt(Map.Entry::getValue)
+        //         ));
+
+        // 可以直接简化成一步
+        // 每个学生的学习时长
+        Map<Long, Integer> studentStudyMap = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        StudyRecord::studentId,
+                        Collectors.summingInt(StudyRecord::minutes)
+                ));
+
+        return studentStudyMap.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .sorted(Comparator.comparing(
+                                        (Map.Entry<Long, Integer> e) -> {
+                                            int score = studentScoreMap.getOrDefault(e.getKey(), 0);
+                                            int time = e.getValue();
+                                            return (double) score / time;
+                                        },
+                                        Comparator.reverseOrder()
+                                )
+                                .thenComparing(
+                                        Map.Entry::getValue,
+                                        Comparator.reverseOrder()
+                                )
+                                .thenComparing(Map.Entry::getKey)
+                )
+                .map(Map.Entry::getKey)
+                .limit(3)
+                .toList();
     }
 
 }
