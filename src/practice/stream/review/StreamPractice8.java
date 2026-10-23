@@ -235,6 +235,8 @@ public class StreamPractice8 {
         System.out.println(t13(courses, examResults));
         // 14. 学习效率最高的学生 Top 3 -> List<Long>
         System.out.println(t14(examResults, studyRecords));
+        // 15. 找出偏科最严重的学生 -> List<Long>
+        System.out.println(t15(examResults));
 
     }
 
@@ -995,6 +997,44 @@ public class StreamPractice8 {
                 )
                 .map(Map.Entry::getKey)
                 .limit(3)
+                .toList();
+    }
+
+    // 15. 找出偏科最严重的学生 -> List<Long>
+    // 对每个学生：
+    // 1. 先取得每门课程的最高考试成绩；
+    // 2. 找出其中最大成绩；
+    // 3. 找出其中最小成绩；
+    // 4. 定义偏科程度：maxScore - minScore
+    // 返回偏科程度最大的全部学生
+    // studentId ASC
+    public static List<Long> t15(List<ExamResult> examResults) {
+
+        Map<CourseStudent, Integer> courseStudentScoreMap = examResults.stream()
+                .collect(Collectors.toMap(
+                        e -> new CourseStudent(
+                                e.courseId(),
+                                e.studentId()
+                        ),
+                        ExamResult::score,
+                        Integer::max
+                ));
+
+        Map<Long, IntSummaryStatistics> statisticsMap = courseStudentScoreMap.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getKey().studentId(),
+                        Collectors.summarizingInt(Map.Entry::getValue)
+                ));
+
+        int maxDiff = statisticsMap.values().stream()
+                .mapToInt(intSummaryStatistics -> intSummaryStatistics.getMax() - intSummaryStatistics.getMin())
+                .max()
+                .orElse(0);
+
+        return statisticsMap.entrySet().stream()
+                .filter(e -> e.getValue().getMax() - e.getValue().getMin() == maxDiff)
+                .map(Map.Entry::getKey)
+                .sorted()
                 .toList();
     }
 
