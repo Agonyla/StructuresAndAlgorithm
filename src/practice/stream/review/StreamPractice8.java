@@ -239,6 +239,10 @@ public class StreamPractice8 {
         System.out.println(t15(examResults));
         // 16. 找出每个城市最喜欢的课程类别 -> Map<String, String>
         System.out.println(t16(students, courses, studyRecords));
+        // 17. 找出学习时间和考试成绩不匹配的学生课程 -> List<StudentCourse>
+        System.out.println(t17(studyRecords, examResults));
+        // 18. 基于相似学生的课程推荐 -> Map<Long, List<Long>>
+        // System.out.println(t18(enrollments, courses));
 
     }
 
@@ -1108,6 +1112,58 @@ public class StreamPractice8 {
                                         .orElse(null)
                         )
                 ));
+    }
+
+    // 17. 找出学习时间和考试成绩不匹配的学生课程 -> List<StudentCourse>
+    // 总学习时间
+    // 最高考试成绩
+    // 总学习时间 >= 100 分钟
+    // 最高成绩 < 85
+    // 排序
+    // 1. 学习时间 DESC；
+    // 2. 成绩 ASC；
+    // 3. studentId ASC；
+    // 4. courseId ASC
+
+    record StudentCourse(
+            long studentId,
+            long courseId
+    ) {
+
+    }
+
+    public static List<StudentCourse> t17(List<StudyRecord> studyRecords, List<ExamResult> examResults) {
+
+        Map<StudentCourse, Integer> studyMap = studyRecords.stream()
+                .collect(Collectors.groupingBy(
+                        sr -> new StudentCourse(
+                                sr.studentId(),
+                                sr.courseId()
+                        ),
+                        Collectors.summingInt(StudyRecord::minutes)
+                ));
+
+        Map<StudentCourse, Integer> scoreMap = examResults.stream()
+                .collect(Collectors.toMap(
+                        er -> new StudentCourse(
+                                er.studentId(),
+                                er.courseId()
+                        ),
+                        ExamResult::score,
+                        Integer::max
+
+                ));
+
+        return studyMap.entrySet().stream()
+                .filter(e -> e.getValue() >= 100)
+                .filter(e -> scoreMap.getOrDefault(e.getKey(), 0) < 85)
+                .sorted(Map.Entry.<StudentCourse, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(e -> scoreMap.getOrDefault(e.getKey(), 0))
+                        .thenComparing(e -> e.getKey().studentId())
+                        .thenComparing(e -> e.getKey().courseId())
+                )
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
 }
